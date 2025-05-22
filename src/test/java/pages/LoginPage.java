@@ -16,7 +16,8 @@ public class LoginPage extends BasePage{
     }
 
     public void clickLoginButton() {
-        loginButton.click();
+        //loginButton.click();
+        clickElement(loginButton);
     }
 
     public void fillUserNameAndPass() {
