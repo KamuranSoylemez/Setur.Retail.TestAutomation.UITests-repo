@@ -2,7 +2,7 @@ package utils;
 
 import com.microsoft.playwright.*;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class Driver {
@@ -17,7 +17,7 @@ public class Driver {
         if (page == null) {
 
             String browserType = ConfigDataReader.getConfig("browser");
-            double slowMoValue = Double.valueOf(ConfigDataReader.getConfig("slow_mo"));
+            double slowMoValue = Double.parseDouble(ConfigDataReader.getConfig("slow_mo"));
 
             if(Objects.equals(browserType, "chrome"))
             {
@@ -26,7 +26,7 @@ public class Driver {
             playwright = Playwright.create();
             browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
                     .setHeadless(false)
-                    .setArgs(Arrays.asList("--start-maximized"))
+                    .setArgs(List.of("--start-maximized"))
                     .setSlowMo(slowMoValue));
 
             context = browser.newContext(new Browser.NewContextOptions().setViewportSize(null));
