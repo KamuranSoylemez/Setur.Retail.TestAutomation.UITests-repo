@@ -12,17 +12,20 @@ public class WorkflowInboxPage extends BasePage{
 
     public void verifySuccessfulLogin() {
 
-        Assert.assertEquals("Akış Gelen Kutusu",pageTitle.textContent().trim());
+        //Assert.assertEquals("Akış Gelen Kutusu",pageTitle.textContent().trim());
+        verifyTextElementUseTrim(pageTitle,"Akış Gelen Kutusu");
     }
 
     public void clickPurchaseDropdownToggle() {
 
-        purchaseDropdown.click();
+        //purchaseDropdown.click();
+        clickElement(purchaseDropdown);
     }
 
     public void clickOrderLink() {
 
-        orderLink.click();
+        //orderLink.click();
+        clickElement(orderLink);
     }
 
 

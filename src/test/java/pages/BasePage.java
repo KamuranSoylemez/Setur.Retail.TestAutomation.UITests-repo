@@ -19,8 +19,11 @@ public class BasePage {
         locator.click();
     }
 
-    public void verifyElementText(Locator locator, String value){
+    public void verifyTextElement(Locator locator, String value){
         Assert.assertEquals(locator.textContent(),value);
+    }
+    public void verifyTextElementUseTrim(Locator locator, String value){
+        Assert.assertEquals(locator.textContent().trim(),value);
     }
     public void addString(String key, String value){
         GlobalVariables.getInstance().addString(key,value);

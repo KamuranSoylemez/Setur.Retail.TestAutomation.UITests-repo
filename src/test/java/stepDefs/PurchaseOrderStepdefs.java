@@ -18,12 +18,12 @@ public class PurchaseOrderStepdefs {
         orderPage.fillOrderDate();
     }
 
-    @And("select category {string} from list")
+    @And("select {string} from list")
     public void selectCategoryFromList(String category) {
         orderPage.selectCategoryFromList(category);
     }
 
-    @And("set distributor company")
+    @And("set distributor company by category")
     public void setDistributorCompany() {
         orderPage.setDistributorCompany();
     }

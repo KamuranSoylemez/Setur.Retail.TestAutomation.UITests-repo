@@ -4,14 +4,14 @@ Feature: Purchase Order Page
     Given navigate to login page
 
     Scenario Outline:
-      When fill "usernameandpass" and "usernameandpass"
+      When fill "username_password" and "username_password"
       And click login
       And click Purchase dropdown toggle
       And click Order link
       Then verify PurchaseOrder page
       And fill order date
-      And select category "<category>" from list
-      And set distributor company
+      And select "<category>" from list
+      And set distributor company by category
       And select firm responsible user
       And select distribution target type
       And select entry warehouse

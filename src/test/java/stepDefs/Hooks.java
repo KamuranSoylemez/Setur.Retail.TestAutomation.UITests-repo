@@ -1,6 +1,5 @@
 package stepDefs;
 
-import com.microsoft.playwright.Page;
 import org.junit.After;
 import org.junit.Before;
 import utils.Driver;

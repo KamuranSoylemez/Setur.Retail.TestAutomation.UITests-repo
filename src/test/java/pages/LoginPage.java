@@ -1,6 +1,7 @@
 package pages;
 
 import com.microsoft.playwright.Locator;
+import utils.GlobalVariables;
 import utils.UserDataReader;
 
 public class LoginPage extends BasePage{
@@ -13,6 +14,7 @@ public class LoginPage extends BasePage{
 
         userNameLocator.fill(UserDataReader.getUsername(userName));
         passwordLocator.fill(UserDataReader.getPassword(password));
+
     }
 
     public void clickLoginButton() {
@@ -20,8 +22,4 @@ public class LoginPage extends BasePage{
         clickElement(loginButton);
     }
 
-    public void fillUserNameAndPass() {
-        userNameLocator.fill("KAMURAN_SOYLEMEZ");
-        passwordLocator.fill("xxxxxxx");
-    }
 }

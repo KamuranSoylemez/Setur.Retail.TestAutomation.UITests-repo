@@ -18,9 +18,4 @@ public class LoginStepdefs {
         loginPage.clickLoginButton();
     }
 
-
-//    @When("fill user name and pass")
-//    public void fillUserNameAndPass() {
-//        loginPage.fillUserNameAndPass();
-//    }
 }
