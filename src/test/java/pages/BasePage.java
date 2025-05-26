@@ -31,6 +31,7 @@ public class BasePage {
     public String getString(String key){
         return GlobalVariables.getInstance().getString(key);
     }
+
 }
 
 

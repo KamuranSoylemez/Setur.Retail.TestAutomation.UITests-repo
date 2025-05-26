@@ -4,7 +4,10 @@ import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import enums.Categories;
+import enums.DistributorInfo;
 import org.junit.Assert;
+
+import java.util.Map;
 
 
 public class PurchaseOrderPage extends BasePage{
@@ -58,77 +61,28 @@ public class PurchaseOrderPage extends BasePage{
 
     }
 
-    private void selectCategoryCode(){ //bu işlem tüm if-else lerde yapılıyor. Method haline getirdim
+    private void selectCategoryCode(){
 
         frameLocator.locator("#FilterButtonId").click();
         frameLocator.locator("//td[@role='gridcell']//input[1]").nth(0).click();
     }
 
     public void setDistributorCompany() {
-
-        //openFrame.click();
         clickElement(openFrame);
 
-        //--------------kategoriye göre dağıtıcı firma seçimi-------------
-        Locator firmName = page.locator("(//li[@unselectable='on']//span)[1]");
+        String categoryLabel = selectedCategory.nth(0).textContent();
+        Categories category = Categories.fromLabel(categoryLabel);
 
-        if (selectedCategory.nth(0).textContent().equals(Categories.PARFUM_KOZMETIK.getLabel())) {
-
-        frameLocator.locator("#FilterFirmCode").fill("CHN");
+        if (category != null) {
+            DistributorInfo distributor = category.getDistributorInfo();
+            frameLocator.locator("#FilterFirmCode").fill(distributor.getFirmCode());
             selectCategoryCode();
-            verifyTextElementUseTrim(firmName,"CHANEL PARFUMS");
-        }
-        else if (selectedCategory.nth(0).textContent().equals(Categories.GIDA.getLabel())) {
-            frameLocator.locator("#FilterFirmCode").fill("MIGRS");
-            selectCategoryCode();
-            verifyTextElementUseTrim(firmName,"MİGROS TİCARET A.Ş.");
-        }
-        else if (selectedCategory.nth(0).textContent().equals(Categories.TOBACCO_PRODUCTS.getLabel())) {
-            frameLocator.locator("#FilterFirmCode").fill("JTI");
-            selectCategoryCode();
-            verifyTextElementUseTrim(firmName,"JAPAN TOBACCO INTERNATIONAL");
-        }
-        else if (selectedCategory.nth(0).textContent().equals(Categories.BUTIK_AKSESUAR.getLabel())) {
-            frameLocator.locator("#FilterFirmCode").fill("FOS");
-            selectCategoryCode();
-            verifyTextElementUseTrim(firmName,"FOSSIL");
-        }
-        else if (selectedCategory.nth(0).textContent().equals(Categories.SPIRITS.getLabel())) {
-            frameLocator.locator("#FilterFirmCode").fill("TUBORG");
-            selectCategoryCode();
-            verifyTextElementUseTrim(firmName,"TUBORG");
-        }
-        else if (selectedCategory.nth(0).textContent().equals(Categories.OYUNCAK.getLabel())) {
-            frameLocator.locator("#FilterFirmCode").fill("LEG");
-            selectCategoryCode();
-            verifyTextElementUseTrim(firmName,"LEGO");
-        }
-        else if (selectedCategory.nth(0).textContent().equals(Categories.BAZAAR.getLabel())) {
-            frameLocator.locator("#FilterFirmCode").fill("MPAZ");
-            selectCategoryCode();
-            verifyTextElementUseTrim(firmName,"MALATYA PAZARI");
-        }
-        else if (selectedCategory.nth(0).textContent().equals(Categories.ELEKTRONIK.getLabel())) {
-            frameLocator.locator("#FilterFirmCode").fill("CAPI");
-            selectCategoryCode();
-            verifyTextElementUseTrim(firmName,"CAPI");
-        }
-        else if (selectedCategory.nth(0).textContent().equals(Categories.POSET.getLabel())) {
-            frameLocator.locator("#FilterFirmCode").fill("20002560");
-            selectCategoryCode();
-            verifyTextElementUseTrim(firmName,"ARCE PLASTİK İÇ VE DIŞ TİC");
-        }
-        else if (selectedCategory.nth(0).textContent().equals(Categories.ESANTIYON.getLabel())) {
-            frameLocator.locator("#FilterFirmCode").fill("ÇNRTX");
-            selectCategoryCode();
-            verifyTextElementUseTrim(firmName,"ÇINARTEKS TAAHHÜT TURİZM VE AMBALAJ SAN.DIŞ TİC.LTD.ŞTİ.");
-
-        }
-        else {
+            Locator firmName = page.locator("(//li[@unselectable='on']//span)[1]");
+            verifyTextElementUseTrim(firmName, distributor.getFirmName());
+            System.out.println("Dağıtıcı Firma seçildi");
+        } else {
             System.out.println("Uygun Kategori Bulunamadı!");
         }
-        System.out.println("Dağıtıcı Firma seçildi");
-
     }
 
     public void selectFirmResponsibleUser() {
@@ -197,6 +151,10 @@ public class PurchaseOrderPage extends BasePage{
 
         //saveOrderBtn.click();
         clickElement(saveOrderBtn);
+
+        Locator purchaseOrderTabs = page.locator("#PurchaseOrderTabs");
+        page.waitForSelector("#PurchaseOrderTabs");
+        Assert.assertTrue(purchaseOrderTabs.isVisible());
 
         System.out.println("sipariş oluşturuldu!");
     }
