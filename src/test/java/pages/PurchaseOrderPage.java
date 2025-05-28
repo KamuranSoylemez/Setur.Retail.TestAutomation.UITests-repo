@@ -7,7 +7,6 @@ import com.microsoft.playwright.options.AriaRole;
 import enums.Categories;
 import enums.DistributorInfo;
 
-
 public class PurchaseOrderPage extends BasePage{
 
     Locator pageTitle = page.locator("#PageTitle");
