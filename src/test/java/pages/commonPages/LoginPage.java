@@ -1,10 +1,9 @@
-package pages;
+package pages.commonPages;
 
 import com.microsoft.playwright.Locator;
-import utils.GlobalVariables;
 import utils.UserDataReader;
 
-public class LoginPage extends BasePage{
+public class LoginPage extends BasePage {
 
     Locator userNameLocator = page.locator("#UserName");
     Locator passwordLocator = page.locator("#Password");

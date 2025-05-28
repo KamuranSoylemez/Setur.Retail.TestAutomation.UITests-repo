@@ -1,10 +1,10 @@
-package pages;
+package pages.purchasePages;
 
 import com.microsoft.playwright.Locator;
-import org.junit.Assert;
+import pages.commonPages.BasePage;
 
 
-public class WorkflowInboxPage extends BasePage{
+public class WorkflowInboxPage extends BasePage {
 
     Locator pageTitle = page.locator("#PageTitle");
     Locator purchaseDropdown = page.locator(".glyphicon.glyphicon-tags");

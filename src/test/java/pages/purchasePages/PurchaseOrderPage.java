@@ -1,4 +1,4 @@
-package pages;
+package pages.purchasePages;
 
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
@@ -6,8 +6,9 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import enums.Categories;
 import enums.DistributorInfo;
+import pages.commonPages.BasePage;
 
-public class PurchaseOrderPage extends BasePage{
+public class PurchaseOrderPage extends BasePage {
 
     Locator pageTitle = page.locator("#PageTitle");
     Locator clickDropdownForCategory = page.locator("(//span[text()='Lütfen Seçiniz'])[1]");
