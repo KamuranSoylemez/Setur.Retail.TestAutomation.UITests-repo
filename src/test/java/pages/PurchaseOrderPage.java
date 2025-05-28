@@ -6,7 +6,6 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import enums.Categories;
 import enums.DistributorInfo;
-import org.junit.Assert;
 
 
 public class PurchaseOrderPage extends BasePage{
@@ -218,7 +217,6 @@ public class PurchaseOrderPage extends BasePage{
         for(int i=0; i<itemCount; i++){
 
             verifyTextElementUseTrim(productItems.nth(i), "WINSTON BLUE KS 600S");
-
         }
     }
 }
