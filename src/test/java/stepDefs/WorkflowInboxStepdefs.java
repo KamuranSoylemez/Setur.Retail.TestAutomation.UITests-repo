@@ -2,7 +2,7 @@ package stepDefs;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
-import pages.WorkflowInboxPage;
+import pages.purchasePages.WorkflowInboxPage;
 
 public class WorkflowInboxStepdefs {
 
