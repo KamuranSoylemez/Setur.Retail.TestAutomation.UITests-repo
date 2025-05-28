@@ -2,7 +2,7 @@ package stepDefs;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.When;
-import pages.LoginPage;
+import pages.commonPages.LoginPage;
 
 public class LoginStepdefs {
 

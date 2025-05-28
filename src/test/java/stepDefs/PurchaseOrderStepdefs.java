@@ -2,7 +2,7 @@ package stepDefs;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
-import pages.PurchaseOrderPage;
+import pages.purchasePages.PurchaseOrderPage;
 
 public class PurchaseOrderStepdefs {
 

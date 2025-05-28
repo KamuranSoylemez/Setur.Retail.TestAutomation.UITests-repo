@@ -1,7 +1,7 @@
 package stepDefs;
 
 import io.cucumber.java.en.Given;
-import pages.GlobalPage;
+import pages.commonPages.GlobalPage;
 
 public class GlobalStepdefs {
 
