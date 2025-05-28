@@ -18,6 +18,8 @@ Feature: Purchase Order Page
       And select company address
       And select warehouse address
       Then check can auto complete and save
+      And add product to order
+      Then verify products
 
       Examples: Categories
         | category         |

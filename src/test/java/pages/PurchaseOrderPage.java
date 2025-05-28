@@ -3,11 +3,10 @@ package pages;
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.AriaRole;
 import enums.Categories;
 import enums.DistributorInfo;
 import org.junit.Assert;
-
-import java.util.Map;
 
 
 public class PurchaseOrderPage extends BasePage{
@@ -31,42 +30,44 @@ public class PurchaseOrderPage extends BasePage{
     Locator saveOrderBtn = page.locator("#SaveBtn");
     FrameLocator frameLocator = page.frameLocator("iframe.k-content-frame");
 
+    //Sipariş İşlemleri sayfasını doğrular
     public void verifyPurchaseOrderPage() {
 
         //Assert.assertEquals("Sipariş İşlemleri", pageTitle.textContent().trim());
         verifyTextElementUseTrim(pageTitle,"Sipariş İşlemleri");
     }
-
+    //Sipariş Tarihi ni doldurur
     public void fillOrderDate() {
 
-        //calendar.nth(0).click();
         clickElement(calendar.nth(0));
+        //kendo component nedeni ile SimpleDateFormat işe yaramıyor!!!
         selectToday.click(new Locator.ClickOptions().setForce(true));
-        // kendo component nedeni ile SimpleDateFormat işe yaramıyor!!!
-    }
 
+        //otomasyon test belli olması adına sipariş adı ekledim
+        Locator purchaseOrderName = page.locator("#PurchaseOrderName");
+        purchaseOrderName.fill("KMRN TST AUTO");
+    }
+    //Kategori alanından seçim yapar
     public void selectCategoryFromList(String category) {
 
-        //clickDropdownForCategory.nth(0).click();
         clickElement(clickDropdownForCategory.nth(0));
-
         page.waitForSelector("#CategoryId_option_selected");
 
         Locator selectCategory = page.locator("#CategoryId_listbox li[role='option'].k-item",
                 new Page.LocatorOptions().setHasText(category));
         selectCategory.click(new Locator.ClickOptions().setForce(true));
 
-        Assert.assertEquals(selectCategory.textContent(),category);
+        //Assert.assertEquals(selectCategory.textContent(),category);
+        verifyTextElementUseTrim(selectCategory,category);
         //System.out.println("Kategori tıklandı: " + category);
 
     }
-
     private void selectCategoryCode(){
 
         frameLocator.locator("#FilterButtonId").click();
         frameLocator.locator("//td[@role='gridcell']//input[1]").nth(0).click();
     }
-
+    //Dağıtıcı Firma alanı seçimi (Kategoriye göre)
     public void setDistributorCompany() {
         clickElement(openFrame);
 
@@ -84,7 +85,7 @@ public class PurchaseOrderPage extends BasePage{
             System.out.println("Uygun Kategori Bulunamadı!");
         }
     }
-
+    //Firma İlgili Kişi
     public void selectFirmResponsibleUser() {
 
         //selectUser.nth(3).click();
@@ -95,7 +96,7 @@ public class PurchaseOrderPage extends BasePage{
 
         System.out.println("ilgili kişi seçildi");
     }
-
+    //Dağılım Hedef Tipi
     public void selectDistributionTargetType() {
 
         //distributionType.nth(1).click();
@@ -106,7 +107,7 @@ public class PurchaseOrderPage extends BasePage{
 
         System.out.println("hedef tipi seçildi");
     }
-
+    //Giriş Antrepo
     public void selectEntryWarehouse() {
 
         //wareHouseBtn.click();
@@ -114,11 +115,13 @@ public class PurchaseOrderPage extends BasePage{
 
         frameLocator.locator("#FilterWarehouseCode").fill("639");
         frameLocator.locator("#FilterButtonId").click();
+        page.locator("body").scrollIntoViewIfNeeded();
+
         frameLocator.locator("//td[@role='gridcell']//input[1]").nth(0).click();
 
         System.out.println("Giriş Antrepo Seçildi");
     }
-
+    //Fatura Adresi
     public void selectCompanyAddress() {
 
         //companyAddress.nth(3).click();
@@ -129,7 +132,7 @@ public class PurchaseOrderPage extends BasePage{
 
         System.out.println("Fatura Adresi seçildi");
     }
-
+    //Teslimat Adresi
     public void selectWarehouseAddress() {
 
         //warehouseAddress.nth(4).click();
@@ -140,22 +143,82 @@ public class PurchaseOrderPage extends BasePage{
 
         System.out.println("Teslimat Adresi seçildi");
     }
-
+    //Sipariş Otomatik Olarak Tamamlansın mı?
     public void checkCanAutoComplete() {
 
-        page.evaluate("window.scrollTo(0, document.body.scrollHeight)");
-        //checkCanAutoComplete.click();
+        pageScroll(); // Sayfayı aşağı kaydırır 10000
         clickElement(checkCanAutoComplete);
 
         System.out.println("Sipariş Otomatik Olarak Tamamlansın mı? işaretlendi");
 
-        //saveOrderBtn.click();
         clickElement(saveOrderBtn);
+        page.locator("body").scrollIntoViewIfNeeded();
+
+        // Sayfa yüklendikten sonra scroll yap
+        pageScroll();// Sayfayı aşağı kaydırır 10000
 
         Locator purchaseOrderTabs = page.locator("#PurchaseOrderTabs");
         page.waitForSelector("#PurchaseOrderTabs");
-        Assert.assertTrue(purchaseOrderTabs.isVisible());
+        verifyIsVisible(purchaseOrderTabs);
 
         System.out.println("sipariş oluşturuldu!");
+    }
+    //kendo özelliğinden dolayı input girişi için kod
+    private void setKendoNumericTextBoxValue(FrameLocator frame, String inputSelector, int value) {
+        Locator input = frame.locator(inputSelector);
+        input.evaluate("(el, val) => {" +
+                "  const widget = $(el).data('kendoNumericTextBox');" +
+                "  if (widget) {" +
+                "    widget.value(val);" +
+                "    $(el).trigger('change');" +
+                "  }" +
+                "}", value);
+
+    }
+    //Ürün ekleme (Yeni Kayıt)
+    public void addProductToOrder() {
+        Locator newProductBtn = page.locator("//div[@id='PurchaseOrderProductGridId']/div[1]/a[1]");
+        clickElement(newProductBtn);
+
+        // Sipariş Ürünü Tanımlama iframe
+        FrameLocator productFrame = page
+                .getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Sipariş Ürünü Tanımlama"))
+                .frameLocator("iframe[title='Setur']");
+
+        productFrame.locator("#ProductIdButtonId").click();
+
+        // Ürün Tanımlama iframe
+        FrameLocator productDescription = page
+                .getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Ürün Tanımlama"))
+                .frameLocator("iframe[title='Setur']");
+
+        setKendoNumericTextBoxValue(productDescription, "#FilterProductId", 397);
+
+        Locator filterBtn = productDescription.locator("#FilterButtonId");
+        while (!filterBtn.isVisible()) {
+            pageScroll();
+        }
+        filterBtn.click();
+
+        // Ürünü seç ve miktar gir
+        productDescription.locator("(//input[@type='button'])[4]").click();
+        setKendoNumericTextBoxValue(productFrame,"#Quantity",10);
+        productFrame.locator("#SaveBtn").click();
+
+        pageScroll();
+
+        System.out.println("ürün eklendi");
+    }
+    //seçilen ürün/leri verify etme
+    public void verifyProducts() {
+        Locator productItems = page.locator("(//td[@data-field-name='ProductName'])");
+
+        int itemCount = productItems.count();
+
+        for(int i=0; i<itemCount; i++){
+
+            verifyTextElementUseTrim(productItems.nth(i), "WINSTON BLUE KS 600S");
+
+        }
     }
 }

@@ -57,4 +57,14 @@ public class PurchaseOrderStepdefs {
     public void checkCanAutoComplete() {
         orderPage.checkCanAutoComplete();
     }
+
+    @And("add product to order")
+    public void addProductToOrder() {
+        orderPage.addProductToOrder();
+    }
+
+    @Then("verify products")
+    public void verifyProducts() {
+        orderPage.verifyProducts();
+    }
 }

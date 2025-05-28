@@ -23,13 +23,22 @@ public class BasePage {
         Assert.assertEquals(locator.textContent(),value);
     }
     public void verifyTextElementUseTrim(Locator locator, String value){
-        Assert.assertEquals(locator.textContent().trim(),value);
+        Assert.assertEquals(locator.textContent().trim(), value.trim());
     }
+    public void verifyIsVisible(Locator locator){
+        Assert.assertTrue(locator.isVisible());
+    }
+
     public void addString(String key, String value){
         GlobalVariables.getInstance().addString(key,value);
     }
     public String getString(String key){
         return GlobalVariables.getInstance().getString(key);
+    }
+
+    public void pageScroll(){
+        page.waitForTimeout(500); // kısa bir bekleme ile JS işlemini biraz erteleyin
+        page.mouse().wheel(0, 10000); // Sayfayı aşağı kaydırır
     }
 }
 
