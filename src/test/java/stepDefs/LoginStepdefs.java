@@ -1,6 +1,7 @@
 package stepDefs;
 
 import io.cucumber.java.en.And;
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import pages.commonPages.LoginPage;
 
@@ -17,5 +18,13 @@ public class LoginStepdefs {
     public void clickLogin() {
         loginPage.clickLoginButton();
     }
+    @When("try login with {string} and {string}")
+    public void tryLoginWithAnd(String user, String pass) {
+        loginPage.tryLoginWithUseAndPass(user,pass);
+    }
 
+    @Then("verify unsuccessful login")
+    public void verifyUnsuccessfulLogin() {
+        loginPage.verifyUnsuccessfulLogin();
+    }
 }
