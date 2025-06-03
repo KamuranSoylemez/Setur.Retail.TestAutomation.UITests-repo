@@ -19,7 +19,11 @@ public class UserDataReader {
                 env = "staging";
             }
 
-            String path = "config/resources/account/" + env + ".users.yml";
+            String credDir = System.getProperty("credentialsDir");
+            if (credDir == null || env == null) {
+                throw new RuntimeException("credentialsDir veya env property’si eksik!");
+            }
+            String path = credDir + "/" + env + ".users.yml";
 
             LoaderOptions loaderOptions = new LoaderOptions();
             Yaml yaml = new Yaml(new Constructor(loaderOptions));

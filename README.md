@@ -9,7 +9,18 @@ TODO: Guide users through getting your code up and running on their own system. 
 4.	API references
 
 # Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+mvn clean test \
+-Dtest=TestRunner \
+-DcredentialsDir=/Users/gini/Documents/UI_Automation_Files \
+-Denv=staging
+
+**Use your local path that contains credentials yaml file**
+
+**To run unique feature:**
+mvn clean test -DcredentialsDir=/Users/gini/Documents/UI_Automation_Files 
+-Denv=staging -Dtest=TestRunner  -Dcucumber.options="--glue stepDefs src/test/resources/login.feature"
+
+
 
 # Contribute
 TODO: Explain how other users and developers can contribute to make your code better. 

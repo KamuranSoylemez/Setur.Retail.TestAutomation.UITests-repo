@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-        features = "src/test/resources",      // .feature dosyalarının yolu
-        glue = {"stepDefs"},                  // step definition sınıflarının bulunduğu paket
+        features = "src/test/resources",
+        glue = {"stepDefs"},
         plugin = {
                 "pretty",
                 "html:target/cucumber-report.html",
