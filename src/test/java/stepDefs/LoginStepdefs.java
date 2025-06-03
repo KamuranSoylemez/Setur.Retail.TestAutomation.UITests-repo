@@ -20,7 +20,7 @@ public class LoginStepdefs {
     }
     @When("try login with {string} and {string}")
     public void tryLoginWithAnd(String user, String pass) {
-        loginPage.tryLoginWithUseAndPass(user,pass);
+        loginPage.tryLoginWithUserAndPass(user,pass);
     }
 
     @Then("verify unsuccessful login")

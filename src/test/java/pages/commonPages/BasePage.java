@@ -37,7 +37,7 @@ public class BasePage {
     }
 
     public void pageScroll(){
-        page.waitForTimeout(500); // kısa bir bekleme ile JS işlemini biraz erteleyin
+        page.waitForTimeout(500);
         page.mouse().wheel(0, 10000); // Sayfayı aşağı kaydırır
     }
 }

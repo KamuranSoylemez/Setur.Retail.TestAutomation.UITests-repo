@@ -21,7 +21,7 @@ public class LoginPage extends BasePage {
         clickElement(loginButton);
     }
 
-    public void tryLoginWithUseAndPass(String user, String pass) {
+    public void tryLoginWithUserAndPass(String user, String pass) {
         userNameLocator.fill(user);
         passwordLocator.fill(pass);
     }
