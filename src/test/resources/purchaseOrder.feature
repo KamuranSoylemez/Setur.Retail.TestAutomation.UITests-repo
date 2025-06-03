@@ -1,15 +1,16 @@
-Feature: Purchase Order Page
+Feature: Purchase Order Tests
 
   Background: Navigate Login Page
     Given navigate to login page
+    When fill "username_password" and "username_password"
+    And click login
+    Then verify successful login
+    And click Purchase dropdown toggle
+    And click Order link
+    Then verify PurchaseOrder page
 
     Scenario Outline:
-      When fill "username_password" and "username_password"
-      And click login
-      And click Purchase dropdown toggle
-      And click Order link
-      Then verify PurchaseOrder page
-      And fill order date
+      When fill order date
       And select "<category>" from list
       And set distributor company by category
       And select firm responsible user
