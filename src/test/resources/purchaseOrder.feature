@@ -2,7 +2,7 @@ Feature: Purchase Order Tests
 
   Background: Navigate Login Page
     Given navigate to login page
-    When fill "username_password" and "username_password"
+    When fill "username" and "password"
     And click login
     Then verify successful login
     And click Purchase dropdown toggle
@@ -21,16 +21,19 @@ Feature: Purchase Order Tests
       Then check can auto complete and save
       And add product to order
       Then verify products
+      And sending for approval process
+      And approve order
+      Then set order placed
 
       Examples: Categories
-        | category         |
-        | PARFÜM-KOZMETİK  |
-        | GIDA             |
-        | TOBACCO PRODUCTS |
-        | BUTİK-AKSESUAR   |
-        | SPIRITS          |
-        | OYUNCAK          |
-        | BAZAAR           |
-        | ELEKTRONİK       |
-        | POŞET            |
-        | EŞANTİYON        |
+        | category        |
+        | PARFÜM-KOZMETİK |
+        | GIDA            |
+        | TÜTÜN ÜRÜNLERİ  |
+        | BUTİK-AKSESUAR  |
+        | İÇKİ            |
+        | OYUNCAK         |
+        | BAZAAR          |
+        | ELEKTRONİK      |
+        | POŞET           |
+        | EŞANTİYON       |
