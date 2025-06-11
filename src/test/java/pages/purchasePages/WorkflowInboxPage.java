@@ -1,6 +1,7 @@
 package pages.purchasePages;
 
 import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
 import pages.commonPages.BasePage;
 
 
@@ -12,18 +13,23 @@ public class WorkflowInboxPage extends BasePage {
 
     public void verifySuccessfulLogin() {
 
+        page.waitForSelector("#PageTitle", new Page.WaitForSelectorOptions().setTimeout(60000));
         verifyTextElementUseTrim(pageTitle,"Akış Gelen Kutusu");
     }
 
     public void clickPurchaseDropdownToggle() {
 
+        page.waitForSelector(".glyphicon.glyphicon-tags",
+                new Page.WaitForSelectorOptions().setTimeout(90000));
         clickElement(purchaseDropdown);
     }
 
     public void clickOrderLink() {
+        page.waitForSelector("//a[@href='/ApplicationManagement/PurchaseOrder/Index']",
+                new Page.WaitForSelectorOptions().setTimeout(90000));
 
         clickElement(orderLink);
+        page.waitForURL("https://dfs-retail-ui-staging.azurewebsites.net/ApplicationManagement/PurchaseOrder/Index",
+                new Page.WaitForURLOptions().setTimeout(60000));
     }
-
-
 }

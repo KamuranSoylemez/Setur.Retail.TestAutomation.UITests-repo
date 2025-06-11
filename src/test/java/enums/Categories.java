@@ -3,9 +3,9 @@ package enums;
 public enum Categories {
     PARFUM_KOZMETIK("PARFÜM-KOZMETİK", DistributorInfo.PARFUM_KOZMETIK),
     GIDA("GIDA", DistributorInfo.GIDA),
-    TOBACCO_PRODUCTS("TOBACCO PRODUCTS", DistributorInfo.TOBACCO_PRODUCTS),
+    TUTUN_URUNLERI("TÜTÜN ÜRÜNLERİ", DistributorInfo.TUTUN_URUNLERI),
     BUTIK_AKSESUAR("BUTİK-AKSESUAR", DistributorInfo.BUTIK_AKSESUAR),
-    SPIRITS("SPIRITS", DistributorInfo.SPIRITS),
+    ICKI("İÇKİ", DistributorInfo.ICKI),
     OYUNCAK("OYUNCAK", DistributorInfo.OYUNCAK),
     BAZAAR("BAZAAR", DistributorInfo.BAZAAR),
     ELEKTRONIK("ELEKTRONİK", DistributorInfo.ELEKTRONIK),

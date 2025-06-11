@@ -4,8 +4,10 @@ import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import enums.Categories;
 import enums.DistributorInfo;
+import org.junit.Assert;
 import pages.commonPages.BasePage;
 
 public class PurchaseOrderPage extends BasePage {
@@ -87,10 +89,10 @@ public class PurchaseOrderPage extends BasePage {
     //Firma İlgili Kişi
     public void selectFirmResponsibleUser() {
 
-        //selectUser.nth(3).click();
-        clickElement(selectUser.nth(3));
+        // Tıklanacak öğeye otomatik scroll yapılmasını engeller
+        selectUser.nth(3).click(new Locator.ClickOptions().setForce(true));
+
         page.waitForSelector("#FirmResponsibleUserId_listbox");
-        //selectFirmUser.nth(0).click();
         clickElement(selectFirmUser.nth(0));
 
         System.out.println("ilgili kişi seçildi");
@@ -218,5 +220,47 @@ public class PurchaseOrderPage extends BasePage {
 
             verifyTextElementUseTrim(productItems.nth(i), "WINSTON BLUE KS 600S");
         }
+    }
+
+    private void orderApprovalProcess(){
+        Locator popup = page.locator(".ajs-dialog");
+        popup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+
+        Locator okButton = popup.locator(".ajs-button.ajs-ok");
+        okButton.click();
+    }
+
+    private void orderCancellationProcess(){
+        Locator popup = page.locator(".ajs-dialog");
+        popup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+
+        Locator cancelButton = popup.locator(".ajs-button.ajs-cancel");
+        cancelButton.click();
+    }
+
+    public void sendingForApprovalProcess() {
+        Locator sendApproveBtn = page.locator("#SendApproveBtn");
+        sendApproveBtn.click();
+
+        orderApprovalProcess();
+        //orderCancellationProcess();
+    }
+
+    public void approveOrder() {
+        Locator approveBtn = page.locator("#ApproveBtn");
+        approveBtn.click();
+
+        orderApprovalProcess();
+
+        Assert.assertTrue(page.locator("#SetOrderGivenBtn").isEnabled());
+        //orderCancellationProcess();
+    }
+
+    public void setOrderPlaced() {
+        Locator setOrderGivenBtn = page.locator("#SetOrderGivenBtn");
+        setOrderGivenBtn.click();
+
+        orderApprovalProcess();
+        System.out.println("Kayıt sipariş verildi durumuna getirildi");
     }
 }
