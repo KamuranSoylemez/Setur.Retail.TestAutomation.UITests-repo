@@ -20,6 +20,52 @@ public class UserDataReader {
             }
 
             String credDir = System.getProperty("credentialsDir");
+            if (credDir == null) {
+                throw new RuntimeException("credentialsDir property’si eksik!");
+            }
+
+            String path = credDir + "/" + env + ".users.yml";
+
+            LoaderOptions loaderOptions = new LoaderOptions();
+            Yaml yaml = new Yaml(new Constructor(loaderOptions));
+            try (InputStream input = new FileInputStream(path)) {
+                users = yaml.load(input);
+                if (users == null) {
+                    throw new RuntimeException("YAML dosyası boş veya hatalı formatta.");
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("YAML dosyası okunamadı: " + e.getMessage(), e);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String getUsername(String userType) {
+        Map<String, String> user = users.get(userType);
+        if (user == null) {
+            throw new RuntimeException("Belirtilen userType bulunamadı: " + userType);
+        }
+        return user.get("username");
+    }
+
+    public static String getPassword(String userType) {
+        Map<String, String> user = users.get(userType);
+        if (user == null) {
+            throw new RuntimeException("Belirtilen userType bulunamadı: " + userType);
+        }
+        return user.get("password");
+    }
+
+    /*static {
+        String env = ConfigDataReader.getConfig("env");
+
+        try {
+            if (env == null) {
+                env = "staging";
+            }
+
+            String credDir = System.getProperty("credentialsDir");
             if (credDir == null || env == null) {
                 throw new RuntimeException("credentialsDir veya env property’si eksik!");
             }
@@ -37,12 +83,10 @@ public class UserDataReader {
 
         }
     }
-
     public static String getUsername(String userType) { //normal
         return users.get(userType).get("username");
     }
-
     public static String getPassword(String userType) {
         return users.get(userType).get("password");
-    }
+    }*/
 }

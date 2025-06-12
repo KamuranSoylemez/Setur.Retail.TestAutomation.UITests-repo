@@ -1,4 +1,4 @@
-Feature: Purchase Order Tests
+Feature: Purchase Order Tests For One Category
 
   Background: Navigate Login Page
     Given navigate to login page
