@@ -19,14 +19,17 @@ public class WorkflowInboxPage extends BasePage {
 
     public void clickPurchaseDropdownToggle() {
 
-        page.waitForSelector(".glyphicon.glyphicon-tags",
-                new Page.WaitForSelectorOptions().setTimeout(90000));
+        page.waitForSelector(".glyphicon.glyphicon-refresh",
+                new Page.WaitForSelectorOptions().setTimeout(60000));
         clickElement(purchaseDropdown);
     }
 
     public void clickOrderLink() {
-        page.waitForSelector("//a[@href='/ApplicationManagement/PurchaseOrder/Index']",
-                new Page.WaitForSelectorOptions().setTimeout(90000));
+        //page.waitForSelector("//a[@href='/ApplicationManagement/PurchaseOrder/Index']",
+          //      new Page.WaitForSelectorOptions().setTimeout(60000));
+
+        page.waitForSelector(".glyphicon.glyphicon-refresh",
+                new Page.WaitForSelectorOptions().setTimeout(60000));
 
         clickElement(orderLink);
         page.waitForURL("https://dfs-retail-ui-staging.azurewebsites.net/ApplicationManagement/PurchaseOrder/Index",

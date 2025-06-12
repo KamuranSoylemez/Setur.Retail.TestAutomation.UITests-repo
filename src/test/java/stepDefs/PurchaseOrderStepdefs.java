@@ -55,7 +55,7 @@ public class PurchaseOrderStepdefs {
 
     @And("check can auto complete and save")
     public void checkCanAutoComplete() {
-        orderPage.checkCanAutoComplete();
+        orderPage.checkCanAutoCompleteAndSave();
     }
 
     @And("add product to order")

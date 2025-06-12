@@ -37,7 +37,7 @@ public class PurchaseOrderPage extends BasePage {
         //Assert.assertEquals("Sipariş İşlemleri", pageTitle.textContent().trim());
         verifyTextElementUseTrim(pageTitle,"Sipariş İşlemleri");
     }
-    //Sipariş Tarihi ni doldurur
+    //Sipariş Tarihini doldurur
     public void fillOrderDate() {
 
         clickElement(calendar.nth(0));
@@ -58,9 +58,7 @@ public class PurchaseOrderPage extends BasePage {
                 new Page.LocatorOptions().setHasText(category));
         selectCategory.click(new Locator.ClickOptions().setForce(true));
 
-        //Assert.assertEquals(selectCategory.textContent(),category);
         verifyTextElementUseTrim(selectCategory,category);
-        //System.out.println("Kategori tıklandı: " + category);
 
     }
     private void selectCategoryCode(){
@@ -70,6 +68,9 @@ public class PurchaseOrderPage extends BasePage {
     }
     //Dağıtıcı Firma alanı seçimi (Kategoriye göre)
     public void setDistributorCompany() {
+
+        page.evaluate("document.body.style.overflow = 'hidden'");
+
         clickElement(openFrame);
 
         String categoryLabel = selectedCategory.nth(0).textContent();
@@ -85,25 +86,31 @@ public class PurchaseOrderPage extends BasePage {
         } else {
             System.out.println("Uygun Kategori Bulunamadı!");
         }
+
+        page.evaluate("document.body.style.overflow = 'auto'");
     }
     //Firma İlgili Kişi
     public void selectFirmResponsibleUser() {
 
-        // Tıklanacak öğeye otomatik scroll yapılmasını engeller
-        selectUser.nth(3).click(new Locator.ClickOptions().setForce(true));
+        page.evaluate("document.body.style.overflow = 'hidden'");
+
+        //selectUser.nth(3).click(new Locator.ClickOptions().setForce(true));
+        clickElement(selectUser.nth(3));
 
         page.waitForSelector("#FirmResponsibleUserId_listbox");
         clickElement(selectFirmUser.nth(0));
 
+        page.evaluate("document.body.style.overflow = 'auto'");
+
         System.out.println("ilgili kişi seçildi");
     }
+
     //Dağılım Hedef Tipi
     public void selectDistributionTargetType() {
 
-        //distributionType.nth(1).click();
-        clickElement(distributionType.nth(1));
+        distributionType.nth(1).click(new Locator.ClickOptions().setForce(true));
+
         page.waitForSelector("#DistributionTargetTypeId_listbox li");
-        //selectType.nth(1).click();
         clickElement(selectType.nth(1));
 
         System.out.println("hedef tipi seçildi");
@@ -111,7 +118,8 @@ public class PurchaseOrderPage extends BasePage {
     //Giriş Antrepo
     public void selectEntryWarehouse() {
 
-        //wareHouseBtn.click();
+        page.evaluate("document.body.style.overflow = 'hidden'");
+
         clickElement(wareHouseBtn);
 
         frameLocator.locator("#FilterWarehouseCode").fill("639");
@@ -120,32 +128,37 @@ public class PurchaseOrderPage extends BasePage {
 
         frameLocator.locator("//td[@role='gridcell']//input[1]").nth(0).click();
 
+        // "Giriş antrepo" input alanının dolmasını bekle
+        page.waitForFunction("document.querySelectorAll('#EntryWarehouseId_taglist li').length > 0");
+
+        page.evaluate("document.body.style.overflow = 'auto'");
+
         System.out.println("Giriş Antrepo Seçildi");
     }
     //Fatura Adresi
     public void selectCompanyAddress() {
 
-        //companyAddress.nth(3).click();
+        page.evaluate("document.body.style.overflow = 'hidden'");
+
         clickElement(companyAddress.nth(3));
         page.waitForSelector("#CompanyAddressId_listbox li");
-        //selectBillingAddress.nth(1).click();
         clickElement(selectBillingAddress.nth(1));
+
+        page.evaluate("document.body.style.overflow = 'auto'");
 
         System.out.println("Fatura Adresi seçildi");
     }
     //Teslimat Adresi
     public void selectWarehouseAddress() {
 
-        //warehouseAddress.nth(4).click();
         clickElement(warehouseAddress.nth(4));
         page.waitForSelector("#WarehouseAddressId_listbox li");
-        //selectDeliveryAddress.nth(1).click();
         clickElement(selectDeliveryAddress.nth(1));
 
         System.out.println("Teslimat Adresi seçildi");
     }
     //Sipariş Otomatik Olarak Tamamlansın mı?
-    public void checkCanAutoComplete() {
+    public void checkCanAutoCompleteAndSave() {
 
         pageScroll(); // Sayfayı aşağı kaydırır 10000
         clickElement(checkCanAutoComplete);
@@ -155,6 +168,11 @@ public class PurchaseOrderPage extends BasePage {
         clickElement(saveOrderBtn);
         page.locator("body").scrollIntoViewIfNeeded();
 
+        System.out.println("Kaydet butonuna tıklandı");
+
+        page.waitForSelector("#SendApproveBtn",
+                new Page.WaitForSelectorOptions().setTimeout(60000));
+
         // Sayfa yüklendikten sonra scroll yap
         pageScroll();// Sayfayı aşağı kaydırır 10000
 
@@ -162,9 +180,9 @@ public class PurchaseOrderPage extends BasePage {
         page.waitForSelector("#PurchaseOrderTabs");
         verifyIsVisible(purchaseOrderTabs);
 
-        System.out.println("sipariş oluşturuldu!");
+        System.out.println("Sipariş oluşturuldu!");
     }
-    //kendo özelliğinden dolayı input girişi için kod
+    //kendo component özelliğinden dolayı input girişi için kod
     private void setKendoNumericTextBoxValue(FrameLocator frame, String inputSelector, int value) {
         Locator input = frame.locator(inputSelector);
         input.evaluate("(el, val) => {" +
