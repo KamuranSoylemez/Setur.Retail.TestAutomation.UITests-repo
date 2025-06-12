@@ -2,7 +2,6 @@ package utils;
 
 import com.microsoft.playwright.*;
 
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,7 +19,19 @@ public class Driver {
             String browserType = ConfigDataReader.getConfig("browser");
             double slowMoValue = Double.parseDouble(ConfigDataReader.getConfig("slow_mo"));
 
-            String executablePath = null;
+
+            if(Objects.equals(browserType, "chrome")) {
+                playwright = Playwright.create();
+                browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
+                        .setHeadless(false)
+                        .setArgs(List.of("--start-maximized"))
+                        .setSlowMo(slowMoValue));
+
+                context = browser.newContext(new Browser.NewContextOptions().setViewportSize(null));
+                page = context.newPage();
+            }
+
+            /*String executablePath = null;
 
             if (Objects.equals(browserType, "chrome")) {
                 executablePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
@@ -40,21 +51,8 @@ public class Driver {
                 page = context.newPage();
             } else {
                 System.out.println("Desteklenmeyen tarayıcı türü: " + browserType);
-            }
+            } */
 
-
-            /*
-            if(Objects.equals(browserType, "chrome")) {
-            playwright = Playwright.create();
-            browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-                    .setHeadless(false)
-                    .setArgs(List.of("--start-maximized"))
-                    .setSlowMo(slowMoValue));
-
-            context = browser.newContext(new Browser.NewContextOptions().setViewportSize(null));
-            page = context.newPage();
-            }
-            */
         }
         return page;
     }

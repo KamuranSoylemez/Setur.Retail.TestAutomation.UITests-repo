@@ -69,7 +69,9 @@ public class PurchaseOrderPage extends BasePage {
     //Dağıtıcı Firma alanı seçimi (Kategoriye göre)
     public void setDistributorCompany() {
 
-        page.evaluate("document.body.style.overflow = 'hidden'");
+        //page.evaluate("document.body.style.overflow = 'hidden'");
+        Number scrollY = (Number) page.evaluate("() => window.scrollY");
+        page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY.doubleValue());
 
         clickElement(openFrame);
 
@@ -86,13 +88,15 @@ public class PurchaseOrderPage extends BasePage {
         } else {
             System.out.println("Uygun Kategori Bulunamadı!");
         }
-
-        page.evaluate("document.body.style.overflow = 'auto'");
+        page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY);
+        //page.evaluate("document.body.style.overflow = 'auto'");
     }
     //Firma İlgili Kişi
     public void selectFirmResponsibleUser() {
 
-        page.evaluate("document.body.style.overflow = 'hidden'");
+        //page.evaluate("document.body.style.overflow = 'hidden'");
+        Number scrollY = (Number) page.evaluate("() => window.scrollY");
+        page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY.doubleValue());
 
         //selectUser.nth(3).click(new Locator.ClickOptions().setForce(true));
         clickElement(selectUser.nth(3));
@@ -100,7 +104,8 @@ public class PurchaseOrderPage extends BasePage {
         page.waitForSelector("#FirmResponsibleUserId_listbox");
         clickElement(selectFirmUser.nth(0));
 
-        page.evaluate("document.body.style.overflow = 'auto'");
+        //page.evaluate("document.body.style.overflow = 'auto'");
+        page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY);
 
         System.out.println("ilgili kişi seçildi");
     }
