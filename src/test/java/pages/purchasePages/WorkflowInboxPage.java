@@ -21,12 +21,11 @@ public class WorkflowInboxPage extends BasePage {
 
         page.waitForSelector(".glyphicon.glyphicon-refresh",
                 new Page.WaitForSelectorOptions().setTimeout(60000));
+
         clickElement(purchaseDropdown);
     }
 
     public void clickOrderLink() {
-        //page.waitForSelector("//a[@href='/ApplicationManagement/PurchaseOrder/Index']",
-          //      new Page.WaitForSelectorOptions().setTimeout(60000));
 
         page.waitForSelector(".glyphicon.glyphicon-refresh",
                 new Page.WaitForSelectorOptions().setTimeout(60000));
