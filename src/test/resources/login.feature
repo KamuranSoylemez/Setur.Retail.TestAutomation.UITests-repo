@@ -4,7 +4,7 @@ Feature: Login Page
     Given navigate to login page
 
     Scenario: Successful Login
-      When fill "username" and "password"
+      When fill username and password
       And click login
       Then verify successful login
 
