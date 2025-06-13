@@ -69,9 +69,9 @@ public class PurchaseOrderPage extends BasePage {
     //Dağıtıcı Firma alanı seçimi (Kategoriye göre)
     public void setDistributorCompany() {
 
-        //page.evaluate("document.body.style.overflow = 'hidden'");
-        Number scrollY = (Number) page.evaluate("() => window.scrollY");
-        page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY.doubleValue());
+        // sayfa scroll olmasın diye kullanılmıştı
+        //Number scrollY = (Number) page.evaluate("() => window.scrollY");
+        //page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY.doubleValue());
 
         clickElement(openFrame);
 
@@ -88,15 +88,14 @@ public class PurchaseOrderPage extends BasePage {
         } else {
             System.out.println("Uygun Kategori Bulunamadı!");
         }
-        page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY);
-        //page.evaluate("document.body.style.overflow = 'auto'");
+        //page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY);
     }
     //Firma İlgili Kişi
     public void selectFirmResponsibleUser() {
 
-        //page.evaluate("document.body.style.overflow = 'hidden'");
-        Number scrollY = (Number) page.evaluate("() => window.scrollY");
-        page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY.doubleValue());
+        //sayfa scroll olmasın diye kullanılmışt
+        //Number scrollY = (Number) page.evaluate("() => window.scrollY");
+        //page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY.doubleValue());
 
         //selectUser.nth(3).click(new Locator.ClickOptions().setForce(true));
         clickElement(selectUser.nth(3));
@@ -104,8 +103,7 @@ public class PurchaseOrderPage extends BasePage {
         page.waitForSelector("#FirmResponsibleUserId_listbox");
         clickElement(selectFirmUser.nth(0));
 
-        //page.evaluate("document.body.style.overflow = 'auto'");
-        page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY);
+        //page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY);
 
         System.out.println("ilgili kişi seçildi");
     }
@@ -123,8 +121,6 @@ public class PurchaseOrderPage extends BasePage {
     //Giriş Antrepo
     public void selectEntryWarehouse() {
 
-        page.evaluate("document.body.style.overflow = 'hidden'");
-
         clickElement(wareHouseBtn);
 
         frameLocator.locator("#FilterWarehouseCode").fill("639");
@@ -136,20 +132,14 @@ public class PurchaseOrderPage extends BasePage {
         // "Giriş antrepo" input alanının dolmasını bekle
         page.waitForFunction("document.querySelectorAll('#EntryWarehouseId_taglist li').length > 0");
 
-        page.evaluate("document.body.style.overflow = 'auto'");
-
         System.out.println("Giriş Antrepo Seçildi");
     }
     //Fatura Adresi
     public void selectCompanyAddress() {
 
-        page.evaluate("document.body.style.overflow = 'hidden'");
-
         clickElement(companyAddress.nth(3));
         page.waitForSelector("#CompanyAddressId_listbox li");
         clickElement(selectBillingAddress.nth(1));
-
-        page.evaluate("document.body.style.overflow = 'auto'");
 
         System.out.println("Fatura Adresi seçildi");
     }
@@ -165,7 +155,7 @@ public class PurchaseOrderPage extends BasePage {
     //Sipariş Otomatik Olarak Tamamlansın mı?
     public void checkCanAutoCompleteAndSave() {
 
-        pageScroll(); // Sayfayı aşağı kaydırır 10000
+        //pageScroll(); // Sayfayı aşağı kaydırır 10000
         clickElement(checkCanAutoComplete);
 
         System.out.println("Sipariş Otomatik Olarak Tamamlansın mı? işaretlendi");
@@ -175,11 +165,10 @@ public class PurchaseOrderPage extends BasePage {
 
         System.out.println("Kaydet butonuna tıklandı");
 
-        page.waitForSelector("#SendApproveBtn",
-                new Page.WaitForSelectorOptions().setTimeout(60000));
+        //page.waitForSelector("#SendApproveBtn", new Page.WaitForSelectorOptions().setTimeout(60000));
 
         // Sayfa yüklendikten sonra scroll yap
-        pageScroll();// Sayfayı aşağı kaydırır 10000
+        //pageScroll();// Sayfayı aşağı kaydırır 10000
 
         Locator purchaseOrderTabs = page.locator("#PurchaseOrderTabs");
         page.waitForSelector("#PurchaseOrderTabs");
