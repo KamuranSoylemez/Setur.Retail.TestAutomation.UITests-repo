@@ -9,9 +9,9 @@ public class LoginStepdefs {
 
     LoginPage loginPage = new LoginPage();
 
-    @When("fill {string} and {string}")
-    public void fillUserNameAndPassword(String userName, String password) {
-        loginPage.fillUserNameAndPassword(userName,password);
+    @When("fill username and password")
+    public void fillUserNameAndPassword() {
+        loginPage.fillUserNameAndPassword();
     }
 
     @And("click login")

@@ -10,11 +10,9 @@ public class LoginPage extends BasePage {
     Locator passwordLocator = page.locator("#Password");
     Locator loginButton = page.locator("#submit");
 
-    public void fillUserNameAndPassword(String userName, String password) {
-
-        userNameLocator.fill(UserDataReader.getUsername(userName));
-        passwordLocator.fill(UserDataReader.getPassword(password));
-
+    public void fillUserNameAndPassword() {
+        userNameLocator.fill(UserDataReader.getUsername());
+        passwordLocator.fill(UserDataReader.getPassword());
     }
 
     public void clickLoginButton() {

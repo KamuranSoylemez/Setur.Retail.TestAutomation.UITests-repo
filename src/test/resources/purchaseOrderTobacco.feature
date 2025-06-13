@@ -2,7 +2,7 @@ Feature: Purchase Order Tests For One Category
 
   Background: Navigate Login Page
     Given navigate to login page
-    When fill "username" and "password"
+    When fill username and password
     And click login
     Then verify successful login
     And click Purchase dropdown toggle
