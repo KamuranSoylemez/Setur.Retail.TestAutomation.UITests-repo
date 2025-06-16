@@ -18,8 +18,13 @@ public class WorkflowInboxStepdefs {
         inboxPage.clickPurchaseDropdownToggle();
     }
 
-    @And("click Order link")
+    @And("click Purchase Order link")
     public void clickOrderLink() {
         inboxPage.clickOrderLink();
+    }
+
+    @And("click Purchase Order Invoice")
+    public void clickPurchaseOrderInvoice() {
+        inboxPage.clickPurchaseOrderInvoice();
     }
 }

@@ -19,11 +19,11 @@ public class BasePage {
         locator.click();
     }
 
-    public void verifyTextElement(Locator locator, String value){
-        Assert.assertEquals(locator.textContent(),value);
+    public void verifyTextElement(String value, Locator locator){
+        Assert.assertEquals(value, locator.textContent());
     }
-    public void verifyTextElementUseTrim(Locator locator, String value){
-        Assert.assertEquals(locator.textContent().trim(), value.trim());
+    public void verifyTextElementUseTrim(String value, Locator locator){
+        Assert.assertEquals(value.trim(), locator.textContent().trim());
     }
     public void verifyIsVisible(Locator locator){
         Assert.assertTrue(locator.isVisible());

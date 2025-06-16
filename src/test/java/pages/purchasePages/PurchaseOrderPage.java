@@ -9,6 +9,11 @@ import enums.Categories;
 import enums.DistributorInfo;
 import org.junit.Assert;
 import pages.commonPages.BasePage;
+import utils.GlobalVariables;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class PurchaseOrderPage extends BasePage {
 
@@ -34,8 +39,7 @@ public class PurchaseOrderPage extends BasePage {
     //Sipariş İşlemleri sayfasını doğrular
     public void verifyPurchaseOrderPage() {
 
-        //Assert.assertEquals("Sipariş İşlemleri", pageTitle.textContent().trim());
-        verifyTextElementUseTrim(pageTitle,"Sipariş İşlemleri");
+        verifyTextElementUseTrim("Sipariş İşlemleri", pageTitle);
     }
     //Sipariş Tarihini doldurur
     public void fillOrderDate() {
@@ -46,8 +50,14 @@ public class PurchaseOrderPage extends BasePage {
 
         //otomasyon test belli olması adına sipariş adı ekledim
         Locator purchaseOrderName = page.locator("#PurchaseOrderName");
-        purchaseOrderName.fill("KMRN TST AUTO");
+
+        // Zaman bazlı sayaç
+        String timestamp = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
+        String orderName = "KMRN_TST_AUTO_" + timestamp;
+
+        purchaseOrderName.fill(orderName);
     }
+
     //Kategori alanından seçim yapar
     public void selectCategoryFromList(String category) {
 
@@ -58,7 +68,7 @@ public class PurchaseOrderPage extends BasePage {
                 new Page.LocatorOptions().setHasText(category));
         selectCategory.click(new Locator.ClickOptions().setForce(true));
 
-        verifyTextElementUseTrim(selectCategory,category);
+        verifyTextElementUseTrim(category, selectCategory);
 
     }
     private void selectCategoryCode(){
@@ -83,7 +93,7 @@ public class PurchaseOrderPage extends BasePage {
             frameLocator.locator("#FilterFirmCode").fill(distributor.getFirmCode());
             selectCategoryCode();
             Locator firmName = page.locator("(//li[@unselectable='on']//span)[1]");
-            verifyTextElementUseTrim(firmName, distributor.getFirmName());
+            verifyTextElementUseTrim(distributor.getFirmName(), firmName);
             System.out.println("Dağıtıcı Firma seçildi");
         } else {
             System.out.println("Uygun Kategori Bulunamadı!");
@@ -183,7 +193,7 @@ public class PurchaseOrderPage extends BasePage {
                 "  const widget = $(el).data('kendoNumericTextBox');" +
                 "  if (widget) {" +
                 "    widget.value(val);" +
-                "    $(el).trigger('change');" +
+                "    widget.trigger('change');" +  // veya widget.trigger('input');
                 "  }" +
                 "}", value);
 
@@ -208,9 +218,9 @@ public class PurchaseOrderPage extends BasePage {
         setKendoNumericTextBoxValue(productDescription, "#FilterProductId", 397);
 
         Locator filterBtn = productDescription.locator("#FilterButtonId");
-        while (!filterBtn.isVisible()) {
+        /*while (!filterBtn.isVisible()) {
             pageScroll();
-        }
+        }*/
         filterBtn.click();
 
         // Ürünü seç ve miktar gir
@@ -218,28 +228,52 @@ public class PurchaseOrderPage extends BasePage {
         setKendoNumericTextBoxValue(productFrame,"#Quantity",10);
         productFrame.locator("#SaveBtn").click();
 
-        pageScroll();
+        //pageScroll();
 
         System.out.println("ürün eklendi");
     }
-    //seçilen ürün/leri verify etme
+    // Seçilen ürün/leri verify etme
     public void verifyProducts() {
-        Locator productItems = page.locator("(//td[@data-field-name='ProductName'])");
+        page.waitForSelector("//td[@data-field-name='ProductName']"); // belirli elementin gelmesini bekle
+        List<Locator> items = page.locator("//td[@data-field-name='ProductName']").all();
 
-        int itemCount = productItems.count();
-
-        for(int i=0; i<itemCount; i++){
-
-            verifyTextElementUseTrim(productItems.nth(i), "WINSTON BLUE KS 600S");
+        for (Locator item : items) {
+            verifyTextElementUseTrim("WINSTON BLUE KS 600 S", item);
         }
     }
 
-    private void orderApprovalProcess(){
-        Locator popup = page.locator(".ajs-dialog");
-        popup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+    // Onaya gönderme işlemi
+    public void sendingForApprovalProcess() {
+        Locator sendApproveBtn = page.locator("#SendApproveBtn");
+        sendApproveBtn.click();
 
-        Locator okButton = popup.locator(".ajs-button.ajs-ok");
-        okButton.click();
+        orderApprovalProcess();
+        //orderCancellationProcess();
+        System.out.println("Kayıt onaya gönderildi");
+    }
+    // Onaylama
+    public void approveOrder() {
+        Locator approveBtn = page.locator("#ApproveBtn");
+        approveBtn.click();
+
+        orderApprovalProcess();
+
+        Assert.assertTrue(page.locator("#SetOrderGivenBtn").isEnabled());
+        //orderCancellationProcess();
+        System.out.println("Kayıt onaylandı");
+    }
+
+    // Sipariş verildi durumu
+    public void setOrderPlaced() {
+        Locator setOrderGivenBtn = page.locator("#SetOrderGivenBtn");
+        setOrderGivenBtn.click();
+
+        orderApprovalProcess();
+
+         String orderID = page.locator("#PurchaseOrderCode").getAttribute("value");
+         GlobalVariables.getInstance().addString("orderCode",orderID);
+
+        System.out.println("Kayıt sipariş verildi durumuna getirildi: " +orderID);
     }
 
     private void orderCancellationProcess(){
@@ -250,29 +284,17 @@ public class PurchaseOrderPage extends BasePage {
         cancelButton.click();
     }
 
-    public void sendingForApprovalProcess() {
-        Locator sendApproveBtn = page.locator("#SendApproveBtn");
-        sendApproveBtn.click();
+    public void orderApprovalProcess(){
+        Locator popup = page.locator(".ajs-dialog");
+        popup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
 
-        orderApprovalProcess();
-        //orderCancellationProcess();
+        Locator okButton = popup.locator(".ajs-button.ajs-ok");
+        okButton.click();
     }
 
-    public void approveOrder() {
-        Locator approveBtn = page.locator("#ApproveBtn");
-        approveBtn.click();
+    public void clickPurchaseOrderInvoiceLink() {
+        Locator purchaseInvoiceOrderLink = page.locator("//a[@href='/ApplicationManagement/PurchaseOrderInvoice/Index']");
+        clickElement(purchaseInvoiceOrderLink);
 
-        orderApprovalProcess();
-
-        Assert.assertTrue(page.locator("#SetOrderGivenBtn").isEnabled());
-        //orderCancellationProcess();
-    }
-
-    public void setOrderPlaced() {
-        Locator setOrderGivenBtn = page.locator("#SetOrderGivenBtn");
-        setOrderGivenBtn.click();
-
-        orderApprovalProcess();
-        System.out.println("Kayıt sipariş verildi durumuna getirildi");
     }
 }

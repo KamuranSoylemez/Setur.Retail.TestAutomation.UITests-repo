@@ -8,12 +8,13 @@ public class WorkflowInboxPage extends BasePage {
 
     Locator pageTitle = page.locator("#PageTitle");
     Locator purchaseDropdown = page.locator(".glyphicon.glyphicon-tags");
-    Locator orderLink = page.locator("//a[@href='/ApplicationManagement/PurchaseOrder/Index']");
+    Locator purchaseOrderLink = page.locator("//a[@href='/ApplicationManagement/PurchaseOrder/Index']");
+    Locator purchaseOrderInvoiceLink = page.locator("//a[@href='/ApplicationManagement/PurchaseOrderInvoice/Index']");
 
     public void verifySuccessfulLogin() {
 
         //page.waitForSelector("#PageTitle", new Page.WaitForSelectorOptions().setTimeout(60000));
-        verifyTextElementUseTrim(pageTitle,"Akış Gelen Kutusu");
+        verifyTextElementUseTrim("Akış Gelen Kutusu", pageTitle);
     }
 
     public void clickPurchaseDropdownToggle() {
@@ -25,6 +26,11 @@ public class WorkflowInboxPage extends BasePage {
     public void clickOrderLink() {
 
         //page.waitForSelector(".glyphicon.glyphicon-refresh",new Page.WaitForSelectorOptions().setTimeout(60000));
-        clickElement(orderLink);
+        clickElement(purchaseOrderLink);
+    }
+
+    public void clickPurchaseOrderInvoice() {
+
+        clickElement(purchaseOrderInvoiceLink);
     }
 }

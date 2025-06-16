@@ -6,7 +6,7 @@ Feature: Purchase Order Tests
     And click login
     Then verify successful login
     And click Purchase dropdown toggle
-    And click Order link
+    And click Purchase Order link
     Then verify PurchaseOrder page
 
     Scenario Outline:
@@ -19,7 +19,7 @@ Feature: Purchase Order Tests
       And select company address
       And select warehouse address
       Then check can auto complete and save
-      And add product to order
+      When add product to order
       Then verify products
       And sending for approval process
       And approve order
