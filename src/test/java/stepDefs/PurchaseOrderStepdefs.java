@@ -2,7 +2,8 @@ package stepDefs;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
-import pages.PurchaseOrderPage;
+import io.cucumber.java.en.When;
+import pages.purchasePages.PurchaseOrderPage;
 
 public class PurchaseOrderStepdefs {
 
@@ -55,10 +56,10 @@ public class PurchaseOrderStepdefs {
 
     @And("check can auto complete and save")
     public void checkCanAutoComplete() {
-        orderPage.checkCanAutoComplete();
+        orderPage.checkCanAutoCompleteAndSave();
     }
 
-    @And("add product to order")
+    @When("add product to order")
     public void addProductToOrder() {
         orderPage.addProductToOrder();
     }
@@ -66,5 +67,25 @@ public class PurchaseOrderStepdefs {
     @Then("verify products")
     public void verifyProducts() {
         orderPage.verifyProducts();
+    }
+
+    @And("sending for approval process")
+    public void sendingForApprovalProcess() {
+        orderPage.sendingForApprovalProcess();
+    }
+
+    @And("approve order")
+    public void approveOrder() {
+        orderPage.approveOrder();
+    }
+
+    @Then("set order placed")
+    public void setOrderPlaced() {
+        orderPage.setOrderPlaced();
+    }
+
+    @And("click purchase order invoice link")
+    public void clickPurchaseOrderInvoiceLink() {
+        orderPage.clickPurchaseOrderInvoiceLink();
     }
 }

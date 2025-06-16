@@ -1,4 +1,4 @@
-package pages;
+package pages.commonPages;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
@@ -19,11 +19,11 @@ public class BasePage {
         locator.click();
     }
 
-    public void verifyTextElement(Locator locator, String value){
-        Assert.assertEquals(locator.textContent(),value);
+    public void verifyTextElement(String value, Locator locator){
+        Assert.assertEquals(value, locator.textContent());
     }
-    public void verifyTextElementUseTrim(Locator locator, String value){
-        Assert.assertEquals(locator.textContent().trim(), value.trim());
+    public void verifyTextElementUseTrim(String value, Locator locator){
+        Assert.assertEquals(value.trim(), locator.textContent().trim());
     }
     public void verifyIsVisible(Locator locator){
         Assert.assertTrue(locator.isVisible());
@@ -37,7 +37,7 @@ public class BasePage {
     }
 
     public void pageScroll(){
-        page.waitForTimeout(500); // kısa bir bekleme ile JS işlemini biraz erteleyin
+        page.waitForTimeout(500);
         page.mouse().wheel(0, 10000); // Sayfayı aşağı kaydırır
     }
 }
