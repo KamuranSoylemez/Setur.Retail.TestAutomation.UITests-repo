@@ -9,7 +9,7 @@ Feature: Purchase Order Tests
     And click Purchase Order link
     Then verify PurchaseOrder page
 
-    Scenario Outline:
+    Scenario Outline: Order Creation Test
       When fill order date
       And select "<category>" from list
       And set distributor company by category

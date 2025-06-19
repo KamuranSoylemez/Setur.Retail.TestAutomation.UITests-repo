@@ -187,7 +187,7 @@ public class PurchaseOrderPage extends BasePage {
         System.out.println("Sipariş oluşturuldu!");
     }
     //kendo component özelliğinden dolayı input girişi için kod
-    private void setKendoNumericTextBoxValue(FrameLocator frame, String inputSelector, int value) {
+    public void setKendoNumericTextBoxValue(FrameLocator frame, String inputSelector, String value) {
         Locator input = frame.locator(inputSelector);
         input.evaluate("(el, val) => {" +
                 "  const widget = $(el).data('kendoNumericTextBox');" +
@@ -215,7 +215,7 @@ public class PurchaseOrderPage extends BasePage {
                 .getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Ürün Tanımlama"))
                 .frameLocator("iframe[title='Setur']");
 
-        setKendoNumericTextBoxValue(productDescription, "#FilterProductId", 397);
+        setKendoNumericTextBoxValue(productDescription, "#FilterProductId", "397");
 
         Locator filterBtn = productDescription.locator("#FilterButtonId");
         /*while (!filterBtn.isVisible()) {
@@ -225,7 +225,7 @@ public class PurchaseOrderPage extends BasePage {
 
         // Ürünü seç ve miktar gir
         productDescription.locator("(//input[@type='button'])[4]").click();
-        setKendoNumericTextBoxValue(productFrame,"#Quantity",10);
+        setKendoNumericTextBoxValue(productFrame,"#Quantity","10");
         productFrame.locator("#SaveBtn").click();
 
         //pageScroll();
@@ -295,6 +295,7 @@ public class PurchaseOrderPage extends BasePage {
     public void clickPurchaseOrderInvoiceLink() {
         Locator purchaseInvoiceOrderLink = page.locator("//a[@href='/ApplicationManagement/PurchaseOrderInvoice/Index']");
         clickElement(purchaseInvoiceOrderLink);
+        System.out.println("Sipariş Sorgulama ekranı açıldı");
 
     }
 }
