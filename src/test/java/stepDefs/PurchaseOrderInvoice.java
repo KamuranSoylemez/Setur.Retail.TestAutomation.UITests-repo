@@ -9,9 +9,9 @@ public class PurchaseOrderInvoice {
 
     PurchaseOrderInvoicePage orderInvoicePage = new PurchaseOrderInvoicePage();
 
-    @Then("verify purchase order invoice page")
-    public void verifyPurchaseOrderInvoicePage() {
-        orderInvoicePage.verifyPurchaseOrderInvoicePage();
+    @Then("verify purchase order search page")
+    public void verifyPurchaseOrderSearchPage() {
+        orderInvoicePage.verifyPurchaseOrderSearchPage();
     }
     @When("search order by id and edit order")
     public void searchOrderIdAndEditOder() {

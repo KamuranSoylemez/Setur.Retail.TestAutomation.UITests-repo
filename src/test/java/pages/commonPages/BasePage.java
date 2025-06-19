@@ -1,7 +1,9 @@
 package pages.commonPages;
 
+import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.AriaRole;
 import org.junit.Assert;
 import utils.Driver;
 import utils.GlobalVariables;
@@ -36,9 +38,21 @@ public class BasePage {
         return GlobalVariables.getInstance().getString(key);
     }
 
-    public void pageScroll(){
-        page.waitForTimeout(500);
-        page.mouse().wheel(0, 10000); // Sayfayı aşağı kaydırır
+    public FrameLocator getFrameByDialogTitle(String dialogTitle) {
+        return page
+                .getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName(dialogTitle))
+                .frameLocator("iframe[title='Setur']");
+    }
+    //kendo component özelliğinden dolayı input girişi için kod
+    public void setKendoNumericTextBoxValue(FrameLocator frame, String inputSelector, String value) {
+        Locator input = frame.locator(inputSelector);
+        input.evaluate("(el, val) => {" +
+                "  const widget = $(el).data('kendoNumericTextBox');" +
+                "  if (widget) {" +
+                "    widget.value(val);" +
+                "    widget.trigger('change');" +  // veya widget.trigger('input');
+                "  }" +
+                "}", value);
     }
 }
 

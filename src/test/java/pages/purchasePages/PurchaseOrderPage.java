@@ -3,7 +3,6 @@ package pages.purchasePages;
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
-import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import enums.Categories;
 import enums.DistributorInfo;
@@ -79,10 +78,6 @@ public class PurchaseOrderPage extends BasePage {
     //Dağıtıcı Firma alanı seçimi (Kategoriye göre)
     public void setDistributorCompany() {
 
-        // sayfa scroll olmasın diye kullanılmıştı
-        //Number scrollY = (Number) page.evaluate("() => window.scrollY");
-        //page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY.doubleValue());
-
         clickElement(openFrame);
 
         String categoryLabel = selectedCategory.nth(0).textContent();
@@ -98,22 +93,13 @@ public class PurchaseOrderPage extends BasePage {
         } else {
             System.out.println("Uygun Kategori Bulunamadı!");
         }
-        //page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY);
     }
     //Firma İlgili Kişi
     public void selectFirmResponsibleUser() {
-
-        //sayfa scroll olmasın diye kullanılmışt
-        //Number scrollY = (Number) page.evaluate("() => window.scrollY");
-        //page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY.doubleValue());
-
-        //selectUser.nth(3).click(new Locator.ClickOptions().setForce(true));
         clickElement(selectUser.nth(3));
 
         page.waitForSelector("#FirmResponsibleUserId_listbox");
         clickElement(selectFirmUser.nth(0));
-
-        //page.evaluate("scrollY => window.scrollTo(0, scrollY)", scrollY);
 
         System.out.println("ilgili kişi seçildi");
     }
@@ -133,15 +119,14 @@ public class PurchaseOrderPage extends BasePage {
 
         clickElement(wareHouseBtn);
 
+        // giriş antrepo dinamik nasıl yaparız?
         frameLocator.locator("#FilterWarehouseCode").fill("639");
         frameLocator.locator("#FilterButtonId").click();
         page.locator("body").scrollIntoViewIfNeeded();
 
         frameLocator.locator("//td[@role='gridcell']//input[1]").nth(0).click();
-
         // "Giriş antrepo" input alanının dolmasını bekle
-        page.waitForFunction("document.querySelectorAll('#EntryWarehouseId_taglist li').length > 0");
-
+        //page.waitForFunction("document.querySelectorAll('#EntryWarehouseId_taglist li').length > 0");
         System.out.println("Giriş Antrepo Seçildi");
     }
     //Fatura Adresi
@@ -165,7 +150,6 @@ public class PurchaseOrderPage extends BasePage {
     //Sipariş Otomatik Olarak Tamamlansın mı?
     public void checkCanAutoCompleteAndSave() {
 
-        //pageScroll(); // Sayfayı aşağı kaydırır 10000
         clickElement(checkCanAutoComplete);
 
         System.out.println("Sipariş Otomatik Olarak Tamamlansın mı? işaretlendi");
@@ -175,60 +159,36 @@ public class PurchaseOrderPage extends BasePage {
 
         System.out.println("Kaydet butonuna tıklandı");
 
-        //page.waitForSelector("#SendApproveBtn", new Page.WaitForSelectorOptions().setTimeout(60000));
-
-        // Sayfa yüklendikten sonra scroll yap
-        //pageScroll();// Sayfayı aşağı kaydırır 10000
-
         Locator purchaseOrderTabs = page.locator("#PurchaseOrderTabs");
         page.waitForSelector("#PurchaseOrderTabs");
         verifyIsVisible(purchaseOrderTabs);
 
         System.out.println("Sipariş oluşturuldu!");
     }
-    //kendo component özelliğinden dolayı input girişi için kod
-    public void setKendoNumericTextBoxValue(FrameLocator frame, String inputSelector, String value) {
-        Locator input = frame.locator(inputSelector);
-        input.evaluate("(el, val) => {" +
-                "  const widget = $(el).data('kendoNumericTextBox');" +
-                "  if (widget) {" +
-                "    widget.value(val);" +
-                "    widget.trigger('change');" +  // veya widget.trigger('input');
-                "  }" +
-                "}", value);
 
-    }
     //Ürün ekleme (Yeni Kayıt)
     public void addProductToOrder() {
         Locator newProductBtn = page.locator("//div[@id='PurchaseOrderProductGridId']/div[1]/a[1]");
         clickElement(newProductBtn);
 
         // Sipariş Ürünü Tanımlama iframe
-        FrameLocator productFrame = page
-                .getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Sipariş Ürünü Tanımlama"))
-                .frameLocator("iframe[title='Setur']");
+        FrameLocator productFrame = getFrameByDialogTitle("Sipariş Ürünü Tanımlama");
 
         productFrame.locator("#ProductIdButtonId").click();
 
         // Ürün Tanımlama iframe
-        FrameLocator productDescription = page
-                .getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName("Ürün Tanımlama"))
-                .frameLocator("iframe[title='Setur']");
+        FrameLocator productDescription = getFrameByDialogTitle("Ürün Tanımlama");
 
+        // Ürün kodunu dinamik nasıl veririz?
         setKendoNumericTextBoxValue(productDescription, "#FilterProductId", "397");
 
         Locator filterBtn = productDescription.locator("#FilterButtonId");
-        /*while (!filterBtn.isVisible()) {
-            pageScroll();
-        }*/
         filterBtn.click();
 
         // Ürünü seç ve miktar gir
         productDescription.locator("(//input[@type='button'])[4]").click();
         setKendoNumericTextBoxValue(productFrame,"#Quantity","10");
         productFrame.locator("#SaveBtn").click();
-
-        //pageScroll();
 
         System.out.println("ürün eklendi");
     }
@@ -259,7 +219,6 @@ public class PurchaseOrderPage extends BasePage {
         orderApprovalProcess();
 
         Assert.assertTrue(page.locator("#SetOrderGivenBtn").isEnabled());
-        //orderCancellationProcess();
         System.out.println("Kayıt onaylandı");
     }
 
@@ -292,8 +251,9 @@ public class PurchaseOrderPage extends BasePage {
         okButton.click();
     }
 
-    public void clickPurchaseOrderInvoiceLink() {
-        Locator purchaseInvoiceOrderLink = page.locator("//a[@href='/ApplicationManagement/PurchaseOrderInvoice/Index']");
+    public void clickPurchaseOrderSearchLink() {
+        Locator purchaseInvoiceOrderLink = page.
+                locator("//a[@href='/ApplicationManagement/PurchaseOrderInvoice/Index']");
         clickElement(purchaseInvoiceOrderLink);
         System.out.println("Sipariş Sorgulama ekranı açıldı");
 

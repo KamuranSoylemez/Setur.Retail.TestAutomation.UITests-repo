@@ -1,10 +1,16 @@
 Feature: Purchase Order Invoice Page
 
+  #Background:
+    #Given navigate to login page
+    #When fill username and password
+    #And click login
+    #Then verify successful login
+
   Scenario Outline: Adding Proforma and Invoices to Order
     When order placed status by "<category>"
     And click Purchase dropdown toggle
-    And click purchase order invoice link
-    Then verify purchase order invoice page
+    And click purchase order search link
+    Then verify purchase order search page
     And search order by id and edit order
     And add proforma to order
     And add info for proforma and save

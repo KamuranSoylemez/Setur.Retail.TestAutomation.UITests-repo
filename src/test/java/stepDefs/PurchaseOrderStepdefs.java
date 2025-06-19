@@ -84,8 +84,8 @@ public class PurchaseOrderStepdefs {
         orderPage.setOrderPlaced();
     }
 
-    @And("click purchase order invoice link")
-    public void clickPurchaseOrderInvoiceLink() {
-        orderPage.clickPurchaseOrderInvoiceLink();
+    @And("click purchase order search link")
+    public void clickPurchaseOrderSearchLink() {
+        orderPage.clickPurchaseOrderSearchLink();
     }
 }
