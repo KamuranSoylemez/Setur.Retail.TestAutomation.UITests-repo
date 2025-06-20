@@ -8,7 +8,7 @@ Feature: Purchase Order Invoice Page
 
   Scenario Outline: Adding Proforma and Invoices to Order
     When order placed status by "<category>"
-    And click Purchase dropdown toggle
+    And click purchase dropdown toggle
     And click purchase order search link
     Then verify purchase order search page
     And search order by id and edit order

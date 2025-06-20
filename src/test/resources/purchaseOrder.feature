@@ -5,9 +5,9 @@ Feature: Purchase Order Tests
     When fill username and password
     And click login
     Then verify successful login
-    And click Purchase dropdown toggle
-    And click Purchase Order link
-    Then verify PurchaseOrder page
+    And click purchase dropdown toggle
+    And click purchase order link
+    Then verify purchase order page
 
     Scenario Outline: Order Creation Test
       When fill order date

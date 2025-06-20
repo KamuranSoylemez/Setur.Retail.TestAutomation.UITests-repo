@@ -9,7 +9,7 @@ public class PurchaseOrderStepdefs {
 
     PurchaseOrderPage orderPage = new PurchaseOrderPage();
 
-    @Then("verify PurchaseOrder page")
+    @Then("verify purchase order page")
     public void verifyPurchaseOrderPage() {
         orderPage.verifyPurchaseOrderPage();
     }

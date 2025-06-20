@@ -3,6 +3,7 @@ package pages.purchasePages;
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.options.WaitForSelectorState;
+import org.junit.Assert;
 import pages.commonPages.BasePage;
 import utils.GlobalVariables;
 
@@ -26,7 +27,7 @@ public class PurchaseOrderInvoicePage extends BasePage {
 
         String orderID = GlobalVariables.getInstance().getString("orderCode");
         filterPurchaseOrderCode.fill(orderID);
-        //filterPurchaseOrderCode.fill("3-2025-JTI-00000113"); // test ederken örnek kullanıldı
+        //filterPurchaseOrderCode.fill("3-2025-JTI-00000127"); // test ederken örnek data
 
         clickElement(filterButtonId);
 
@@ -47,16 +48,18 @@ public class PurchaseOrderInvoicePage extends BasePage {
         proformaTab.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
         proformaTab.click(new Locator.ClickOptions().setForce(true));
 
-        orderProcessingFrame.locator(".k-button.k-button-icontext.k-grid-ProformaReceiptGridIdAddNew")
-                .click();
-
+        // Assertion
         Locator frameName = page.locator("#SeturModalWin_wnd_title");
         verifyTextElement("Sipariş İşlemleri", frameName);
 
-        // String orderNo = orderProcessingFrame.locator("#PurchaseOrderCode").getAttribute("value");
-        // Assert.assertEquals(GlobalVariables.getInstance().getString("orderCode"),orderNo);
+        String orderNo = orderProcessingFrame.locator("#PurchaseOrderCode").getAttribute("value");
+        // Assert.assertEquals("3-2025-JTI-00000127",orderNo); //test ederken örnek data
+        Assert.assertEquals(GlobalVariables.getInstance().getString("orderCode"),orderNo);
 
-        System.out.println("Proforma Kaydetme sayfası açıldı");
+        orderProcessingFrame.locator(".k-button.k-button-icontext.k-grid-ProformaReceiptGridIdAddNew")
+                .click();
+
+        System.out.println("Proforma Kaydetme sayfası açıldı: " +frameName.textContent());
     }
 
     // Proforma kaydetme
@@ -75,8 +78,11 @@ public class PurchaseOrderInvoicePage extends BasePage {
         String amount = GlobalVariables.getInstance().getString("totalAmount");
         setKendoNumericTextBoxValue(proformaFrame, "#ProformaTotalAmount", amount);
 
+        Locator frameName = page.locator(".k-window-title").nth(1);
+        verifyTextElement("Proforma Kaydetme", frameName);
+
         proformaFrame.locator("#btnSave").click();
-        System.out.println("Proforma kaydedildi");
+        System.out.println("Proforma kaydedildi: " +frameName.textContent());
 
     }
     // Sipariş ürünlerini kopyala ve proforma onayla
@@ -92,7 +98,12 @@ public class PurchaseOrderInvoicePage extends BasePage {
         proformaUpdateFrame.locator("#approveButton").click();
         System.out.println("Proforma onaylandı");
 
+        Locator frameName = page.locator(".k-window-title").nth(1);
+        verifyTextElement("Proforma Güncelleme", frameName);
+
         proformaUpdateFrame.locator("#ClosePopupBtn").click();
+
+        System.out.println("Proforma Kaydetme işlemi yapıldı:" +frameName.textContent());
     }
     // Sipariş faturalarını ekleme
     public void addOrderInvoices() {
@@ -105,7 +116,11 @@ public class PurchaseOrderInvoicePage extends BasePage {
 
         orderProcessingFrame.locator(".k-button.k-button-icontext.k-grid-InvoiceGridIdAddNew")
                 .click();
-        System.out.println("Fatura Oluşturma framei açıldı");
+
+        Locator frameName = page.locator(".k-window-title").nth(1);
+        verifyTextElement("Fatura Oluşturma", frameName);
+
+        System.out.println("Fatura Oluşturma framei açıldı: " +frameName.textContent());
 
     }
     // Fatura bilgilerinin girilmesi
@@ -126,8 +141,12 @@ public class PurchaseOrderInvoicePage extends BasePage {
         invoiceFrame.locator("span.k-dropdown-wrap").last().click();
         invoiceFrame.locator("#RegimeNoSourceId_listbox li").nth(1).click();
 
+        Locator frameName = page.locator(".k-window-title").nth(1);
+        verifyTextElement("Fatura Oluşturma", frameName);
+
         invoiceFrame.locator("#SaveBtn").click();
-        System.out.println("Fatura kaydedildi");
+
+        System.out.println("Fatura kaydedildi: " +frameName.textContent());
     }
     // Proforma ürünlerini kopyalama ve fatura tamamla
     public void copyProformaItemsAndApproveInvoice() {
@@ -145,6 +164,9 @@ public class PurchaseOrderInvoicePage extends BasePage {
         
         invoiceUpdateFrame.locator("#completeButton").click();
 
+        Locator frameName = page.locator(".k-window-title").nth(1);
+        verifyTextElement("Fatura Güncelleme", frameName);
+
         Locator saveBtn = invoiceUpdateFrame.locator("#SaveBtn");
         saveBtn.scrollIntoViewIfNeeded();
         saveBtn.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
@@ -156,12 +178,12 @@ public class PurchaseOrderInvoicePage extends BasePage {
         if (successPopup.isVisible()) {
             successPopup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
         }
-        // ilk defa proforma fatura eklenince gelen bilgilendirme mesajını kapatır
-        // Locator warningPopup = page.locator(".ajs-message.ajs-warning.ajs-visible");
-        // warningPopup.click();
+
         // 2. Mesaj kaybolduktan sonra pencereyi kapat
         Locator closeButton = page.locator(".k-window-actions .k-i-close").nth(0);
         closeButton.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         closeButton.click();
+
+        System.out.println("Fatura Güncelleme yapıldı:" +frameName.textContent());
     }
 }

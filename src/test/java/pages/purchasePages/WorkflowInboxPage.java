@@ -10,6 +10,7 @@ public class WorkflowInboxPage extends BasePage {
     Locator purchaseDropdown = page.locator(".glyphicon.glyphicon-tags");
     Locator purchaseOrderLink = page.locator("//a[@href='/ApplicationManagement/PurchaseOrder/Index']");
     Locator purchaseOrderInvoiceLink = page.locator("//a[@href='/ApplicationManagement/PurchaseOrderInvoice/Index']");
+    Locator purchasePrice = page.locator("//a[@href='/ApplicationManagement/ProductPurchasePrice/Index']");
 
     public void verifySuccessfulLogin() {
 
@@ -32,5 +33,9 @@ public class WorkflowInboxPage extends BasePage {
     public void clickPurchaseOrderInvoice() {
 
         clickElement(purchaseOrderInvoiceLink);
+    }
+
+    public void clickProductPurchasePriceLink() {
+        clickElement(purchasePrice);
     }
 }

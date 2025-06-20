@@ -5,7 +5,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import pages.purchasePages.PurchaseOrderInvoicePage;
 
-public class PurchaseOrderInvoice {
+public class PurchaseOrderInvoiceStepdefs {
 
     PurchaseOrderInvoicePage orderInvoicePage = new PurchaseOrderInvoicePage();
 
