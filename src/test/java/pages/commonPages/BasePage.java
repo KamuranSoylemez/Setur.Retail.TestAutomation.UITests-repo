@@ -8,6 +8,8 @@ import org.junit.Assert;
 import utils.Driver;
 import utils.GlobalVariables;
 
+import java.util.Random;
+
 public class BasePage {
 
     protected Page page;
@@ -53,6 +55,11 @@ public class BasePage {
                 "    widget.trigger('change');" +  // veya widget.trigger('input');
                 "  }" +
                 "}", value);
+    }
+
+    public int generateRandomNumber(){
+        Random random = new Random();
+        return random.nextInt(1000);
     }
 }
 

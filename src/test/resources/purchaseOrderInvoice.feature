@@ -1,10 +1,10 @@
 Feature: Purchase Order Invoice Page
 
-  #Background:
-    #Given navigate to login page
-    #When fill username and password
-    #And click login
-    #Then verify successful login
+   #Background:
+     #Given navigate to login page
+     #When fill username and password
+     #And click login
+     #Then verify successful login
 
   Scenario Outline: Adding Proforma and Invoices to Order
     When order placed status by "<category>"

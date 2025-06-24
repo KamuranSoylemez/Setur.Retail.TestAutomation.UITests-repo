@@ -7,8 +7,6 @@ import org.junit.Assert;
 import pages.commonPages.BasePage;
 import utils.GlobalVariables;
 
-import java.util.Random;
-
 public class PurchaseOrderInvoicePage extends BasePage {
 
     Locator pageTitle = page.locator("#PageTitle");
@@ -27,7 +25,7 @@ public class PurchaseOrderInvoicePage extends BasePage {
 
         String orderID = GlobalVariables.getInstance().getString("orderCode");
         filterPurchaseOrderCode.fill(orderID);
-        //filterPurchaseOrderCode.fill("3-2025-JTI-00000127"); // test ederken örnek data
+        //filterPurchaseOrderCode.fill("3-2025-JTI-00000114"); // test ederken örnek data
 
         clickElement(filterButtonId);
 
@@ -67,8 +65,7 @@ public class PurchaseOrderInvoicePage extends BasePage {
 
         FrameLocator proformaFrame = getFrameByDialogTitle("Proforma Kaydetme");
 
-        Random random = new Random();
-        int randomNumber = random.nextInt(1000);
+        int randomNumber = generateRandomNumber();
         String formatted = String.format("KMRN-TST-%04d", randomNumber);
         proformaFrame.locator("#ProformaNo").fill(formatted);
 
@@ -127,8 +124,7 @@ public class PurchaseOrderInvoicePage extends BasePage {
     public void addInfoForInvoiceAndSave() {
         FrameLocator invoiceFrame = getFrameByDialogTitle("Fatura Oluşturma");
 
-        Random random = new Random();
-        int randomNumber = random.nextInt(1000);
+        int randomNumber = generateRandomNumber();
         String formatted = String.format("KMRN-AU-%04d", randomNumber);
         invoiceFrame.locator("#InvoiceNo").fill(formatted);
 

@@ -11,7 +11,7 @@ Feature: Purchase Order Tests For One Category
 
   Scenario Outline: Tobacco Category Test
     When fill order date
-    And select "<category>" from list
+    When select "<category>" from list
     And set distributor company by category
     And select firm responsible user
     And select distribution target type

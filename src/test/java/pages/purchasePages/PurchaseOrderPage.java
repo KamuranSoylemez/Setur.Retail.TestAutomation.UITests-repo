@@ -17,11 +17,11 @@ import java.util.List;
 public class PurchaseOrderPage extends BasePage {
 
     Locator pageTitle = page.locator("#PageTitle");
-    Locator clickDropdownForCategory = page.locator("(//span[text()='Lütfen Seçiniz'])[1]");
-    Locator calendar = page.locator("(//span[@role='button']//span)[1]");
+    //Locator clickDropdownForCategory = page.locator("span.k-select > span.k-icon.k-i-arrow-s");
+    Locator calendar = page.locator(".k-icon.k-i-calendar");
     Locator selectToday = page.locator(".k-link.k-nav-today");
     Locator openFrame = page.locator("#FirmIdButtonId");
-    Locator selectedCategory = page.locator("(//span[@class='k-input'])[1]");
+    Locator selectedCategoryDropdown = page.locator("span.k-select > span.k-icon.k-i-arrow-s");
     Locator selectUser = page.locator(".k-multiselect-wrap.k-floatwrap");
     Locator selectFirmUser = page.locator("#FirmResponsibleUserId_option_selected");
     Locator distributionType = page.locator(".k-dropdown-wrap.k-state-default");
@@ -60,34 +60,32 @@ public class PurchaseOrderPage extends BasePage {
     //Kategori alanından seçim yapar
     public void selectCategoryFromList(String category) {
 
-        clickElement(clickDropdownForCategory.nth(0));
-        page.waitForSelector("#CategoryId_option_selected");
+        clickElement(selectedCategoryDropdown.nth(0));
+        //page.waitForSelector("#CategoryId_option_selected");
 
         Locator selectCategory = page.locator("#CategoryId_listbox li[role='option'].k-item",
                 new Page.LocatorOptions().setHasText(category));
         selectCategory.click(new Locator.ClickOptions().setForce(true));
 
         verifyTextElementUseTrim(category, selectCategory);
+        System.out.println("Selected category: " + category);
 
-    }
-    private void selectCategoryCode(){
-
-        frameLocator.locator("#FilterButtonId").click();
-        frameLocator.locator("//td[@role='gridcell']//input[1]").nth(0).click();
     }
     //Dağıtıcı Firma alanı seçimi (Kategoriye göre)
     public void setDistributorCompany() {
 
         clickElement(openFrame);
 
-        String categoryLabel = selectedCategory.nth(0).textContent();
+        String categoryLabel = selectedCategoryDropdown.nth(0).textContent();
         Categories category = Categories.fromLabel(categoryLabel);
 
         if (category != null) {
             DistributorInfo distributor = category.getDistributorInfo();
             frameLocator.locator("#FilterFirmCode").fill(distributor.getFirmCode());
-            selectCategoryCode();
-            Locator firmName = page.locator("(//li[@unselectable='on']//span)[1]");
+            frameLocator.locator("#FilterButtonId").click();
+            frameLocator.locator("input[type='button'][value='413']")
+                    .nth(0).click();
+            Locator firmName = page.locator("#FirmId_taglist li.k-button span:not(.k-delete)");
             verifyTextElementUseTrim(distributor.getFirmName(), firmName);
             System.out.println("Dağıtıcı Firma seçildi");
         } else {

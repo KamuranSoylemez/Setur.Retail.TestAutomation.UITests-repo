@@ -14,7 +14,7 @@ public class PurchaseOrderStepdefs {
         orderPage.verifyPurchaseOrderPage();
     }
 
-    @And("fill order date")
+    @When("fill order date")
     public void fillOrderDate() {
         orderPage.fillOrderDate();
     }
@@ -22,6 +22,8 @@ public class PurchaseOrderStepdefs {
     @And("select {string} from list")
     public void selectCategoryFromList(String category) {
         orderPage.selectCategoryFromList(category);
+        System.out.println("Selected category: " + category);
+
     }
 
     @And("set distributor company by category")
