@@ -25,7 +25,7 @@ public class GlobalPage extends BasePage {
         purchaseOrderPage.verifyPurchaseOrderPage();
         purchaseOrderPage.fillOrderDate();
         purchaseOrderPage.selectCategoryFromList(category);
-        purchaseOrderPage.setDistributorCompany();
+        purchaseOrderPage.setDistributorCompany(category);
         purchaseOrderPage.selectFirmResponsibleUser();
         purchaseOrderPage.selectDistributionTargetType();
         purchaseOrderPage.selectEntryWarehouse();

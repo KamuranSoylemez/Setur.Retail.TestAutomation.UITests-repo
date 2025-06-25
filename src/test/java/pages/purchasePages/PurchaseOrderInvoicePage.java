@@ -13,6 +13,11 @@ public class PurchaseOrderInvoicePage extends BasePage {
     Locator filterPurchaseOrderCode = page.locator("#FilterPurchaseOrderCode");
     Locator filterButtonId = page.locator("#FilterButtonId");
     Locator edit = page.locator("#Edit");
+    FrameLocator orderProcessingFrame = getFrameByDialogTitle("Sipariş İşlemleri");
+    FrameLocator proformaFrame = getFrameByDialogTitle("Proforma Kaydetme");
+    FrameLocator proformaUpdateFrame = getFrameByDialogTitle("Proforma Güncelleme");
+    FrameLocator invoiceFrame = getFrameByDialogTitle("Fatura Oluşturma");
+    FrameLocator invoiceUpdateFrame = getFrameByDialogTitle("Fatura Güncelleme");
 
     // sayfa doğrulama
     public void verifyPurchaseOrderSearchPage() {
@@ -25,7 +30,7 @@ public class PurchaseOrderInvoicePage extends BasePage {
 
         String orderID = GlobalVariables.getInstance().getString("orderCode");
         filterPurchaseOrderCode.fill(orderID);
-        //filterPurchaseOrderCode.fill("3-2025-JTI-00000114"); // test ederken örnek data
+        //filterPurchaseOrderCode.fill("3-2025-JTI-00000141"); // test ederken örnek data
 
         clickElement(filterButtonId);
 
@@ -39,8 +44,6 @@ public class PurchaseOrderInvoicePage extends BasePage {
     // Proforma yeni kayıt
     public void addProformaToOrder() {
 
-        FrameLocator orderProcessingFrame = getFrameByDialogTitle("Sipariş İşlemleri");
-
         Locator proformaTab = orderProcessingFrame.locator(".k-item.k-state-default").nth(1);
         proformaTab.scrollIntoViewIfNeeded();
         proformaTab.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
@@ -51,19 +54,16 @@ public class PurchaseOrderInvoicePage extends BasePage {
         verifyTextElement("Sipariş İşlemleri", frameName);
 
         String orderNo = orderProcessingFrame.locator("#PurchaseOrderCode").getAttribute("value");
-        // Assert.assertEquals("3-2025-JTI-00000127",orderNo); //test ederken örnek data
-        Assert.assertEquals(GlobalVariables.getInstance().getString("orderCode"),orderNo);
+        String orderCode = GlobalVariables.getInstance().getString("orderCode");
+        Assert.assertEquals(orderCode,orderNo);
 
         orderProcessingFrame.locator(".k-button.k-button-icontext.k-grid-ProformaReceiptGridIdAddNew")
                 .click();
-
         System.out.println("Proforma Kaydetme sayfası açıldı: " +frameName.textContent());
     }
 
     // Proforma kaydetme
     public void addInfoForProformaAndSave() {
-
-        FrameLocator proformaFrame = getFrameByDialogTitle("Proforma Kaydetme");
 
         int randomNumber = generateRandomNumber();
         String formatted = String.format("KMRN-TST-%04d", randomNumber);
@@ -84,7 +84,6 @@ public class PurchaseOrderInvoicePage extends BasePage {
     }
     // Sipariş ürünlerini kopyala ve proforma onayla
     public void copyOrderItemsAndApproveProforma() {
-        FrameLocator proformaUpdateFrame = getFrameByDialogTitle("Proforma Güncelleme");
 
         proformaUpdateFrame.locator("#ProductCopyId").waitFor();
         proformaUpdateFrame.locator("#ProductCopyId").click();
@@ -104,7 +103,6 @@ public class PurchaseOrderInvoicePage extends BasePage {
     }
     // Sipariş faturalarını ekleme
     public void addOrderInvoices() {
-        FrameLocator orderProcessingFrame = getFrameByDialogTitle("Sipariş İşlemleri");
 
         Locator invoiceTab = orderProcessingFrame.locator(".k-item.k-state-default").nth(2);
         invoiceTab.scrollIntoViewIfNeeded();
@@ -122,7 +120,6 @@ public class PurchaseOrderInvoicePage extends BasePage {
     }
     // Fatura bilgilerinin girilmesi
     public void addInfoForInvoiceAndSave() {
-        FrameLocator invoiceFrame = getFrameByDialogTitle("Fatura Oluşturma");
 
         int randomNumber = generateRandomNumber();
         String formatted = String.format("KMRN-AU-%04d", randomNumber);
@@ -147,11 +144,8 @@ public class PurchaseOrderInvoicePage extends BasePage {
     // Proforma ürünlerini kopyalama ve fatura tamamla
     public void copyProformaItemsAndApproveInvoice() {
 
-        FrameLocator orderProcessingFrame = getFrameByDialogTitle("Sipariş İşlemleri");
         orderProcessingFrame.locator(".k-button.gridCmdBtn.k-success.cmdLink.InvoiceGridIdCmd")
                 .nth(0).click();
-
-        FrameLocator invoiceUpdateFrame = getFrameByDialogTitle("Fatura Güncelleme");
 
         invoiceUpdateFrame.locator("#ProformaProductCopyId").click();
         // pop-up onayla -- birden fazla proforma varsa yeni frame açılır!!!

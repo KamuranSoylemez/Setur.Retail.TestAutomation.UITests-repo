@@ -6,7 +6,7 @@ Feature: Purchase Price Page
     And click login
     Then verify successful login
     And click purchase dropdown toggle
-    And click product purchase price link
+    And click purchase price link
     Then verify purchase price page
 
   Scenario: Create New Purchase Price For Defined Product

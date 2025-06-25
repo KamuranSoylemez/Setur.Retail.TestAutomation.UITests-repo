@@ -26,9 +26,9 @@ public class PurchaseOrderStepdefs {
 
     }
 
-    @And("set distributor company by category")
-    public void setDistributorCompany() {
-        orderPage.setDistributorCompany();
+    @And("set distributor company by {string}")
+    public void setDistributorCompany(String category) {
+        orderPage.setDistributorCompany(category);
     }
 
     @And("select firm responsible user")

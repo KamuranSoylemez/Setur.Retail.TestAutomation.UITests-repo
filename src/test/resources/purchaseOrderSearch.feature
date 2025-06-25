@@ -1,4 +1,4 @@
-Feature: Purchase Order Invoice Page
+Feature: Purchase Order Search Page
 
    #Background:
      #Given navigate to login page

@@ -1,4 +1,4 @@
-Feature: Purchase Order Tests
+Feature: Purchase Create Order Page
 
   Background: Navigate Login Page
     Given navigate to login page
@@ -6,13 +6,13 @@ Feature: Purchase Order Tests
     And click login
     Then verify successful login
     And click purchase dropdown toggle
-    And click purchase order link
+    And click purchase create order order link
     Then verify purchase order page
 
     Scenario Outline: Order Creation Test
       When fill order date
       And select "<category>" from list
-      And set distributor company by category
+      And set distributor company by "<category>"
       And select firm responsible user
       And select distribution target type
       And select entry warehouse

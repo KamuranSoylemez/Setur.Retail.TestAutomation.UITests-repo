@@ -14,19 +14,16 @@ public class WorkflowInboxPage extends BasePage {
 
     public void verifySuccessfulLogin() {
 
-        //page.waitForSelector("#PageTitle", new Page.WaitForSelectorOptions().setTimeout(60000));
         verifyTextElementUseTrim("Akış Gelen Kutusu", pageTitle);
     }
 
     public void clickPurchaseDropdownToggle() {
 
-        //page.waitForSelector(".glyphicon.glyphicon-refresh",new Page.WaitForSelectorOptions().setTimeout(60000));
         clickElement(purchaseDropdown);
     }
 
     public void clickOrderLink() {
 
-        //page.waitForSelector(".glyphicon.glyphicon-refresh",new Page.WaitForSelectorOptions().setTimeout(60000));
         clickElement(purchaseOrderLink);
     }
 
@@ -35,7 +32,7 @@ public class WorkflowInboxPage extends BasePage {
         clickElement(purchaseOrderInvoiceLink);
     }
 
-    public void clickProductPurchasePriceLink() {
+    public void clickPurchasePriceLink() {
         clickElement(purchasePrice);
     }
 }

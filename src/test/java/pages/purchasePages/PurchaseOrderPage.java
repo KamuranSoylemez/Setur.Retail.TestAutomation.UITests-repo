@@ -17,7 +17,6 @@ import java.util.List;
 public class PurchaseOrderPage extends BasePage {
 
     Locator pageTitle = page.locator("#PageTitle");
-    //Locator clickDropdownForCategory = page.locator("span.k-select > span.k-icon.k-i-arrow-s");
     Locator calendar = page.locator(".k-icon.k-i-calendar");
     Locator selectToday = page.locator(".k-link.k-nav-today");
     Locator openFrame = page.locator("#FirmIdButtonId");
@@ -49,11 +48,9 @@ public class PurchaseOrderPage extends BasePage {
 
         //otomasyon test belli olması adına sipariş adı ekledim
         Locator purchaseOrderName = page.locator("#PurchaseOrderName");
-
         // Zaman bazlı sayaç
         String timestamp = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
         String orderName = "KMRN_TST_AUTO_" + timestamp;
-
         purchaseOrderName.fill(orderName);
     }
 
@@ -72,15 +69,13 @@ public class PurchaseOrderPage extends BasePage {
 
     }
     //Dağıtıcı Firma alanı seçimi (Kategoriye göre)
-    public void setDistributorCompany() {
+    public void setDistributorCompany(String category) {
 
         clickElement(openFrame);
+        Categories categoryLabel = Categories.fromLabel(category);
 
-        String categoryLabel = selectedCategoryDropdown.nth(0).textContent();
-        Categories category = Categories.fromLabel(categoryLabel);
-
-        if (category != null) {
-            DistributorInfo distributor = category.getDistributorInfo();
+        if (categoryLabel != null) {
+            DistributorInfo distributor = categoryLabel.getDistributorInfo();
             frameLocator.locator("#FilterFirmCode").fill(distributor.getFirmCode());
             frameLocator.locator("#FilterButtonId").click();
             frameLocator.locator("input[type='button'][value='413']")
@@ -149,18 +144,15 @@ public class PurchaseOrderPage extends BasePage {
     public void checkCanAutoCompleteAndSave() {
 
         clickElement(checkCanAutoComplete);
-
         System.out.println("Sipariş Otomatik Olarak Tamamlansın mı? işaretlendi");
 
         clickElement(saveOrderBtn);
         page.locator("body").scrollIntoViewIfNeeded();
-
         System.out.println("Kaydet butonuna tıklandı");
 
         Locator purchaseOrderTabs = page.locator("#PurchaseOrderTabs");
         page.waitForSelector("#PurchaseOrderTabs");
         verifyIsVisible(purchaseOrderTabs);
-
         System.out.println("Sipariş oluşturuldu!");
     }
 
@@ -171,24 +163,22 @@ public class PurchaseOrderPage extends BasePage {
 
         // Sipariş Ürünü Tanımlama iframe
         FrameLocator productFrame = getFrameByDialogTitle("Sipariş Ürünü Tanımlama");
-
         productFrame.locator("#ProductIdButtonId").click();
 
         // Ürün Tanımlama iframe
         FrameLocator productDescription = getFrameByDialogTitle("Ürün Tanımlama");
-
-        // Ürün kodunu dinamik nasıl veririz?
         setKendoNumericTextBoxValue(productDescription, "#FilterProductId", "397");
-
         Locator filterBtn = productDescription.locator("#FilterButtonId");
         filterBtn.click();
 
         // Ürünü seç ve miktar gir
         productDescription.locator("(//input[@type='button'])[4]").click();
         setKendoNumericTextBoxValue(productFrame,"#Quantity","10");
-        productFrame.locator("#SaveBtn").click();
 
-        System.out.println("ürün eklendi");
+        Locator saveBtn = productFrame.locator("#SaveBtn");
+        saveBtn.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
+        saveBtn.click();
+        System.out.println("Ürün eklendi");
     }
     // Seçilen ürün/leri verify etme
     public void verifyProducts() {
@@ -215,7 +205,6 @@ public class PurchaseOrderPage extends BasePage {
         approveBtn.click();
 
         orderApprovalProcess();
-
         Assert.assertTrue(page.locator("#SetOrderGivenBtn").isEnabled());
         System.out.println("Kayıt onaylandı");
     }
@@ -226,7 +215,6 @@ public class PurchaseOrderPage extends BasePage {
         setOrderGivenBtn.click();
 
         orderApprovalProcess();
-
          String orderID = page.locator("#PurchaseOrderCode").getAttribute("value");
          GlobalVariables.getInstance().addString("orderCode",orderID);
 

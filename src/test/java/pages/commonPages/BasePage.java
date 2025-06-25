@@ -8,6 +8,8 @@ import org.junit.Assert;
 import utils.Driver;
 import utils.GlobalVariables;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 public class BasePage {
@@ -60,6 +62,26 @@ public class BasePage {
     public int generateRandomNumber(){
         Random random = new Random();
         return random.nextInt(1000);
+    }
+
+    public String generateRandomDate(){
+        Random random = new Random(); //random date (aynı tarih için uyarı veriyor)
+        int daysToAdd = random.nextInt(30);
+        LocalDate randomDate = LocalDate.now().plusDays(daysToAdd);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return randomDate.format(formatter);
+    }
+
+    public String generateBarcodeNumber(){
+        Random randomNum = new Random();
+        StringBuilder sb = new StringBuilder();
+        // İlk rakam 1–9 arasında olmalı (başta 0 olamaz)
+        sb.append(randomNum.nextInt(9) + 1);
+        // Geri kalan 12 rakam 0–9
+        for (int i = 0; i < 12; i++) {
+            sb.append(randomNum.nextInt(10));
+        }
+        return sb.toString();
     }
 }
 
