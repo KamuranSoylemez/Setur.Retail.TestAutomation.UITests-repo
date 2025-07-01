@@ -7,87 +7,82 @@ import pages.purchasePages.PurchaseOrderPage;
 
 public class PurchaseOrderStepdefs {
 
-    PurchaseOrderPage orderPage = new PurchaseOrderPage();
+    PurchaseOrderPage purchaseOrderPage = new PurchaseOrderPage();
 
     @Then("verify purchase order page")
     public void verifyPurchaseOrderPage() {
-        orderPage.verifyPurchaseOrderPage();
+        purchaseOrderPage.verifyPurchaseOrderPage();
     }
 
     @When("fill order date")
     public void fillOrderDate() {
-        orderPage.fillOrderDate();
+        purchaseOrderPage.fillOrderDate();
     }
 
     @And("select {string} from list")
     public void selectCategoryFromList(String category) {
-        orderPage.selectCategoryFromList(category);
+        purchaseOrderPage.selectCategoryFromList(category);
         System.out.println("Selected category: " + category);
 
     }
 
     @And("set distributor company by {string}")
     public void setDistributorCompany(String category) {
-        orderPage.setDistributorCompany(category);
+        purchaseOrderPage.setDistributorCompany(category);
     }
 
     @And("select firm responsible user")
     public void selectFirmResponsibleUser() {
-        orderPage.selectFirmResponsibleUser();
+        purchaseOrderPage.selectFirmResponsibleUser();
     }
 
     @And("select distribution target type")
     public void selectDistributionTargetType() {
-        orderPage.selectDistributionTargetType();
+        purchaseOrderPage.selectDistributionTargetType();
     }
 
     @And("select entry warehouse")
     public void selectEntryWarehouse() {
-        orderPage.selectEntryWarehouse();
+        purchaseOrderPage.selectEntryWarehouse();
     }
 
     @And("select company address")
     public void selectCompanyAddress() {
-        orderPage.selectCompanyAddress();
+        purchaseOrderPage.selectCompanyAddress();
     }
 
     @And("select warehouse address")
     public void selectWarehouseAddress() {
-        orderPage.selectWarehouseAddress();
+        purchaseOrderPage.selectWarehouseAddress();
     }
 
     @And("check can auto complete and save")
     public void checkCanAutoComplete() {
-        orderPage.checkCanAutoCompleteAndSave();
+        purchaseOrderPage.checkCanAutoCompleteAndSave();
     }
 
     @When("add product to order")
     public void addProductToOrder() {
-        orderPage.addProductToOrder();
+        purchaseOrderPage.addProductToOrder();
     }
 
     @Then("verify products")
     public void verifyProducts() {
-        orderPage.verifyProducts();
+        purchaseOrderPage.verifyProducts();
     }
 
     @And("sending for approval process")
     public void sendingForApprovalProcess() {
-        orderPage.sendingForApprovalProcess();
+        purchaseOrderPage.sendingForApprovalProcess();
     }
 
     @And("approve order")
     public void approveOrder() {
-        orderPage.approveOrder();
+        purchaseOrderPage.approveOrder();
     }
 
     @Then("set order placed")
     public void setOrderPlaced() {
-        orderPage.setOrderPlaced();
-    }
-
-    @And("click purchase order search link")
-    public void clickPurchaseOrderSearchLink() {
-        orderPage.clickPurchaseOrderSearchLink();
+        purchaseOrderPage.setOrderPlaced();
     }
 }

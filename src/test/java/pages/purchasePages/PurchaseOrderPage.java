@@ -8,7 +8,6 @@ import enums.Categories;
 import enums.DistributorInfo;
 import org.junit.Assert;
 import pages.commonPages.BasePage;
-import utils.GlobalVariables;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,6 +32,7 @@ public class PurchaseOrderPage extends BasePage {
     Locator checkCanAutoComplete = page.locator("#no_CanAutoComplete");
     Locator saveOrderBtn = page.locator("#SaveBtn");
     FrameLocator frameLocator = page.frameLocator("iframe.k-content-frame");
+    FrameLocator productFrame = getFrameByDialogTitle("Sipariş Ürünü Tanımlama");
 
     //Sipariş İşlemleri sayfasını doğrular
     public void verifyPurchaseOrderPage() {
@@ -78,7 +78,7 @@ public class PurchaseOrderPage extends BasePage {
             DistributorInfo distributor = categoryLabel.getDistributorInfo();
             frameLocator.locator("#FilterFirmCode").fill(distributor.getFirmCode());
             frameLocator.locator("#FilterButtonId").click();
-            frameLocator.locator("input[type='button'][value='413']")
+            frameLocator.locator("input[type='button'][value='99']")
                     .nth(0).click();
             Locator firmName = page.locator("#FirmId_taglist li.k-button span:not(.k-delete)");
             verifyTextElementUseTrim(distributor.getFirmName(), firmName);
@@ -89,6 +89,10 @@ public class PurchaseOrderPage extends BasePage {
     }
     //Firma İlgili Kişi
     public void selectFirmResponsibleUser() {
+
+        Locator tagItem = page.locator("#FirmId_taglist li span:first-child");
+        tagItem.waitFor(new Locator.WaitForOptions().setTimeout(1000));
+
         clickElement(selectUser.nth(3));
 
         page.waitForSelector("#FirmResponsibleUserId_listbox");
@@ -158,35 +162,39 @@ public class PurchaseOrderPage extends BasePage {
 
     //Ürün ekleme (Yeni Kayıt)
     public void addProductToOrder() {
-        Locator newProductBtn = page.locator("//div[@id='PurchaseOrderProductGridId']/div[1]/a[1]");
+        Locator newProductBtn = page.locator("a.k-grid-PurchaseOrderProductGridIdAddNew");
         clickElement(newProductBtn);
 
         // Sipariş Ürünü Tanımlama iframe
-        FrameLocator productFrame = getFrameByDialogTitle("Sipariş Ürünü Tanımlama");
         productFrame.locator("#ProductIdButtonId").click();
 
         // Ürün Tanımlama iframe
         FrameLocator productDescription = getFrameByDialogTitle("Ürün Tanımlama");
-        setKendoNumericTextBoxValue(productDescription, "#FilterProductId", "397");
+        setKendoNumericTextBoxValue(productDescription, "#FilterProductId", "1107");
         Locator filterBtn = productDescription.locator("#FilterButtonId");
         filterBtn.click();
 
         // Ürünü seç ve miktar gir
         productDescription.locator("(//input[@type='button'])[4]").click();
-        setKendoNumericTextBoxValue(productFrame,"#Quantity","10");
+        setKendoNumericTextBoxValue(productFrame,"#Quantity","2");
+        productFrame.locator("#Quantity").press("Enter");
+
+        //Locator totalAmount = productFrame.locator("#TotalAmount");
+        //totalAmount.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
 
         Locator saveBtn = productFrame.locator("#SaveBtn");
-        saveBtn.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
+        saveBtn.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         saveBtn.click();
         System.out.println("Ürün eklendi");
     }
     // Seçilen ürün/leri verify etme
     public void verifyProducts() {
+
         page.waitForSelector("//td[@data-field-name='ProductName']"); // belirli elementin gelmesini bekle
         List<Locator> items = page.locator("//td[@data-field-name='ProductName']").all();
 
         for (Locator item : items) {
-            verifyTextElementUseTrim("WINSTON BLUE KS 600 S", item);
+            verifyTextElementUseTrim("CACHAREL W ANAIS EDT 50ML", item);
         }
     }
 
@@ -216,32 +224,10 @@ public class PurchaseOrderPage extends BasePage {
 
         orderApprovalProcess();
          String orderID = page.locator("#PurchaseOrderCode").getAttribute("value");
-         GlobalVariables.getInstance().addString("orderCode",orderID);
+         addString("orderCode",orderID);
+         //GlobalVariables.getInstance().addString("orderCode",orderID);
 
         System.out.println("Kayıt sipariş verildi durumuna getirildi: " +orderID);
     }
 
-    private void orderCancellationProcess(){
-        Locator popup = page.locator(".ajs-dialog");
-        popup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
-
-        Locator cancelButton = popup.locator(".ajs-button.ajs-cancel");
-        cancelButton.click();
-    }
-
-    public void orderApprovalProcess(){
-        Locator popup = page.locator(".ajs-dialog");
-        popup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
-
-        Locator okButton = popup.locator(".ajs-button.ajs-ok");
-        okButton.click();
-    }
-
-    public void clickPurchaseOrderSearchLink() {
-        Locator purchaseInvoiceOrderLink = page.
-                locator("//a[@href='/ApplicationManagement/PurchaseOrderInvoice/Index']");
-        clickElement(purchaseInvoiceOrderLink);
-        System.out.println("Sipariş Sorgulama ekranı açıldı");
-
-    }
 }

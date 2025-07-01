@@ -23,13 +23,18 @@ public class WorkflowInboxStepdefs {
         inboxPage.clickOrderLink();
     }
 
-    @And("click Purchase Order Invoice")
-    public void clickPurchaseOrderInvoice() {
-        inboxPage.clickPurchaseOrderInvoice();
+    @And("click purchase order search link")
+    public void clickPurchaseOrderSearch() {
+        inboxPage.clickPurchaseOrderSearch();
     }
 
     @And("click purchase price link")
     public void clickPurchasePriceLink() {
         inboxPage.clickPurchasePriceLink();
+    }
+
+    @And("click invoice transactions link")
+    public void clickInvoiceTransactions() {
+        inboxPage.clickInvoiceTransactions();
     }
 }

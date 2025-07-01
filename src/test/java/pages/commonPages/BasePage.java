@@ -4,6 +4,7 @@ import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import org.junit.Assert;
 import utils.Driver;
 import utils.GlobalVariables;
@@ -61,17 +62,18 @@ public class BasePage {
 
     public int generateRandomNumber(){
         Random random = new Random();
-        return random.nextInt(1000);
+        return random.nextInt(10000);
     }
-
+    //random tarih üretme (aynı tarih için uyarı veriyor)
     public String generateRandomDate(){
-        Random random = new Random(); //random date (aynı tarih için uyarı veriyor)
+        Random random = new Random();
         int daysToAdd = random.nextInt(30);
         LocalDate randomDate = LocalDate.now().plusDays(daysToAdd);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         return randomDate.format(formatter);
     }
 
+    // 13 haneli barkod numarası üretme
     public String generateBarcodeNumber(){
         Random randomNum = new Random();
         StringBuilder sb = new StringBuilder();
@@ -82,6 +84,29 @@ public class BasePage {
             sb.append(randomNum.nextInt(10));
         }
         return sb.toString();
+    }
+    // Random Gümrük Beyanname No üret (format: 8 rakam + AN + 8 rakam)
+    public String generateCustomHouseNo() {
+        Random random = new Random();
+        String part1 = String.format("%08d", random.nextInt(100_000_000));
+        String part2 = String.format("%08d", random.nextInt(100_000_000));
+        return part1 + "AN" + part2;
+    }
+    // pop-up onayla işlemi (frame içindeki onaylamalar için geçerli değildir)
+    public void orderApprovalProcess(){
+        Locator popup = page.locator(".ajs-dialog");
+        popup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+
+        Locator okButton = popup.locator(".ajs-button.ajs-ok");
+        okButton.click();
+    }
+    // pop-up vazçgeç işlemi (frame içindeki onaylamalar için geçerli değildir)
+    private void orderCancellationProcess(){
+        Locator popup = page.locator(".ajs-dialog");
+        popup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+
+        Locator cancelButton = popup.locator(".ajs-button.ajs-cancel");
+        cancelButton.click();
     }
 }
 

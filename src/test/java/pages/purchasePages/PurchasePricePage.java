@@ -5,9 +5,8 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import org.junit.Assert;
 import pages.commonPages.BasePage;
-import utils.GlobalVariables;
 
-public class ProductPurchasePricePage extends BasePage {
+public class PurchasePricePage extends BasePage {
 
     Locator pageTitle = page.locator("#PageTitle");
     Locator newRecord = page.locator(".glyphicon.glyphicon-plus");
@@ -50,7 +49,7 @@ public class ProductPurchasePricePage extends BasePage {
 
         String newAmount = purchasePriceFrame.locator("#Amount").getAttribute("aria-valuenow");
         //purchasePriceFrame.locator("#Amount").evaluate("el => $(el).data('kendoNumericTextBox').value()").toString();
-        GlobalVariables.getInstance().addString("newAmount",newAmount);
+        addString("newAmount",newAmount);
 
         System.out.println("Yeni tutar belirlendi: " +newAmount);
 
@@ -78,7 +77,7 @@ public class ProductPurchasePricePage extends BasePage {
 
         page.locator("#FilterButtonId").click();
 
-        String amount =  GlobalVariables.getInstance().getString("newAmount");
+        String amount =  getString("newAmount");
         Locator mainPageAmount = page.locator("td[data-field-name='Amount']").nth(0);
 
         Assert.assertEquals(amount+",000000",mainPageAmount.textContent());
@@ -110,7 +109,7 @@ public class ProductPurchasePricePage extends BasePage {
         String newProductAmount = purchasePriceFrame.locator("#Amount")
                 .getAttribute("aria-valuenow");
         //purchasePriceFrame.locator("#Amount").evaluate("el => $(el).data('kendoNumericTextBox').value()").toString();
-        GlobalVariables.getInstance().addString("newProAmount",newProductAmount);
+        addString("newProAmount",newProductAmount);
 
         System.out.println("Yeni tutar oluşturuldu: " +newProductAmount);
 
@@ -136,7 +135,7 @@ public class ProductPurchasePricePage extends BasePage {
         selectFirmByCode(undefinedDistributorFirm, "JTI", "413");
         page.locator("#FilterButtonId").click();
 
-        String amount =  GlobalVariables.getInstance().getString("newProAmount");
+        String amount =  getString("newProAmount");
         Locator mainPageProductAmount = page.locator("td[data-field-name='Amount']").nth(0);
 
         Assert.assertEquals(amount+",000000",mainPageProductAmount.textContent());

@@ -1,6 +1,7 @@
 package pages.commonPages;
 
 import pages.purchasePages.PurchaseOrderPage;
+import pages.purchasePages.PurchaseOrderSearchPage;
 import pages.purchasePages.WorkflowInboxPage;
 import utils.ConfigDataReader;
 
@@ -9,6 +10,7 @@ public class GlobalPage extends BasePage {
     LoginPage loginPage = new LoginPage();
     WorkflowInboxPage workflowInboxPage = new WorkflowInboxPage();
     PurchaseOrderPage purchaseOrderPage = new PurchaseOrderPage();
+    PurchaseOrderSearchPage orderSearchPage = new PurchaseOrderSearchPage();
 
     public void navigateToHomePage() {
         //page.navigate("https://dfs-retail-ui-staging.azurewebsites.net/CustomerManagement/Login");
@@ -38,5 +40,19 @@ public class GlobalPage extends BasePage {
         purchaseOrderPage.approveOrder();
         purchaseOrderPage.setOrderPlaced();
 
+    }
+
+    public void setProformaAndInvoice() {
+        workflowInboxPage.clickPurchaseDropdownToggle();
+        workflowInboxPage.clickPurchaseOrderSearch();
+        orderSearchPage.verifyPurchaseOrderSearchPage();
+        orderSearchPage.searchOrderIdAndEditOder();
+        orderSearchPage.addProformaToOrder();
+        orderSearchPage.addInfoForProformaAndSave();
+        orderSearchPage.copyOrderItemsAndApproveProforma();
+        orderSearchPage.addOrderInvoices();
+        orderSearchPage.addInfoForInvoiceAndSave();
+        orderSearchPage.copyProformaItemsAndApproveInvoice();
+        orderSearchPage.invoiceCompletionAndApproval();
     }
 }

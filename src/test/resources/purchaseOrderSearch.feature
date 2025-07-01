@@ -18,7 +18,8 @@ Feature: Purchase Order Search Page
     Then add order invoices
     And add info for invoice and save
     And copy proforma items and approve invoice
+    Then invoice completion and approval
 
     Examples: Categories
-      | category       |
-      | TÜTÜN ÜRÜNLERİ |
+      | category        |
+      | PARFÜM-KOZMETİK |

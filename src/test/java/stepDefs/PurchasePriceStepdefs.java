@@ -3,11 +3,11 @@ package stepDefs;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import pages.purchasePages.ProductPurchasePricePage;
+import pages.purchasePages.PurchasePricePage;
 
-public class ProductPurchasePriceStepdefs {
+public class PurchasePriceStepdefs {
 
-    ProductPurchasePricePage purchasePricePage = new ProductPurchasePricePage();
+    PurchasePricePage purchasePricePage = new PurchasePricePage();
 
     @Then("verify purchase price page")
     public void verifyPurchasePricePage() {

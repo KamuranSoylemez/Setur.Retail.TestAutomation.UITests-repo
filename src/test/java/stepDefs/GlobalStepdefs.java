@@ -17,4 +17,9 @@ public class GlobalStepdefs {
     public void orderPlacedStatusBy(String category) {
         globalPage.orderPlacedStatus(category);
     }
+
+    @When("set proforma and invoice")
+    public void setProformaAndInvoice() {
+        globalPage.setProformaAndInvoice();
+    }
 }

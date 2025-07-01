@@ -3,42 +3,47 @@ package stepDefs;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import pages.purchasePages.PurchaseOrderInvoicePage;
+import pages.purchasePages.PurchaseOrderSearchPage;
 
-public class PurchaseOrderInvoiceStepdefs {
+public class PurchaseOrderSearchStepdefs {
 
-    PurchaseOrderInvoicePage orderInvoicePage = new PurchaseOrderInvoicePage();
+    PurchaseOrderSearchPage orderSearchPage = new PurchaseOrderSearchPage();
 
     @Then("verify purchase order search page")
     public void verifyPurchaseOrderSearchPage() {
-        orderInvoicePage.verifyPurchaseOrderSearchPage();
+        orderSearchPage.verifyPurchaseOrderSearchPage();
     }
     @When("search order by id and edit order")
     public void searchOrderIdAndEditOder() {
-        orderInvoicePage.searchOrderIdAndEditOder();
+        orderSearchPage.searchOrderIdAndEditOder();
     }
     @When("add proforma to order")
     public void addProformaToOrder() {
-        orderInvoicePage.addProformaToOrder();
+        orderSearchPage.addProformaToOrder();
     }
     @And("add info for proforma and save")
     public void addInfoForProformaAndSave() {
-        orderInvoicePage.addInfoForProformaAndSave();
+        orderSearchPage.addInfoForProformaAndSave();
     }
     @And("copy order items and approve proforma")
     public void copyOrderItemsAndApproveProforma() {
-        orderInvoicePage.copyOrderItemsAndApproveProforma();
+        orderSearchPage.copyOrderItemsAndApproveProforma();
     }
     @And("add order invoices")
     public void addOrderInvoices() {
-        orderInvoicePage.addOrderInvoices();
+        orderSearchPage.addOrderInvoices();
     }
     @And("add info for invoice and save")
     public void addInfoForInvoiceAndSave() {
-        orderInvoicePage.addInfoForInvoiceAndSave();
+        orderSearchPage.addInfoForInvoiceAndSave();
     }
     @And("copy proforma items and approve invoice")
     public void copyProformaItemsAndApproveInvoice() {
-        orderInvoicePage.copyProformaItemsAndApproveInvoice();
+        orderSearchPage.copyProformaItemsAndApproveInvoice();
+    }
+
+    @Then("invoice completion and approval")
+    public void invoiceCompletionAndApproval() {
+        orderSearchPage.invoiceCompletionAndApproval();
     }
 }

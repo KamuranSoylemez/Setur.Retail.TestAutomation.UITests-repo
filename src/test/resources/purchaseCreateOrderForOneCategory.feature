@@ -9,10 +9,10 @@ Feature: Purchase Order Tests For One Category
     And click purchase create order order link
     Then verify purchase order page
 
-  Scenario Outline: Tobacco Category Test
+  Scenario: Create Order For One Category
     When fill order date
-    When select "<category>" from list
-    And set distributor company by "<category>"
+    And select "PARFÜM-KOZMETİK" from list
+    And set distributor company by "PARFÜM-KOZMETİK"
     And select firm responsible user
     And select distribution target type
     And select entry warehouse
@@ -24,7 +24,3 @@ Feature: Purchase Order Tests For One Category
     And sending for approval process
     And approve order
     Then set order placed
-
-    Examples: Categories
-      | category       |
-      | TÜTÜN ÜRÜNLERİ |

@@ -5,9 +5,8 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import org.junit.Assert;
 import pages.commonPages.BasePage;
-import utils.GlobalVariables;
 
-public class PurchaseOrderInvoicePage extends BasePage {
+public class PurchaseOrderSearchPage extends BasePage {
 
     Locator pageTitle = page.locator("#PageTitle");
     Locator filterPurchaseOrderCode = page.locator("#FilterPurchaseOrderCode");
@@ -28,14 +27,15 @@ public class PurchaseOrderInvoicePage extends BasePage {
     public void searchOrderIdAndEditOder() {
         filterPurchaseOrderCode.click();
 
-        String orderID = GlobalVariables.getInstance().getString("orderCode");
+        String orderID = getString("orderCode");
         filterPurchaseOrderCode.fill(orderID);
         //filterPurchaseOrderCode.fill("3-2025-JTI-00000141"); // test ederken örnek data
 
         clickElement(filterButtonId);
 
         String totalAmount = page.locator("td[data-field-name='TotalAmount']").textContent();
-        GlobalVariables.getInstance().addString("totalAmount", totalAmount);
+        addString("totalAmount", totalAmount);
+        //GlobalVariables.getInstance().addString("totalAmount", totalAmount);
 
         clickElement(edit);
         System.out.println("Sipariş İşlemleri framei açıldı");
@@ -54,7 +54,7 @@ public class PurchaseOrderInvoicePage extends BasePage {
         verifyTextElement("Sipariş İşlemleri", frameName);
 
         String orderNo = orderProcessingFrame.locator("#PurchaseOrderCode").getAttribute("value");
-        String orderCode = GlobalVariables.getInstance().getString("orderCode");
+        String orderCode = getString("orderCode");
         Assert.assertEquals(orderCode,orderNo);
 
         orderProcessingFrame.locator(".k-button.k-button-icontext.k-grid-ProformaReceiptGridIdAddNew")
@@ -66,13 +66,13 @@ public class PurchaseOrderInvoicePage extends BasePage {
     public void addInfoForProformaAndSave() {
 
         int randomNumber = generateRandomNumber();
-        String formatted = String.format("KMRN-TST-%04d", randomNumber);
+        String formatted = String.format("KMRN-%05d", randomNumber);
         proformaFrame.locator("#ProformaNo").fill(formatted);
 
         proformaFrame.locator(".k-icon.k-i-calendar").click();
         proformaFrame.locator(".k-link.k-nav-today").click();
 
-        String amount = GlobalVariables.getInstance().getString("totalAmount");
+        String amount = getString("totalAmount");
         setKendoNumericTextBoxValue(proformaFrame, "#ProformaTotalAmount", amount);
 
         Locator frameName = page.locator(".k-window-title").nth(1);
@@ -122,13 +122,13 @@ public class PurchaseOrderInvoicePage extends BasePage {
     public void addInfoForInvoiceAndSave() {
 
         int randomNumber = generateRandomNumber();
-        String formatted = String.format("KMRN-AU-%04d", randomNumber);
+        String formatted = String.format("KMRN-%05d", randomNumber);
         invoiceFrame.locator("#InvoiceNo").fill(formatted);
 
         invoiceFrame.locator(".k-icon.k-i-calendar").click();
         invoiceFrame.locator(".k-link.k-nav-today").click();
 
-        String amount = GlobalVariables.getInstance().getString("totalAmount");
+        String amount = getString("totalAmount");
         setKendoNumericTextBoxValue(invoiceFrame, "#InvoiceTotalAmount", amount);
 
         invoiceFrame.locator("span.k-dropdown-wrap").last().click();
@@ -148,30 +148,69 @@ public class PurchaseOrderInvoicePage extends BasePage {
                 .nth(0).click();
 
         invoiceUpdateFrame.locator("#ProformaProductCopyId").click();
-        // pop-up onayla -- birden fazla proforma varsa yeni frame açılır!!!
-        // Birden fazla proforma kontrolü yok!!!
         invoiceUpdateFrame.locator(".ajs-button.ajs-ok").click();
-        
-        invoiceUpdateFrame.locator("#completeButton").click();
+        //invoiceUpdateFrame.locator("#completeButton").click();
+
+        // input elementini locate et
+        Locator totalAmountInput = invoiceUpdateFrame.locator("#DisplayTotalAmount");
+
+// 1 saniye bekle (veri yüklenmesi için)
+        page.waitForTimeout(1000);
+
+// İçeriği oku (görmeden)
+        String value = totalAmountInput.getAttribute("aria-valuenow");
+
+// Eğer içerik boş değilse tıkla
+        if (value != null && !value.trim().isEmpty()) {
+            System.out.println("Toplam tutar bulundu: " + value);
+            invoiceUpdateFrame.locator("#completeButton").click();
+        } else {
+            System.out.println("Toplam tutar boş, butona tıklanmadı.");
+        }
+
+
+        Locator successMessage = page.locator(".ajs-message.ajs-success.ajs-visible");
+        successMessage.last().click();
+
+        invoiceUpdateFrame.locator("#SaveBtn").click();
+
+        System.out.println("Fatura Tamamlama işlemi yapıldı");
+
+    }
+    // Fatura onaylama süreci
+    public void invoiceCompletionAndApproval() {
+
+        /*orderProcessingFrame.locator(".k-button.gridCmdBtn.k-success.cmdLink.InvoiceGridIdCmd")
+                .nth(0).click();
+
+        Locator saveBtn = invoiceUpdateFrame.locator("#SaveBtn");
+        //saveBtn.click();
+
+        saveBtn.locator("#SaveBtn").waitFor(
+                new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        saveBtn.scrollIntoViewIfNeeded();
+        saveBtn.click();*/
+
+        Locator invoiceText = orderProcessingFrame.locator("td[data-field-name='InvoiceNo']");
+        addString("Fatura No",invoiceText.textContent());
+        System.out.println("Invoice No: " + invoiceText);
+
+        // Başarı mesajı kapat
+        Locator successPopup = page.locator(".ajs-message.ajs-success").last();
+        if (successPopup.isVisible()) {
+            successPopup.click();
+        }
+
+        // Mesaj kaybolduktan sonra pencereyi kapat
+        Locator warningMessage = page.locator(".ajs-message.ajs-warning.ajs-visible");
+        if (warningMessage.isVisible()){
+            page.evaluate("document.querySelector('.ajs-message.ajs-warning.ajs-visible')?.remove()");
+        }
 
         Locator frameName = page.locator(".k-window-title").nth(1);
         verifyTextElement("Fatura Güncelleme", frameName);
 
-        Locator saveBtn = invoiceUpdateFrame.locator("#SaveBtn");
-        saveBtn.scrollIntoViewIfNeeded();
-        saveBtn.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
-        saveBtn.click(new Locator.ClickOptions().setForce(true));
-
-
-        // 1. Başarı mesajı görünürse, onun DOM'dan kaybolmasını bekle
-        Locator successPopup = page.locator(".ajs-message.ajs-success").last();
-        if (successPopup.isVisible()) {
-            successPopup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
-        }
-
-        // 2. Mesaj kaybolduktan sonra pencereyi kapat
         Locator closeButton = page.locator(".k-window-actions .k-i-close").nth(0);
-        closeButton.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         closeButton.click();
 
         System.out.println("Fatura Güncelleme yapıldı:" +frameName.textContent());
