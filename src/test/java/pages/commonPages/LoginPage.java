@@ -64,7 +64,7 @@ public class LoginPage extends BasePage {
      */
     private void verifyWarningMessageVisible() {
         Assert.assertTrue("Hatalı kullanıcı adı veya şifre!", warningMessage.isVisible());
-        verifyTextElementUseTrim(errorMessage.textContent(),errorMessage);
+        verifyTextElement("InvalidUserCodeOrPassword",errorMessage);
     }
     /**
      * Utility: sınıf adında hata var mı?
