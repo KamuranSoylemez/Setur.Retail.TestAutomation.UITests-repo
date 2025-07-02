@@ -93,7 +93,7 @@ public class BasePage {
         return part1 + "AN" + part2;
     }
     // pop-up onayla işlemi (frame içindeki onaylamalar için geçerli değildir)
-    public void orderApprovalProcess(){
+    public void popUpConfirmationProcess(){
         Locator popup = page.locator(".ajs-dialog");
         popup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
 

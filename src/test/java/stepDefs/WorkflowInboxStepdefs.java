@@ -13,14 +13,14 @@ public class WorkflowInboxStepdefs {
         inboxPage.verifySuccessfulLogin();
     }
 
-    @And("click purchase dropdown toggle")
-    public void clickPurchaseDropdownToggle() {
-        inboxPage.clickPurchaseDropdownToggle();
+    @And("click purchasing dropdown toggle")
+    public void clickPurchasingDropdownToggle() {
+        inboxPage.clickPurchasingDropdownToggle();
     }
 
-    @And("click purchase create order order link")
-    public void clickOrderLink() {
-        inboxPage.clickOrderLink();
+    @And("click on the purchase order creation link")
+    public void clickCreateOrderLink() {
+        inboxPage.clickCreateOrderLink();
     }
 
     @And("click purchase order search link")

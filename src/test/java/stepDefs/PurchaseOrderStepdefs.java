@@ -9,31 +9,37 @@ public class PurchaseOrderStepdefs {
 
     PurchaseOrderPage purchaseOrderPage = new PurchaseOrderPage();
 
-    @Then("verify purchase order page")
-    public void verifyPurchaseOrderPage() {
-        purchaseOrderPage.verifyPurchaseOrderPage();
+    @Then("verify order creation page")
+    public void verifyCreateOrderPage() {
+        purchaseOrderPage.verifyCreateOrderPage();
     }
 
-    @When("fill order date")
-    public void fillOrderDate() {
-        purchaseOrderPage.fillOrderDate();
+    @When("fill in the order date")
+    public void fillOrderCreationDate() {
+        purchaseOrderPage.fillOrderCreationDate();
     }
 
-    @And("select {string} from list")
+    @When("fill in the order name")
+    public void fillOrderNameOrderCreationPage() {
+        purchaseOrderPage.fillOrderNameOrderCreationPage();
+    }
+
+    @And("select category from {string} list")
     public void selectCategoryFromList(String category) {
         purchaseOrderPage.selectCategoryFromList(category);
-        System.out.println("Selected category: " + category);
-
     }
 
-    @And("set distributor company by {string}")
-    public void setDistributorCompany(String category) {
-        purchaseOrderPage.setDistributorCompany(category);
+    @And("set distributor company by category {string}")
+    public void distributorCompanySelection(String category) {
+        purchaseOrderPage.openCompanyIdentificationFrame();
+        purchaseOrderPage.fillCompanyCode(category);
+        purchaseOrderPage.clickFilterButtonId();
+        purchaseOrderPage.selectDistributorCompany();
     }
 
-    @And("select firm responsible user")
-    public void selectFirmResponsibleUser() {
-        purchaseOrderPage.selectFirmResponsibleUser();
+    @And("select company contact person")
+    public void selectCompanyContactPerson() {
+        purchaseOrderPage.selectCompanyContactPerson();
     }
 
     @And("select distribution target type")
@@ -41,32 +47,45 @@ public class PurchaseOrderStepdefs {
         purchaseOrderPage.selectDistributionTargetType();
     }
 
-    @And("select entry warehouse")
+    @And("select warehouse where the order will enter")
     public void selectEntryWarehouse() {
-        purchaseOrderPage.selectEntryWarehouse();
+        purchaseOrderPage.openWarehouseDefinitionFrame();
+        purchaseOrderPage.fillWarehouseCodeField();
+        purchaseOrderPage.clickFilterButtonId();
+        purchaseOrderPage.selectWarehouse();
     }
 
-    @And("select company address")
-    public void selectCompanyAddress() {
-        purchaseOrderPage.selectCompanyAddress();
+    @And("select invoice address")
+    public void selectInvoiceAddress() {
+        purchaseOrderPage.selectInvoiceAddress();
     }
 
-    @And("select warehouse address")
-    public void selectWarehouseAddress() {
-        purchaseOrderPage.selectWarehouseAddress();
+    @And("select delivery address")
+    public void selectDeliveryAddress() {
+        purchaseOrderPage.selectDeliveryAddress();
     }
 
-    @And("check can auto complete and save")
-    public void checkCanAutoComplete() {
-        purchaseOrderPage.checkCanAutoCompleteAndSave();
+    @And("complete order automatically mark checkbox to no")
+    public void checkOrderCompleteAutomatically() {
+        purchaseOrderPage.checkOrderCompleteAutomatically();
+    }
+    @And("save order")
+    public void saveOrder() {
+        purchaseOrderPage.saveOrder();
     }
 
     @When("add product to order")
     public void addProductToOrder() {
-        purchaseOrderPage.addProductToOrder();
+        purchaseOrderPage.openOrderProductDescriptionFrame();
+        purchaseOrderPage.openProductDescriptionFrame();
+        purchaseOrderPage.enterProductCode();
+        purchaseOrderPage.clickFilterButtonProductDescFrame();
+        purchaseOrderPage.selectProduct();
+        purchaseOrderPage.enterQuantityForProduct();
+        purchaseOrderPage.saveOrderProductsDescription();
     }
 
-    @Then("verify products")
+    @Then("verify products added to order")
     public void verifyProducts() {
         purchaseOrderPage.verifyProducts();
     }
@@ -76,7 +95,7 @@ public class PurchaseOrderStepdefs {
         purchaseOrderPage.sendingForApprovalProcess();
     }
 
-    @And("approve order")
+    @And("approve order process")
     public void approveOrder() {
         purchaseOrderPage.approveOrder();
     }
@@ -84,5 +103,10 @@ public class PurchaseOrderStepdefs {
     @Then("set order placed")
     public void setOrderPlaced() {
         purchaseOrderPage.setOrderPlaced();
+    }
+
+    @Then("verify order by order id")
+    public void verifyOrderByOrderId() {
+        purchaseOrderPage.verifyOrderByOrderId();
     }
 }

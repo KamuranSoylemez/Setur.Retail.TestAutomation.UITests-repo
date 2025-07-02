@@ -13,18 +13,22 @@ public class WorkflowInboxPage extends BasePage {
     Locator purchasePrice = page.locator("//a[@href='/ApplicationManagement/ProductPurchasePrice/Index']");
     Locator purchaseInvoiceTransactions = page.locator("//a[@href='/ApplicationManagement/Invoice/Index']");
 
+    /**
+     * Giriş yaptıktan sonra ilk açılan sayfayı verify eder
+     */
     public void verifySuccessfulLogin() {
-
         verifyTextElementUseTrim("Akış Gelen Kutusu", pageTitle);
     }
-
-    public void clickPurchaseDropdownToggle() {
-
+    /**
+     * Satın Alma dropdown toggle linkine tıklar
+     */
+    public void clickPurchasingDropdownToggle() {
         clickElement(purchaseDropdown);
     }
-
-    public void clickOrderLink() {
-
+    /**
+     * Satın Alma dropdown toggle altındaki  Sipariş Oluşturma linkine tıklar
+     */
+    public void clickCreateOrderLink() {
         clickElement(purchaseOrderLink);
     }
 

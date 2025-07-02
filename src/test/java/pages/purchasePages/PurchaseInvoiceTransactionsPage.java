@@ -67,7 +67,7 @@ public class PurchaseInvoiceTransactionsPage extends BasePage {
 
         Locator checkboxDeclaration = page.locator("#checkboxDeclaration");
         checkboxDeclaration.nth(0).click();
-        orderApprovalProcess();
+        popUpConfirmationProcess();
 
         System.out.println("Beyannme oluşturma işlemi tamamlandı");
 

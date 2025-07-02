@@ -7,43 +7,41 @@ import utils.ConfigDataReader;
 
 public class GlobalPage extends BasePage {
 
-    LoginPage loginPage = new LoginPage();
     WorkflowInboxPage workflowInboxPage = new WorkflowInboxPage();
     PurchaseOrderPage purchaseOrderPage = new PurchaseOrderPage();
     PurchaseOrderSearchPage orderSearchPage = new PurchaseOrderSearchPage();
 
+    /**
+     * https://dfs-retail-ui-staging.azurewebsites.net/CustomerManagement/Login sayfasını açar
+     */
     public void navigateToHomePage() {
-        //page.navigate("https://dfs-retail-ui-staging.azurewebsites.net/CustomerManagement/Login");
         page.navigate(ConfigDataReader.getConfig("baseUrl"));
     }
 
     public void orderPlacedStatus(String category) {
-        navigateToHomePage();
-        loginPage.fillUserNameAndPassword();
-        loginPage.clickLoginButton();
-        workflowInboxPage.verifySuccessfulLogin();
-        workflowInboxPage.clickPurchaseDropdownToggle();
-        workflowInboxPage.clickOrderLink();
-        purchaseOrderPage.verifyPurchaseOrderPage();
-        purchaseOrderPage.fillOrderDate();
+        workflowInboxPage.clickCreateOrderLink();
+        purchaseOrderPage.verifyCreateOrderPage();
+        purchaseOrderPage.fillOrderCreationDate();
+        purchaseOrderPage.fillOrderNameOrderCreationPage();
         purchaseOrderPage.selectCategoryFromList(category);
-        purchaseOrderPage.setDistributorCompany(category);
-        purchaseOrderPage.selectFirmResponsibleUser();
+        purchaseOrderPage.openCompanyIdentificationFrame();
+        purchaseOrderPage.selectCompanyContactPerson();
         purchaseOrderPage.selectDistributionTargetType();
-        purchaseOrderPage.selectEntryWarehouse();
-        purchaseOrderPage.selectCompanyAddress();
-        purchaseOrderPage.selectWarehouseAddress();
-        purchaseOrderPage.checkCanAutoCompleteAndSave();
-        purchaseOrderPage.addProductToOrder();
+        purchaseOrderPage.openWarehouseDefinitionFrame();
+        purchaseOrderPage.selectInvoiceAddress();
+        purchaseOrderPage.selectDeliveryAddress();
+        purchaseOrderPage.checkOrderCompleteAutomatically();
+        purchaseOrderPage.saveOrder();
+        purchaseOrderPage.openOrderProductDescriptionFrame();
         purchaseOrderPage.verifyProducts();
         purchaseOrderPage.sendingForApprovalProcess();
         purchaseOrderPage.approveOrder();
         purchaseOrderPage.setOrderPlaced();
+        purchaseOrderPage.verifyOrderByOrderId();
 
     }
 
     public void setProformaAndInvoice() {
-        workflowInboxPage.clickPurchaseDropdownToggle();
         workflowInboxPage.clickPurchaseOrderSearch();
         orderSearchPage.verifyPurchaseOrderSearchPage();
         orderSearchPage.searchOrderIdAndEditOder();

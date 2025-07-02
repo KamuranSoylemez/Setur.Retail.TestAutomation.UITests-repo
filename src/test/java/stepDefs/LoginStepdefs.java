@@ -14,12 +14,12 @@ public class LoginStepdefs {
         loginPage.fillUserNameAndPassword();
     }
 
-    @And("click login")
-    public void clickLogin() {
+    @And("click login button")
+    public void clickLoginButton() {
         loginPage.clickLoginButton();
     }
-    @When("try login with {string} and {string}")
-    public void tryLoginWithAnd(String user, String pass) {
+    @When("try login with incorrect {string} or {string}")
+    public void tryLoginWithIncorrectUserAndPass(String user, String pass) {
         loginPage.tryLoginWithUserAndPass(user,pass);
     }
 
