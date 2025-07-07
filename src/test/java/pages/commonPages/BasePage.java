@@ -26,29 +26,67 @@ public class BasePage {
         locator.click();
     }
 
+    /**
+     * text elementi doğrular.
+     * @param value string değeri
+     * @param locator locator değeri
+     */
     public void verifyTextElement(String value, Locator locator){
         Assert.assertEquals(value, locator.textContent());
     }
+
+    /**
+     * trim kullanarak text elementi doğrular.
+     * @param value text değeri
+     * @param locator locator içindeki text değeri
+     */
     public void verifyTextElementUseTrim(String value, Locator locator){
         Assert.assertEquals(value.trim(), locator.textContent().trim());
     }
+
+    /**
+     * elementin görünür olmasını kontrol eder.
+     * @param locator elementi
+     */
     public void verifyIsVisible(Locator locator){
         Assert.assertTrue(locator.isVisible());
     }
 
+    /**
+     * gereken değeri başka yerde kullanmak için saklar.
+     * @param key string değer kendimiz veririz.
+     * @param value locator değerini alır.
+     */
     public void addString(String key, String value){
         GlobalVariables.getInstance().addString(key,value);
     }
+
+    /**
+     * saklanan string değeri kullanmak için getirir.
+     * @param key addString metodunda kendimizin yazdığı değeri karşılar
+     * @return değeri döner
+     */
     public String getString(String key){
         return GlobalVariables.getInstance().getString(key);
     }
 
+    /**
+     * frame içinde işlem yapmaya yarar.
+     * @param dialogTitle frame ismi
+     * @return frame değerini döner
+     */
     public FrameLocator getFrameByDialogTitle(String dialogTitle) {
         return page
                 .getByRole(AriaRole.DIALOG, new Page.GetByRoleOptions().setName(dialogTitle))
                 .frameLocator("iframe[title='Setur']");
     }
-    //kendo component özelliğinden dolayı input girişi için kod
+
+    /**
+     * Kendo komponenti kullanıldığı için gereken yerlerde kullanılır.
+     * @param frame hangi frame ise
+     * @param inputSelector hangi locator ise
+     * @param value locatora girilecek değer
+     */
     public void setKendoNumericTextBoxValue(FrameLocator frame, String inputSelector, String value) {
         Locator input = frame.locator(inputSelector);
         input.evaluate("(el, val) => {" +
@@ -64,7 +102,10 @@ public class BasePage {
         Random random = new Random();
         return random.nextInt(10000);
     }
-    //random tarih üretme (aynı tarih için uyarı veriyor)
+    /**
+     * random tarih değeri girer
+     * @return tarih değerini döner
+     */
     public String generateRandomDate(){
         Random random = new Random();
         int daysToAdd = random.nextInt(30);
@@ -72,8 +113,10 @@ public class BasePage {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         return randomDate.format(formatter);
     }
-
-    // 13 haneli barkod numarası üretme
+    /**
+     * barkod numarası üretir
+     * @return string bir barkod no döner
+     */
     public String generateBarcodeNumber(){
         Random randomNum = new Random();
         StringBuilder sb = new StringBuilder();
@@ -85,14 +128,19 @@ public class BasePage {
         }
         return sb.toString();
     }
-    // Random Gümrük Beyanname No üret (format: 8 rakam + AN + 8 rakam)
+    /**
+     * Gümrük Beyanname No random üretir.
+     * @return Gümrük Beyanname No
+     */
     public String generateCustomHouseNo() {
         Random random = new Random();
         String part1 = String.format("%08d", random.nextInt(100_000_000));
         String part2 = String.format("%08d", random.nextInt(100_000_000));
         return part1 + "AN" + part2;
     }
-    // pop-up onayla işlemi (frame içindeki onaylamalar için geçerli değildir)
+    /**
+     * pop-up onaylama yapar. (frame içi hariç)
+     */
     public void popUpConfirmationProcess(){
         Locator popup = page.locator(".ajs-dialog");
         popup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
@@ -100,7 +148,10 @@ public class BasePage {
         Locator okButton = popup.locator(".ajs-button.ajs-ok");
         okButton.click();
     }
-    // pop-up vazçgeç işlemi (frame içindeki onaylamalar için geçerli değildir)
+
+    /**
+     * pop-up vazgeçme işlemi yapar.
+     */
     private void orderCancellationProcess(){
         Locator popup = page.locator(".ajs-dialog");
         popup.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));

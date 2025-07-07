@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-        features = "src/test/resources", //tek feature soyası çalıştırmak için örnek:..resources/purchasing.feature
+        features = "src/test/resources", //feature dosyası çalıştırmak için örnek:..resources/purchasing.feature
         glue = {"stepDefs"},
         plugin = {
                 "pretty",

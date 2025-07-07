@@ -14,13 +14,13 @@ public class PurchaseOrderStepdefs {
         purchaseOrderPage.verifyCreateOrderPage();
     }
 
-    @When("fill in the order date")
+    @When("fill order date")
     public void fillOrderCreationDate() {
         purchaseOrderPage.fillOrderCreationDate();
     }
 
-    @When("fill in the order name")
-    public void fillOrderNameOrderCreationPage() {
+    @When("fill order name")
+    public void fillOrderName() {
         purchaseOrderPage.fillOrderNameOrderCreationPage();
     }
 
@@ -72,9 +72,10 @@ public class PurchaseOrderStepdefs {
     @And("save order")
     public void saveOrder() {
         purchaseOrderPage.saveOrder();
+        purchaseOrderPage.verifyOrderByOrderCode();
     }
 
-    @When("add product to order")
+    @And("add product to order")
     public void addProductToOrder() {
         purchaseOrderPage.openOrderProductDescriptionFrame();
         purchaseOrderPage.openProductDescriptionFrame();
@@ -100,7 +101,7 @@ public class PurchaseOrderStepdefs {
         purchaseOrderPage.approveOrder();
     }
 
-    @Then("set order placed")
+    @And("set order placed")
     public void setOrderPlaced() {
         purchaseOrderPage.setOrderPlaced();
     }

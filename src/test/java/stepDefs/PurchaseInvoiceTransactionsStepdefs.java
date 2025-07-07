@@ -14,43 +14,60 @@ public class PurchaseInvoiceTransactionsStepdefs {
         invoiceTransactionsPage.verifyPurchaseInvoiceTransactionPage();
     }
 
-    /*@When("search by order number")
-    public void searchByOrderNumber() {
-        invoiceTransactionsPage.searchByOrderNumber();
-    }*/
-
     @When("search by invoice number")
     public void searchByInvoiceNumber() {
-        invoiceTransactionsPage.searchByInvoiceNumber();
+        invoiceTransactionsPage.fillInvoiceNo();
+        invoiceTransactionsPage.searchForInvoiceNo();
+        invoiceTransactionsPage.verifyInvoiceNo();
     }
 
     @And("open invoice update frame")
     public void openInvoiceUpdateFrame() {
-        invoiceTransactionsPage.openInvoiceUpdateFrame();
+        invoiceTransactionsPage.clickCheckboxForDeclaration();
+        invoiceTransactionsPage.createDeclaration();
     }
 
-    @And("set the counting process")
-    public void completeTheCountingProcess() {
-        invoiceTransactionsPage.completeTheCountingProcess();
+    @And("completing counting process")
+    public void completeCountingProcess() {
+        invoiceTransactionsPage.selectCountingTab();
+        invoiceTransactionsPage.creatingCount();
+        invoiceTransactionsPage.fillDescriptionField();
+        invoiceTransactionsPage.saveCountDescription();
     }
 
     @And("edit counting process")
     public void editCountingProcess() {
         invoiceTransactionsPage.editCountingProcess();
+        invoiceTransactionsPage.sendForCount();
+        invoiceTransactionsPage.copyRequestToApprover();
+        invoiceTransactionsPage.copyingProcess();
+        invoiceTransactionsPage.completingCount();
+        invoiceTransactionsPage.saveUpdateCount();
     }
 
-    @And("exclude shipping and save")
+    @And("exclude out of shipping and save")
     public void excludeShippingAndSave() {
-        invoiceTransactionsPage.excludeShippingAndSave();
+        invoiceTransactionsPage.checkExcludeShipping();
+        invoiceTransactionsPage.saveDeclarationUpdate();
     }
 
     @And("put in stock process")
     public void putInStockProcess() {
-        invoiceTransactionsPage.putInStockProcess();
+        invoiceTransactionsPage.openUpdateDeclarationFrame();
+        invoiceTransactionsPage.openPutInStockFrame();
+        invoiceTransactionsPage.fillCustomsDeclarationNoField();
+        invoiceTransactionsPage.selectCustomsDate();
+        invoiceTransactionsPage.fillDormitoryEntryNo();
+        invoiceTransactionsPage.selectDomesticEntryDate();
+        invoiceTransactionsPage.selectRegimeNo();
+        invoiceTransactionsPage.savePutInStockProcess();
+        invoiceTransactionsPage.saveDeclarationUpdate();
     }
 
     @Then("complete order process")
     public void completeOrderProcess() {
-        invoiceTransactionsPage.completeOrderProcess();
+        invoiceTransactionsPage.openOrderProcessFrame();
+        invoiceTransactionsPage.completeOrder();
+        invoiceTransactionsPage.closeOrderProcessFrame();
     }
 }

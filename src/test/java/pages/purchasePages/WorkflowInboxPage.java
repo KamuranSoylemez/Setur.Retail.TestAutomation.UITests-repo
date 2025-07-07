@@ -31,18 +31,22 @@ public class WorkflowInboxPage extends BasePage {
     public void clickCreateOrderLink() {
         clickElement(purchaseOrderLink);
     }
-
+    /**
+     * Satın Alma dropdown toggle altındaki  Sipariş Sorgulama linkine tıklar
+     */
     public void clickPurchaseOrderSearch() {
-
         clickElement(purchaseOrderSearchLink);
     }
-
+    /**
+     * Satın Alma dropdown toggle altındaki  Satın Alma linkine tıklar
+     */
     public void clickPurchasePriceLink() {
         clickElement(purchasePrice);
     }
-
+    /**
+     * Satın Alma dropdown toggle altındaki  Fatura İşlemleri linkine tıklar
+     */
     public void clickInvoiceTransactions() {
-
         clickElement(purchaseInvoiceTransactions);
     }
 }

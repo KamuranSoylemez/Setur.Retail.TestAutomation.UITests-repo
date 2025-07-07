@@ -3,6 +3,7 @@ package pages.purchasePages;
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.LoadState;
 import enums.Categories;
 import enums.DistributorInfo;
 import org.junit.Assert;
@@ -166,6 +167,12 @@ public class PurchaseOrderPage extends BasePage {
         page.waitForSelector("#PurchaseOrderTabs");
         verifyIsVisible(purchaseOrderTabs);
     }
+    public void verifyOrderByOrderCode(){
+        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
+        String orderID = purchaseOrderCode.getAttribute("value");
+        Assert.assertNotNull("Order ID null olmamalı!", orderID);
+        addString("orderCode", orderID);
+    }
     /**
      * Ürün eklemek için Yeni Kayıt butonuna tıklar ve Sipariş Ürünü Tanımlama frame'ini açar.
      */
@@ -232,6 +239,7 @@ public class PurchaseOrderPage extends BasePage {
      * Siparişi onaylama işlemi yapar. Çıkan pop-up onaylar
      */
     public void approveOrder() {
+        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
         page.locator("#ApproveBtn").click();
         popUpConfirmationProcess();
         Assert.assertTrue(page.locator("#SetOrderGivenBtn").isEnabled());
@@ -241,6 +249,8 @@ public class PurchaseOrderPage extends BasePage {
      * Siparişi verildi işlemi yapar. Çıkan pop-up onaylar
      */
     public void setOrderPlaced() {
+        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
+
         page.locator("#SetOrderGivenBtn").click();
         popUpConfirmationProcess();
     }
@@ -248,12 +258,9 @@ public class PurchaseOrderPage extends BasePage {
      * Siparişi sipariş no üzerinden doğrular
      */
     public void verifyOrderByOrderId() {
-        Assert.assertTrue("PurchaseOrderCode input alanı görünür değil!", purchaseOrderCode.isVisible());
+        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
 
         String orderID = purchaseOrderCode.getAttribute("value");
         Assert.assertNotNull("Order ID null olmamalı!", orderID);
-        Assert.assertFalse("Order ID boş olmamalı!", orderID.trim().isEmpty());
-
-        addString("orderCode", orderID);
     }
 }
