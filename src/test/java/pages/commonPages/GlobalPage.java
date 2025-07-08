@@ -12,7 +12,7 @@ public class GlobalPage extends BasePage {
     PurchaseOrderSearchStepdefs searchStepdefs = new PurchaseOrderSearchStepdefs();
 
     /**
-     * https://dfs-retail-ui-staging.azurewebsites.net/CustomerManagement/ Login sayfasını açar
+     * https://dfs-retail-ui-staging.azurewebsites.net/CustomerManagement/Login sayfasını açar
      */
     public void navigateToHomePage() {
         page.navigate(ConfigDataReader.getConfig("baseUrl"));

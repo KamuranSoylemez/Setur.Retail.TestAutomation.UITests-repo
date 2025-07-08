@@ -98,6 +98,8 @@ Feature: Purchase Create Order Page
     Then verify purchase price page
     When new record purchase price
     And create purchase price for defined product
+    And select defined product
+    And fill purchase price for defined product
     Then search defined product and verify amount
 
 
@@ -105,5 +107,8 @@ Feature: Purchase Create Order Page
     And click purchase price link
     Then verify purchase price page
     When new record purchase price
-    And create purchase price for undefined product
+    And select purchase price for undefined product
+    And select distributor company
+    And select undefined product manufacturer company
+    And fill purchase price for undefined product
     Then search undefined product and verify amount

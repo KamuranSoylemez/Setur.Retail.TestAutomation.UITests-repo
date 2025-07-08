@@ -3,6 +3,8 @@ package pages.purchasePages;
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.LoadState;
+import enums.DistributorInfo;
 import org.junit.Assert;
 import pages.commonPages.BasePage;
 
@@ -15,138 +17,201 @@ public class PurchasePricePage extends BasePage {
     Locator priceFrameName = page.locator("#SeturModalWin_wnd_title");
     FrameLocator undefinedDistributorFirm = getFrameByDialogTitle("Firma Tanımlama");
 
+
+    /**
+     * Satın Alma Fiyatları sayfasını doğrular.
+     */
     public void verifyPurchasePricePage() {
         verifyTextElementUseTrim("Satınalma Fiyatları",pageTitle);
     }
 
-    // Yeni Kayıt
+    /**
+     * Satınalma Fiyatları yeni kayıt açar.
+     */
     public void newRecordPurchasePrice() {
         clickElement(newRecord);
     }
 
-    // tanımlı ürün için fiyat oluşturma
-    public void createPurchasePriceForDefinedProduct() {
-
-        purchasePriceFrame.locator("#ProductIdButtonId").click();
-
+    /**
+     * Satınalma Fiyatı Oluştur frame doğrular
+     */
+    public void verifyCreatePurchasePriceFrame(){
+        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
         verifyTextElement("Satınalma Fiyatı Oluştur", priceFrameName);
+    }
 
-        setKendoNumericTextBoxValue(productDefFrame, "#FilterProductId", "209");
-        productDefFrame.locator("#FilterButtonId").click();
-        productDefFrame.locator("td[data-field-name='ProductId'] input[type='button']").click();
+    /**
+     * Ürün Tanımlama frame açar.
+     */
+    public void openProductDescriptionFrame() {
+        purchasePriceFrame.locator("#ProductIdButtonId").click();
+    }
 
+    /**
+     * Ürün Tanımlama frame doğrular.
+     */
+    public void verifyProductDescFrame(){
         Locator productFrameName = page.locator("span.k-window-title", new Page.LocatorOptions()
                 .setHasText("Ürün Tanımlama"));
         verifyTextElement("Ürün Tanımlama", productFrameName);
+    }
 
-        System.out.println("Tanımlı ürün belirlendi: " +productFrameName.textContent());
+    /**
+     * Ürün Kodu alanını doldurur.
+     */
+    public void fillProductCode(){
+        setKendoNumericTextBoxValue(productDefFrame, "#FilterProductId", "209");
+    }
 
+    /**
+     * Girilen ürün kodunu sorgular.
+     */
+    public void searchProduct(){
+        productDefFrame.locator("#FilterButtonId").click();
+    }
+
+    /**
+     * Sorgu sonucu gelen ürünü seçer. Ürün Tanımlama frame kapanır.
+     */
+    public void selectProduct(){
+        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
+        productDefFrame.locator("td[data-field-name='ProductId'] input[type='button']").click();
+    }
+
+    /**
+     *  Satınalma Fiyatı Oluştur frame başlangıç tarihini doldurur.
+     */
+    public void fillStartDate() {
         String randomDate = generateRandomDate();
         purchasePriceFrame.locator("#StartDate").fill(randomDate);
+    }
 
+    /**
+     * Satınalma Fiyatı doldurur.
+     */
+    public void fillPurchasePrice(){
         int number = generateRandomNumber();
         setKendoNumericTextBoxValue(purchasePriceFrame,"#Amount", String.valueOf(number));
+    }
 
+    /**
+     * Tutar değerini ilerde kullanmak için saklar.
+     */
+    public void getValueOfAmount(){
         String newAmount = purchasePriceFrame.locator("#Amount").getAttribute("aria-valuenow");
-        //purchasePriceFrame.locator("#Amount").evaluate("el => $(el).data('kendoNumericTextBox').value()").toString();
         addString("newAmount",newAmount);
+    }
 
-        System.out.println("Yeni tutar belirlendi: " +newAmount);
-
+    /**
+     * Fiyat Türü seçer.
+     */
+    public void selectPriceType(){
         purchasePriceFrame.locator("span.k-select > span.k-icon.k-i-arrow-s")
                 .nth(1).click();
         purchasePriceFrame.locator("#PriceTypeId_listbox li").nth(1).click();
-        purchasePriceFrame.locator("#Save").click();
-
-        Locator warningPopup = purchasePriceFrame.locator(".ajs-dialog");
-        if (warningPopup.isVisible()){
-            purchasePriceFrame.locator(".ajs-button.ajs-ok").click();
-        }
-
-        System.out.println("Sipariş fiyatı oluşturuldu: " +priceFrameName.textContent());
     }
 
-    // ana ekranda tanımlı ürüne girilen fiyat doğrula
-    public void searchDefinedProductAndVerifyAmount() {
+    /**
+     * Satınalma Fiyatı Oluştur işlemini kaydeder.
+     */
+    public void saveCreatePurchasePrice(){
+        purchasePriceFrame.locator("#Save").click();
+    }
 
+    /**
+     * Ana sayfada Ürün Tanımlam frame açar.
+     */
+    public void openProductDescFrame() {
         page.locator("#FilterProductIdButtonId").click();
+    }
 
-        setKendoNumericTextBoxValue(productDefFrame, "#FilterProductId", "209");
-        productDefFrame.locator("#FilterButtonId").click();
-        productDefFrame.locator("td[data-field-name='ProductId'] input[type='button']").click();
-
+    /**
+     * Ana sayfada ürün sorgular.
+     */
+    public void searchProductInMainPage(){
         page.locator("#FilterButtonId").click();
+    }
 
-        String amount =  getString("newAmount");
+    /**
+     * Satın Alma Fiyatını karşılaştırır.
+     */
+    public void verifyPurchasePriceAmount() {
+        String amount = getString("newAmount"); // örn: "9091"
         Locator mainPageAmount = page.locator("td[data-field-name='Amount']").nth(0);
 
-        Assert.assertEquals(amount+",000000",mainPageAmount.textContent());
-        System.out.println("Yeni Tutar: " +mainPageAmount.textContent());
-
+        String actualText = mainPageAmount.textContent().replace(".", ""); // "9.091,000000" → "9091,000000"
+        Assert.assertEquals(amount + ",000000", actualText);
     }
 
-    // tanımsız ürün için fiyat oluşturma
-    public void createPurchasePriceForUndefinedProduct() {
-
-        verifyTextElement("Satınalma Fiyatı Oluştur", priceFrameName);
-
+    /**
+     * Tamınsız ürün seçer.
+     */
+    public void selectUndefinedProduct() {
         purchasePriceFrame.locator("#no_DefUndefProduct").click();
+    }
+
+    /**
+     * Tanımsız ürün Firma Tanımı frame açar.
+     */
+    public void openCompanyIdentification(){
         purchasePriceFrame.locator("#UndefinedDistributorFirmIdButtonId").click();
-        selectFirmByCode(undefinedDistributorFirm, "JTI", "413");
+    }
 
+    /**
+     * Kategori seçimine göre firma kodu doldurur.
+     * @param distributorInfo DistributorInfo enum klasından istenilen firma kodu
+     */
+    public void fillCompanyCode(DistributorInfo distributorInfo){
+        undefinedDistributorFirm.locator("#FilterFirmCode").fill(distributorInfo.getFirmCode());
+    }
+
+    /**
+     * Firma sorgular.
+     */
+    public void searchCompany(){
+        undefinedDistributorFirm.locator("#FilterButtonId").click();
+    }
+
+    /**
+     * Sorgulanan firmayı seçer.
+     */
+    public void selectCompany(){
+        undefinedDistributorFirm.locator("input[type='button'][name*='FirmGrid']").click();
+    }
+
+    /**
+     * Tanımsız ürün için üretici firma Firma tanımlama frame açar.
+     */
+    public void openManufacturerCompany(){
         purchasePriceFrame.locator("#UndefinedProducerFirmIdButtonId").click();
-        selectFirmByCode(undefinedDistributorFirm, "JTI", "413");
+    }
+    /**
+     * Kategori seçimine göre firma kodu doldurur.
+     * @param distributorInfo DistributorInfo enum sınıfında istenilen firma kodu
+     */
+    public void fillManufacturerCompany(DistributorInfo distributorInfo){
+        undefinedDistributorFirm.locator("#FilterFirmCode").fill(distributorInfo.getFirmCode());
+    }
 
+    /**
+     * Barkod numarası üretir.
+     */
+    public void fillUnidentifiedProductBarcode() {
         String randomNumber = generateBarcodeNumber();
         purchasePriceFrame.locator("#UndefinedBarcode").fill(randomNumber);
+    }
 
-        String randomDate = generateRandomDate();
-        purchasePriceFrame.locator("#StartDate").fill(randomDate);
-
-        int randNumber = generateRandomNumber();
-        setKendoNumericTextBoxValue(purchasePriceFrame,"#Amount", String.valueOf(randNumber));
-
-        String newProductAmount = purchasePriceFrame.locator("#Amount")
-                .getAttribute("aria-valuenow");
-        //purchasePriceFrame.locator("#Amount").evaluate("el => $(el).data('kendoNumericTextBox').value()").toString();
-        addString("newProAmount",newProductAmount);
-
-        System.out.println("Yeni tutar oluşturuldu: " +newProductAmount);
-
+    /**
+     * KDV tutarı doldurur.
+     */
+    public void setVatAmount(){
         setKendoNumericTextBoxValue(purchasePriceFrame,"#VatAmount","7");
-        purchasePriceFrame.locator("span.k-select > span.k-icon.k-i-arrow-s")
-                .nth(1).click();
-        purchasePriceFrame.locator("#PriceTypeId_listbox li").nth(1).click();
-        purchasePriceFrame.locator("#Save").click();
-
-        Locator warningPopup = purchasePriceFrame.locator(".ajs-dialog");
-        if (warningPopup.isVisible()){
-            purchasePriceFrame.locator(".ajs-button.ajs-ok").click();
-        }
-
-        System.out.println("Sipariş fiyatı oluştur işlemi tamamlandı: " +priceFrameName.textContent());
-
     }
 
-    // ana ekranda tanımsız ürüne girilen fiyat doğrula
-    public void searchUndefinedProductAndVerifyAmount() {
-
+    /**
+     * Ana sayfada firma tanımlama frame açar.
+     */
+    public void openCompanyIdentificationFrame() {
         page.locator("#FilterDistributorFirmIdButtonId").click();
-        selectFirmByCode(undefinedDistributorFirm, "JTI", "413");
-        page.locator("#FilterButtonId").click();
-
-        String amount =  getString("newProAmount");
-        Locator mainPageProductAmount = page.locator("td[data-field-name='Amount']").nth(0);
-
-        Assert.assertEquals(amount+",000000",mainPageProductAmount.textContent());
-        System.out.println("Yeni Tutar: " +mainPageProductAmount.textContent());
-
     }
-
-    public void selectFirmByCode(FrameLocator frame, String firmCode, String buttonValue) {
-        frame.locator("#FilterFirmCode").fill(firmCode);
-        frame.locator("#FilterButtonId").click();
-        frame.locator("input[type='button'][value='" + buttonValue + "']").click();
-    }
-
 }

@@ -15,11 +15,11 @@ Feature: Login Page
 
     Examples: User and Pass
       | username         | password        |
-      | USER             | PASS            |
+      | USERNAME         | PASSWORD        |
       |                  |                 |
-      | ADMIN            | 1234            |
+      | ADMINUSER        | 1234567         |
       | KAMURAN_SÖYLEMEZ |                 |
       |                  | correctPassword |
       | KAMURAN_SÖYLEMEZ | xxx             |
-      | xxx              | correctPassword |
+      | xxxxxx           | correctPassword |
 
