@@ -4,6 +4,7 @@ import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.LoadState;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import enums.Categories;
 import enums.DistributorInfo;
 import org.junit.Assert;
@@ -11,7 +12,7 @@ import pages.commonPages.BasePage;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class PurchaseOrderPage extends BasePage {
 
@@ -23,17 +24,14 @@ public class PurchaseOrderPage extends BasePage {
     Locator selectedCategoryDropdown = page.locator("span.k-select > span.k-icon.k-i-arrow-s");
     Locator clickResponsibleUserField = page.locator(".k-multiselect-wrap.k-floatwrap");
     Locator selectResponsibleUser = page.locator("#FirmResponsibleUserId_option_selected");
-    Locator distributionTypeSelectionField = page.locator(".k-dropdown-wrap.k-state-default");
     Locator clickDistributionTargetType = page.locator("#DistributionTargetTypeId_listbox li");
     Locator entryWarehouseSearchButton = page.locator("#EntryWarehouseIdButtonId");
-    Locator clickBillingAddressField = page.locator(".k-dropdown-wrap.k-state-default");
     Locator selectBillingAddress = page.locator("#CompanyAddressId_listbox li");
-    Locator clickDeliveryAddressField = page.locator(".k-dropdown-wrap.k-state-default");
     Locator selectDeliveryAddress = page.locator("#WarehouseAddressId_listbox li");
     Locator checkCanAutoCompleteToNo = page.locator("#no_CanAutoComplete");
     Locator saveOrderBtn = page.locator("#SaveBtn");
     FrameLocator frameLocator = page.frameLocator("iframe.k-content-frame");
-    FrameLocator productFrame = getFrameByDialogTitle("Sipariş Ürünü Tanımlama");
+    FrameLocator orderProductIdentificationFrame = getFrameByDialogTitle("Sipariş Ürünü Tanımlama");
     Locator purchaseOrderTabs = page.locator("#PurchaseOrderTabs");
     Locator newProductBtn = page.locator("a.k-grid-PurchaseOrderProductGridIdAddNew");
     FrameLocator productDescriptionFrame = getFrameByDialogTitle("Ürün Tanımlama");
@@ -45,13 +43,16 @@ public class PurchaseOrderPage extends BasePage {
     public void verifyCreateOrderPage() {
         verifyTextElementUseTrim("Sipariş İşlemleri", pageTitle);
     }
+
     /**
      * Sipariş Oluşturma sayfasında Sipariş Tarihi doldurur.
      */
     public void fillOrderCreationDate() {
         clickElement(calendar.nth(0));
-        selectToday.click(new Locator.ClickOptions().setForce(true)); //kendo component nedeni ile SimpleDateFormat işe yaramıyor!!!
+        selectToday.click(new Locator.ClickOptions().setForce(true));
+        //kendo component nedeni ile SimpleDateFormat işe yaramıyor!!!
     }
+
     /**
      * Sipariş Oluşturma sayfasında Sipariş Adı doldurur.
      */
@@ -60,24 +61,32 @@ public class PurchaseOrderPage extends BasePage {
         String orderName = "KMRN_TST_AUTO_" + timestamp;
         purchaseOrderName.fill(orderName);
     }
+
+    /**
+     * Kategori listesini açar.
+     */
+    public void openCategoryList(){
+        clickElement(selectedCategoryDropdown.nth(0));
+    }
+
     /**
      * Sipariş Oluşturma sayfasında Kategori alanını seçer.
      */
     public void selectCategoryFromList(String category) {
-        clickElement(selectedCategoryDropdown.nth(0));
-
         Locator selectCategory = page.locator("#CategoryId_listbox li[role='option'].k-item",
                 new Page.LocatorOptions().setHasText(category));
         selectCategory.click(new Locator.ClickOptions().setForce(true));
 
         verifyTextElementUseTrim(category, selectCategory);
     }
+
     /**
      * Sipariş Oluşturma sayfasında Dağıtıcı Firma frame'ini açar.
      */
     public void openCompanyIdentificationFrame() {
         clickElement(clickCompanyIdentificationSearchButton);
     }
+
     /**
      * Firma Tanımlama frame'inde Firma Kodu alanını doldurur.
      */
@@ -88,76 +97,125 @@ public class PurchaseOrderPage extends BasePage {
             frameLocator.locator("#FilterFirmCode").fill(distributorInfo.getFirmCode());
         }
     }
+
     /**
-     * Framelerde sorgula butonuna tıklar.
+     * Firma Tanımlama frame sorgula butonuna tıklar.
      */
     public void clickFilterButtonId(){
         frameLocator.locator("#FilterButtonId").click();
     }
+
     /**
      * Firma Tanımlama frame'inde sorgu sonucunda gelen firmayı seçer.
      */
     public void selectDistributorCompany(){
         frameLocator.locator("input[name^='FirmGridId']").nth(0).click();
     }
+
+    /**
+     * Sipariş Oluşturma sayfasında Firma İlgili Kişi  tıklar.
+     */
+    public void clickCompanyContactPerson(){
+        clickElement(clickResponsibleUserField.nth(3));
+    }
+
     /**
      * Sipariş Oluşturma sayfasında Firma İlgili Kişi  seçer.
      */
     public void selectCompanyContactPerson() {
-
-        clickElement(clickResponsibleUserField.nth(3));
         page.waitForSelector("#FirmResponsibleUserId_listbox");
         clickElement(selectResponsibleUser.nth(0));
     }
+
+    /**
+     * Sipariş Oluşturma sayfasında Dağılım Hedef Tipi açar.
+     */
+    public void openDistributionTargetType(){
+
+        selectedCategoryDropdown.nth(1).click(new Locator.ClickOptions().setForce(true));
+    }
+
     /**
      * Sipariş Oluşturma sayfasında Dağılım Hedef Tipi seçer.
      */
     public void selectDistributionTargetType() {
-        distributionTypeSelectionField.nth(1).click(new Locator.ClickOptions().setForce(true));
 
         page.waitForSelector("#DistributionTargetTypeId_listbox li");
         clickElement(clickDistributionTargetType.nth(1));
     }
+
     /**
      * Sipariş Oluşturma sayfasında Giriş Antrepo frame'ini açar.
      */
     public void openWarehouseDefinitionFrame() {
         clickElement(entryWarehouseSearchButton);
     }
+
     /**
-     * Antrepo Tanımlama frame'inde Antrepo Kodu alanını doldurur.
+     * Antrepo Tanımlama frame'inde Setur Bölgesi listesini açar.
      */
-    public void fillWarehouseCodeField(){
-        frameLocator.locator("#FilterWarehouseCode").fill("639");
+    public void openSeturRegionFields(){
+        frameLocator.locator("span.k-select > span.k-icon.k-i-arrow-s")
+                .nth(0).click();
     }
+
+    /**
+     * Antrepo Tanımlama frame Setur Bölgesi seçer.
+     * @param region setur bölgesi
+     */
+    public void selectSeturRegionFromList(String region) {
+        Locator allItems = frameLocator.locator("ul#FilterSeturRegionID_listbox li");
+        Locator targetItem = allItems.filter(new Locator.FilterOptions().setHasText(region));
+        targetItem.click(new Locator.ClickOptions().setForce(true));
+
+        verifyTextElementUseTrim(region, targetItem);
+    }
+
     /**
      * Antrepo Tanımlama frame'inde sorgu sonucunda gelen antrepoyu seçer.
      */
     public void selectWarehouse(){
-        frameLocator.locator("//input[starts-with(@name, 'WarehouseGridId')]").nth(0).click();
+        frameLocator.locator("input[name^='WarehouseGridId']").nth(0).click();
     }
+
+    /**
+     * Sipariş Oluşturma sayfasında Fatura Adresini açar.
+     */
+    public void openInvoiceAddress(){
+        clickElement(selectedCategoryDropdown.nth(3));
+    }
+
     /**
      * Sipariş Oluşturma sayfasında Fatura Adresini seçer.
      */
     public void selectInvoiceAddress() {
-        clickElement(clickBillingAddressField.nth(3));
         page.waitForSelector("#CompanyAddressId_listbox li");
         clickElement(selectBillingAddress.nth(1));
     }
+
+    /**
+     * Sipariş Oluşturma sayfasında Teslimat Adresini açar.
+     */
+    public void openDeliveryAddress(){
+        clickElement(selectedCategoryDropdown.nth(4));
+
+    }
+
     /**
      * Sipariş Oluşturma sayfasında Teslimat Adresini seçer.
      */
     public void selectDeliveryAddress() {
-        clickElement(clickDeliveryAddressField.nth(4));
         page.waitForSelector("#WarehouseAddressId_listbox li");
         clickElement(selectDeliveryAddress.nth(1));
     }
+
     /**
      * Sipariş Oluşturma sayfasında Sipariş Otomatik Olarak Tamamlansın mı? Hayır seçer.
      */
     public void checkOrderCompleteAutomatically() {
         clickElement(checkCanAutoCompleteToNo);
     }
+
     /**
      * Sipariş Oluşturma sayfasında siparişi kaydeder.
      */
@@ -167,66 +225,133 @@ public class PurchaseOrderPage extends BasePage {
         page.waitForSelector("#PurchaseOrderTabs");
         verifyIsVisible(purchaseOrderTabs);
     }
+
+    /**
+     * Sipariş Numarasını doğrular.
+     */
     public void verifyOrderByOrderCode(){
         page.waitForLoadState(LoadState.DOMCONTENTLOADED);
         String orderID = purchaseOrderCode.getAttribute("value");
         Assert.assertNotNull("Order ID null olmamalı!", orderID);
         addString("orderCode", orderID);
     }
+
     /**
      * Ürün eklemek için Yeni Kayıt butonuna tıklar ve Sipariş Ürünü Tanımlama frame'ini açar.
      */
     public void openOrderProductDescriptionFrame() {
         clickElement(newProductBtn);
     }
+
     /**
      * Ürün eklemek için Ürün Tanımlama frame'ini açar.
      */
     public void openProductDescriptionFrame(){
-        productFrame.locator("#ProductIdButtonId").click();
+        //orderProductIdentificationFrame.locator("#ProductIdButtonId").click();
+        frameLocator.locator("#ProductIdButtonId").click();
     }
+
     /**
-     * Ürün Tanımlama frame'inde ürün kodu girer.
+     * Ürün Tanımlama frame'inde Ürün Adını alır ve kaydeder.
      */
-    public void enterProductCode(){
-        setKendoNumericTextBoxValue(productDescriptionFrame, "#FilterProductId", "1107");
+    public void getProductName() {
+        Locator productNameLocator = productDescriptionFrame.
+                locator("td[data-field-name='ProductNameLong']").nth(0);
+
+        productNameLocator.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        String productName = productNameLocator.textContent().trim();
+        System.out.println("Ürün adı: " + productName);
+        addString("productName", productName);
     }
-    /**
-     * Ürün Tanımlama frame'inde sorgula butonuna basar.
-     */
-    public void clickFilterButtonProductDescFrame(){
-        productDescriptionFrame.locator("#FilterButtonId").click();
-    }
+
     /**
      * Ürün Tanımlama frame'inde sorgulama sonucunda gelen ürünü seçer.
      */
     public void selectProduct(){
-        productDescriptionFrame.locator("//input[starts-with(@name, 'ProductGridId')]").nth(0).click();
+        //frame içinde frame (nested iframe) bu nedenle frameLocator kullanılamaz
+        productDescriptionFrame.locator("input[name^='ProductGrid']").nth(0).click();
     }
+
+    /**
+     * Sipariş Ürünü Tanımlama frame Satın Alma Para Birimi değerini alır.
+     */
+    public void getCurrencyCodes() {
+        String productCurrency = (String) orderProductIdentificationFrame.locator("#ProductCurrencyCode")
+                .evaluate("el => el.value || el.placeholder || el.textContent || el.innerText");
+        addString("productCurrency" , productCurrency);
+    }
+
+    /**
+     * Sipariş Ürünü Tanımlama Sipariş- Ürün para birimleri uyuşmuyorsa frame kapatır.
+     */
+    public boolean ifCurrencyNotMatchCloseFrame() {
+        String currencyCode = orderProductIdentificationFrame.locator("#CurrencyCode").inputValue();
+        String productCurrency = getString("productCurrency");
+
+        if (!currencyCode.equals(productCurrency)) {
+            page.locator(".k-window-actions .k-window-action").nth(0).click();
+            return true; // eşleşmiyor
+        }
+        return false; // eşleşiyor
+    }
+
+    /**
+     * Sipariş Para Birimi listesini açar.
+     */
+    public void openOrderCurrencyCodes() {
+        Locator currencyDropdownToggle = page.locator("#CurrencyCode")
+                .locator("xpath=../..")
+                .locator("span.k-select");
+
+        currencyDropdownToggle.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        currencyDropdownToggle.scrollIntoViewIfNeeded();
+        currencyDropdownToggle.click();
+    }
+
+    /**
+     * Ürüne uyumlu olan para birimini seçer.
+     */
+    public void selectCurrencyCode() {
+        String productCurrency = getString("productCurrency");
+
+        page.locator("ul#CurrencyCode_listbox").waitFor(new Locator.WaitForOptions()
+                .setState(WaitForSelectorState.VISIBLE));
+        Locator currencyOption = page.locator("ul#CurrencyCode_listbox li:text-is('" + productCurrency + "')");
+        currencyOption.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        currencyOption.scrollIntoViewIfNeeded();
+        currencyOption.click(new Locator.ClickOptions().setForce(true));
+
+        verifyTextElementUseTrim(productCurrency, currencyOption);
+    }
+
+    public void confirmPopup() {
+        page.locator(".ajs-button.ajs-ok").click();
+    }
+
     /**
      * Sipariş Ürünü Tanımlama frame'inde Sipariş Adedi girer.
      */
     public void enterQuantityForProduct(){
-        setKendoNumericTextBoxValue(productFrame,"#Quantity","2");
-        productFrame.locator("#Quantity").press("Enter");
+        int randomQuantity = ThreadLocalRandom.current().nextInt(1, 21);
+        setKendoNumericTextBoxValue(orderProductIdentificationFrame,"#Quantity",
+                String.valueOf(randomQuantity));
+        orderProductIdentificationFrame.locator("#Quantity").press("Enter");
     }
+
     /**
      * Sipariş Ürünü Tanımlama frame'inde Kaydet butonuna tıklar.
      */
     public void saveOrderProductsDescription(){
-        productFrame.locator("#SaveBtn").click();
+        orderProductIdentificationFrame.locator("#SaveBtn").click();
     }
+
     /**
-     * Siparişe eklenen ürün/ürünleri verify eder.
+     * Siparişe eklenen ürünü verify eder.
      */
     public void verifyProducts() {
-
-        page.waitForSelector("//td[@data-field-name='ProductName']");
-        List<Locator> items = page.locator("//td[@data-field-name='ProductName']").all();
-
-        for (Locator item : items) {
-            verifyTextElementUseTrim("CACHAREL W ANAIS EDT 50ML", item);
-        }
+        Locator tableProduct = page.locator("td[data-field-name='ProductName']");
+        String productName = getString("productName");
+        verifyTextElementUseTrim(productName , tableProduct);
     }
     /**
      * Siparişi onaya gönderme işlemi yapar. Çıkan pop-up onaylar
@@ -263,4 +388,5 @@ public class PurchaseOrderPage extends BasePage {
         String orderID = purchaseOrderCode.getAttribute("value");
         Assert.assertNotNull("Order ID null olmamalı!", orderID);
     }
+
 }

@@ -68,7 +68,6 @@ public class PurchaseOrderSearchStepdefs {
         orderSearchPage.saveInvoiceInInvoiceUpdateFrame();
         orderSearchPage.checkIfInvoiceIsCompleted();
     }
-
     @Then("completing and approving invoice")
     public void invoiceCompletionAndApproval() {
         orderSearchPage.storeInvoiceNoForInvoiceTransaction();

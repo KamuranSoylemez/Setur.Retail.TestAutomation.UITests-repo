@@ -9,27 +9,27 @@ Feature: Purchase Create Order Page
 
   @orderCreationTest
   Scenario Outline: Order Creation Test
-      And click on the purchase order creation link
-      Then verify order creation page
-      When fill order date
-      And fill order name
-      And select category from "<category>" list
-      And set distributor company by category "<category>"
-      And select company contact person
-      And select distribution target type
-      And select warehouse where the order will enter
-      And select invoice address
-      And select delivery address
-      And complete order automatically mark checkbox to no
-      And save order
-      When add product to order
-      Then verify products added to order
-      And sending for approval process
-      And approve order process
-      And set order placed
-      Then verify order by order id
+    When click on the purchase order creation link
+    Then verify order creation page
+    And fill order date
+    And fill order name
+    And select category from "<category>" list
+    And set distributor company by "<category>"
+    And select company contact person
+    And select distribution target type
+    And select warehouse where the order will enter "KAPIKULE-SANAL"
+    And select invoice address
+    And select delivery address
+    And complete order automatically mark checkbox to no
+    And save order
+    And add product to order
+    Then verify products added to order
+    And sending for approval process
+    And approve order process
+    And set order placed
+    Then verify order by order id
 
-      Examples: Categories
+     Examples: Categories
         | category        |
         | PARFÜM-KOZMETİK |
         | GIDA            |
@@ -44,20 +44,20 @@ Feature: Purchase Create Order Page
 
   @createOrderForOneCategory
   Scenario: Create Order For One Category
-   And click on the purchase order creation link
+   When click on the purchase order creation link
    Then verify order creation page
-   When fill order date
+   And fill order date
    And fill order name
    And select category from "PARFÜM-KOZMETİK" list
-   And set distributor company by category "PARFÜM-KOZMETİK"
+   And set distributor company by "PARFÜM-KOZMETİK"
    And select company contact person
    And select distribution target type
-   And select warehouse where the order will enter
+   And select warehouse where the order will enter "KAPIKULE-SANAL"
    And select invoice address
    And select delivery address
    And complete order automatically mark checkbox to no
    And save order
-   When add product to order
+   And add product to order
    Then verify products added to order
    And sending for approval process
    And approve order process
@@ -82,11 +82,11 @@ Feature: Purchase Create Order Page
   @invoiceCompletionProcess
   Scenario: Invoice Completion Process
    When order placed status by "PARFÜM-KOZMETİK"
-   When set proforma and invoice
+   And set proforma and invoice
    And click purchasing dropdown toggle
    And click invoice transactions link
    Then verify purchase invoice transaction page
-   When search by invoice number
+   And search by invoice number
    And open invoice update frame
    And completing counting process
    And edit counting process
@@ -96,9 +96,9 @@ Feature: Purchase Create Order Page
 
   @createNewPurchasePriceForDefinedProduct
   Scenario: Create New Purchase Price For Defined Product
-    And click purchase price link
+    When click purchase price link
     Then verify purchase price page
-    When new record purchase price
+    And new record purchase price
     And create purchase price for defined product
     And select defined product
     And fill purchase price for defined product
@@ -106,9 +106,9 @@ Feature: Purchase Create Order Page
 
   @createNewPurchasePriceForUndefinedProduct
   Scenario: Create New Purchase Price For Undefined Product
-   And click purchase price link
+   When click purchase price link
    Then verify purchase price page
-   When new record purchase price
+   And new record purchase price
    And select purchase price for undefined product
    And select distributor company
    And select undefined product manufacturer company

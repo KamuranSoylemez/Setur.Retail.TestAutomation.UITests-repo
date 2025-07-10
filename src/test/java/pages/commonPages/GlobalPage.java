@@ -22,7 +22,7 @@ public class GlobalPage extends BasePage {
      * diğer işlemler için sipariş hazırlama kısmı.
      * @param category sipariş hazırlanırken kategory değerini alır.
      */
-    public void orderPlacedStatus(String category) {
+    public void orderPlacedStatus(String category, String region) {
         workflowInboxStepdefs.clickCreateOrderLink();
         orderStepdefs.verifyCreateOrderPage();
         orderStepdefs.fillOrderCreationDate();
@@ -31,7 +31,7 @@ public class GlobalPage extends BasePage {
         orderStepdefs.distributorCompanySelection(category);
         orderStepdefs.selectCompanyContactPerson();
         orderStepdefs.selectDistributionTargetType();
-        orderStepdefs.selectEntryWarehouse();
+        orderStepdefs.selectEntryWarehouse(region);
         orderStepdefs.selectInvoiceAddress();
         orderStepdefs.selectDeliveryAddress();
         orderStepdefs.checkOrderCompleteAutomatically();
