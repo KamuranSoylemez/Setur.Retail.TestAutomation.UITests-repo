@@ -21,7 +21,7 @@ public class PurchaseOrderPage extends BasePage {
     Locator selectToday = page.locator(".k-link.k-nav-today");
     Locator purchaseOrderName = page.locator("#PurchaseOrderName");
     Locator clickCompanyIdentificationSearchButton = page.locator("#FirmIdButtonId");
-    Locator selectedCategoryDropdown = page.locator("span.k-select > span.k-icon.k-i-arrow-s");
+    Locator clickDropdownToggle = page.locator("span.k-select > span.k-icon.k-i-arrow-s");
     Locator clickResponsibleUserField = page.locator(".k-multiselect-wrap.k-floatwrap");
     Locator selectResponsibleUser = page.locator("#FirmResponsibleUserId_option_selected");
     Locator clickDistributionTargetType = page.locator("#DistributionTargetTypeId_listbox li");
@@ -66,7 +66,7 @@ public class PurchaseOrderPage extends BasePage {
      * Kategori listesini açar.
      */
     public void openCategoryList(){
-        clickElement(selectedCategoryDropdown.nth(0));
+        clickElement(clickDropdownToggle.nth(0));
     }
 
     /**
@@ -132,7 +132,7 @@ public class PurchaseOrderPage extends BasePage {
      */
     public void openDistributionTargetType(){
 
-        selectedCategoryDropdown.nth(1).click(new Locator.ClickOptions().setForce(true));
+        clickDropdownToggle.nth(1).click(new Locator.ClickOptions().setForce(true));
     }
 
     /**
@@ -182,7 +182,7 @@ public class PurchaseOrderPage extends BasePage {
      * Sipariş Oluşturma sayfasında Fatura Adresini açar.
      */
     public void openInvoiceAddress(){
-        clickElement(selectedCategoryDropdown.nth(3));
+        clickElement(clickDropdownToggle.nth(3));
     }
 
     /**
@@ -197,7 +197,7 @@ public class PurchaseOrderPage extends BasePage {
      * Sipariş Oluşturma sayfasında Teslimat Adresini açar.
      */
     public void openDeliveryAddress(){
-        clickElement(selectedCategoryDropdown.nth(4));
+        clickElement(clickDropdownToggle.nth(4));
 
     }
 
@@ -276,10 +276,15 @@ public class PurchaseOrderPage extends BasePage {
      * Sipariş Ürünü Tanımlama frame Satın Alma Para Birimi değerini alır.
      */
     public void getCurrencyCodes() {
-        String productCurrency = (String) orderProductIdentificationFrame.locator("#ProductCurrencyCode")
+        Locator currencyLocator = orderProductIdentificationFrame.locator("#ProductCurrencyCode");
+        currencyLocator.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+
+        String productCurrency = (String) currencyLocator
                 .evaluate("el => el.value || el.placeholder || el.textContent || el.innerText");
-        addString("productCurrency" , productCurrency);
+
+        addString("productCurrency", productCurrency);
     }
+
 
     /**
      * Sipariş Ürünü Tanımlama Sipariş- Ürün para birimleri uyuşmuyorsa frame kapatır.
@@ -299,13 +304,10 @@ public class PurchaseOrderPage extends BasePage {
      * Sipariş Para Birimi listesini açar.
      */
     public void openOrderCurrencyCodes() {
-        Locator currencyDropdownToggle = page.locator("#CurrencyCode")
-                .locator("xpath=../..")
-                .locator("span.k-select");
+        Locator currencyDropdownToggle = page.locator("span.k-select > span.k-icon.k-i-arrow-s");
 
-        currencyDropdownToggle.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
-        currencyDropdownToggle.scrollIntoViewIfNeeded();
-        currencyDropdownToggle.click();
+        currencyDropdownToggle.nth(7).hover();
+        currencyDropdownToggle.nth(7).click();
     }
 
     /**
@@ -314,15 +316,13 @@ public class PurchaseOrderPage extends BasePage {
     public void selectCurrencyCode() {
         String productCurrency = getString("productCurrency");
 
-        page.locator("ul#CurrencyCode_listbox").waitFor(new Locator.WaitForOptions()
-                .setState(WaitForSelectorState.VISIBLE));
-        Locator currencyOption = page.locator("ul#CurrencyCode_listbox li:text-is('" + productCurrency + "')");
-        currencyOption.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
-        currencyOption.scrollIntoViewIfNeeded();
-        currencyOption.click(new Locator.ClickOptions().setForce(true));
+        Locator currencyOption = page.locator("ul#CurrencyCode_listbox li",
+                new Page.LocatorOptions().setHasText(productCurrency));
+        currencyOption.click(new Locator.ClickOptions().setTimeout(3000).setForce(true));
 
         verifyTextElementUseTrim(productCurrency, currencyOption);
     }
+
 
     public void confirmPopup() {
         page.locator(".ajs-button.ajs-ok").click();

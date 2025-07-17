@@ -8,7 +8,7 @@ TODO: Guide users through getting your code up and running on their own system. 
 3.	Latest releases
 4.	API references
 
-# Build and Tes
+# Build and Test
 mvn clean test \
 -DcredentialsDir=/Users/gini/Documents/UI_Automation_Files \
 -Denv=staging \
