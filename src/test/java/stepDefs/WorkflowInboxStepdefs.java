@@ -2,6 +2,7 @@ package stepDefs;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import pages.purchasePages.WorkflowInboxPage;
 
 public class WorkflowInboxStepdefs {
@@ -18,7 +19,7 @@ public class WorkflowInboxStepdefs {
         inboxPage.clickPurchasingDropdownToggle();
     }
 
-    @And("click on the purchase order creation link")
+    @And("click purchase order creation link")
     public void clickCreateOrderLink() {
         inboxPage.clickCreateOrderLink();
     }
@@ -36,5 +37,15 @@ public class WorkflowInboxStepdefs {
     @And("click invoice transactions link")
     public void clickInvoiceTransactions() {
         inboxPage.clickInvoiceTransactions();
+    }
+
+    @And("click retail definition dropdown toggle")
+    public void clickRetailDefinitionDropdownToggle() {
+        inboxPage.clickRetailDefinitionDropdownToggle();
+    }
+
+    @When("click product definition link")
+    public void clickProductDefinitionLink() {
+        inboxPage.clickProductDefinitionLink();
     }
 }
