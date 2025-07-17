@@ -1,4 +1,4 @@
-Feature: Purchase Create Order Page
+Feature: Purchasing Page
 
   Background: Navigate Login Page
     Given navigate to login page
@@ -9,7 +9,7 @@ Feature: Purchase Create Order Page
 
   @orderCreationTest
   Scenario Outline: Order Creation Test
-    When click on the purchase order creation link
+    When click purchase order creation link
     Then verify order creation page
     And fill order date
     And fill order name
@@ -44,7 +44,7 @@ Feature: Purchase Create Order Page
 
   @createOrderForOneCategory
   Scenario: Create Order For One Category
-   When click on the purchase order creation link
+   When click purchase order creation link
    Then verify order creation page
    And fill order date
    And fill order name
