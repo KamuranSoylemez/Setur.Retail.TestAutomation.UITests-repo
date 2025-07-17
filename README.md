@@ -10,16 +10,19 @@ TODO: Guide users through getting your code up and running on their own system. 
 
 # Build and Test
 mvn clean test \
--Dtest=TestRunner \
 -DcredentialsDir=/Users/gini/Documents/UI_Automation_Files \
--Denv=staging
+-Denv=staging \
+-Dtest=TestRunner \
+"-Dcucumber.features=src/test/resources/login.feature" \
+"-Dcucumber.glue=stepDefs" \
+"-Dcucumber.filter.tags=@unsuccessfulLogin"
 
 **Use your local path that contains credentials yaml file**
 
-**To run unique feature:**
-mvn clean test -DcredentialsDir=/Users/gini/Documents/UI_Automation_Files 
--Denv=staging -Dtest=TestRunner  -Dcucumber.options="--glue stepDefs src/test/resources/login.feature"
-
+**To run one scenario in any feature:**
+mvn clean test -DcredentialsDir=/Users/gini/Documents/UI_Automation_Files
+-Denv=staging -Dtest=TestRunner "-Dcucumber.features=src/test/resources/login.feature"
+"-Dcucumber.glue=stepDefs" "-Dcucumber.filter.tags=@unsuccessfulLogin"
 
 
 # Contribute

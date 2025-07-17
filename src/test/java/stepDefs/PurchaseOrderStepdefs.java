@@ -7,85 +7,131 @@ import pages.purchasePages.PurchaseOrderPage;
 
 public class PurchaseOrderStepdefs {
 
-    PurchaseOrderPage orderPage = new PurchaseOrderPage();
+    PurchaseOrderPage purchaseOrderPage = new PurchaseOrderPage();
 
-    @Then("verify PurchaseOrder page")
-    public void verifyPurchaseOrderPage() {
-        orderPage.verifyPurchaseOrderPage();
+    @Then("verify order creation page")
+    public void verifyCreateOrderPage() {
+        purchaseOrderPage.verifyCreateOrderPage();
     }
 
-    @And("fill order date")
-    public void fillOrderDate() {
-        orderPage.fillOrderDate();
+    @When("fill order date")
+    public void fillOrderCreationDate() {
+        purchaseOrderPage.fillOrderCreationDate();
     }
 
-    @And("select {string} from list")
+    @When("fill order name")
+    public void fillOrderName() {
+        purchaseOrderPage.fillOrderNameOrderCreationPage();
+    }
+
+    @And("select category from {string} list")
     public void selectCategoryFromList(String category) {
-        orderPage.selectCategoryFromList(category);
+        purchaseOrderPage.openCategoryList();
+        purchaseOrderPage.selectCategoryFromList(category);
     }
 
-    @And("set distributor company by category")
-    public void setDistributorCompany() {
-        orderPage.setDistributorCompany();
+    @And("set distributor company by {string}")
+    public void distributorCompanySelection(String category) {
+        purchaseOrderPage.openCompanyIdentificationFrame();
+        purchaseOrderPage.fillCompanyCode(category);
+        purchaseOrderPage.clickFilterButtonId();
+        purchaseOrderPage.selectDistributorCompany();
     }
 
-    @And("select firm responsible user")
-    public void selectFirmResponsibleUser() {
-        orderPage.selectFirmResponsibleUser();
+    @And("select company contact person")
+    public void selectCompanyContactPerson() {
+        purchaseOrderPage.clickCompanyContactPerson();
+        purchaseOrderPage.selectCompanyContactPerson();
     }
 
     @And("select distribution target type")
     public void selectDistributionTargetType() {
-        orderPage.selectDistributionTargetType();
+        purchaseOrderPage.openDistributionTargetType();
+        purchaseOrderPage.selectDistributionTargetType();
     }
 
-    @And("select entry warehouse")
-    public void selectEntryWarehouse() {
-        orderPage.selectEntryWarehouse();
+    @And("select warehouse where the order will enter {string}")
+    public void selectEntryWarehouse(String region) {
+        purchaseOrderPage.openWarehouseDefinitionFrame();
+        purchaseOrderPage.openSeturRegionFields();
+        purchaseOrderPage.selectSeturRegionFromList(region);
+        purchaseOrderPage.clickFilterButtonId();
+        purchaseOrderPage.selectWarehouse();
     }
 
-    @And("select company address")
-    public void selectCompanyAddress() {
-        orderPage.selectCompanyAddress();
+    @And("select invoice address")
+    public void selectInvoiceAddress() {
+        purchaseOrderPage.openInvoiceAddress();
+        purchaseOrderPage.selectInvoiceAddress();
     }
 
-    @And("select warehouse address")
-    public void selectWarehouseAddress() {
-        orderPage.selectWarehouseAddress();
+    @And("select delivery address")
+    public void selectDeliveryAddress() {
+        purchaseOrderPage.openDeliveryAddress();
+        purchaseOrderPage.selectDeliveryAddress();
     }
 
-    @And("check can auto complete and save")
-    public void checkCanAutoComplete() {
-        orderPage.checkCanAutoCompleteAndSave();
+    @And("complete order automatically mark checkbox to no")
+    public void checkOrderCompleteAutomatically() {
+        purchaseOrderPage.checkOrderCompleteAutomatically();
     }
 
-    @When("add product to order")
+    @And("save order")
+    public void saveOrder() {
+        purchaseOrderPage.saveOrder();
+        purchaseOrderPage.verifyOrderByOrderCode();
+    }
+
+    @And("add product to order")
     public void addProductToOrder() {
-        orderPage.addProductToOrder();
+        purchaseOrderPage.openOrderProductDescriptionFrame();
+        purchaseOrderPage.openProductDescriptionFrame();
+        purchaseOrderPage.getProductName();
+        purchaseOrderPage.selectProduct();
+        purchaseOrderPage.getCurrencyCodes();
+
+        if (purchaseOrderPage.ifCurrencyNotMatchCloseFrame()) {
+            // Para birimi eşleşmiyorsa: siparişin para birimini değiştir
+            purchaseOrderPage.openOrderCurrencyCodes();
+            purchaseOrderPage.selectCurrencyCode();
+            purchaseOrderPage.saveOrder();
+            purchaseOrderPage.confirmPopup();
+
+            // Ürünü tekrar ekle
+            purchaseOrderPage.openOrderProductDescriptionFrame();
+            purchaseOrderPage.openProductDescriptionFrame();
+            purchaseOrderPage.selectProduct();
+            purchaseOrderPage.enterQuantityForProduct();
+            purchaseOrderPage.saveOrderProductsDescription();
+        } else {
+            // Para birimi eşleşiyorsa: doğrudan devam et
+            purchaseOrderPage.enterQuantityForProduct();
+            purchaseOrderPage.saveOrderProductsDescription();
+        }
     }
 
-    @Then("verify products")
+    @Then("verify products added to order")
     public void verifyProducts() {
-        orderPage.verifyProducts();
+        purchaseOrderPage.verifyProducts();
     }
 
     @And("sending for approval process")
     public void sendingForApprovalProcess() {
-        orderPage.sendingForApprovalProcess();
+        purchaseOrderPage.sendingForApprovalProcess();
     }
 
-    @And("approve order")
+    @And("approve order process")
     public void approveOrder() {
-        orderPage.approveOrder();
+        purchaseOrderPage.approveOrder();
     }
 
-    @Then("set order placed")
+    @And("set order placed")
     public void setOrderPlaced() {
-        orderPage.setOrderPlaced();
+        purchaseOrderPage.setOrderPlaced();
     }
 
-    @And("click purchase order invoice link")
-    public void clickPurchaseOrderInvoiceLink() {
-        orderPage.clickPurchaseOrderInvoiceLink();
+    @Then("verify order by order id")
+    public void verifyOrderByOrderId() {
+        purchaseOrderPage.verifyOrderByOrderId();
     }
 }

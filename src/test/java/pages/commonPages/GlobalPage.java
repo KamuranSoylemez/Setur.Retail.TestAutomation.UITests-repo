@@ -1,42 +1,64 @@
 package pages.commonPages;
 
-import pages.purchasePages.PurchaseOrderPage;
-import pages.purchasePages.WorkflowInboxPage;
+import stepDefs.PurchaseOrderSearchStepdefs;
+import stepDefs.PurchaseOrderStepdefs;
+import stepDefs.WorkflowInboxStepdefs;
 import utils.ConfigDataReader;
 
 public class GlobalPage extends BasePage {
 
-    LoginPage loginPage = new LoginPage();
-    WorkflowInboxPage workflowInboxPage = new WorkflowInboxPage();
-    PurchaseOrderPage purchaseOrderPage = new PurchaseOrderPage();
+    WorkflowInboxStepdefs workflowInboxStepdefs = new WorkflowInboxStepdefs();
+    PurchaseOrderStepdefs orderStepdefs = new PurchaseOrderStepdefs();
+    PurchaseOrderSearchStepdefs searchStepdefs = new PurchaseOrderSearchStepdefs();
 
+    /**
+     * https://dfs-retail-ui-staging.azurewebsites.net/CustomerManagement/Login sayfasını açar
+     */
     public void navigateToHomePage() {
-        //page.navigate("https://dfs-retail-ui-staging.azurewebsites.net/CustomerManagement/Login");
         page.navigate(ConfigDataReader.getConfig("baseUrl"));
     }
 
-    public void orderPlacedStatus(String category) {
-        navigateToHomePage();
-        loginPage.fillUserNameAndPassword();
-        loginPage.clickLoginButton();
-        workflowInboxPage.verifySuccessfulLogin();
-        workflowInboxPage.clickPurchaseDropdownToggle();
-        workflowInboxPage.clickOrderLink();
-        purchaseOrderPage.verifyPurchaseOrderPage();
-        purchaseOrderPage.fillOrderDate();
-        purchaseOrderPage.selectCategoryFromList(category);
-        purchaseOrderPage.setDistributorCompany();
-        purchaseOrderPage.selectFirmResponsibleUser();
-        purchaseOrderPage.selectDistributionTargetType();
-        purchaseOrderPage.selectEntryWarehouse();
-        purchaseOrderPage.selectCompanyAddress();
-        purchaseOrderPage.selectWarehouseAddress();
-        purchaseOrderPage.checkCanAutoCompleteAndSave();
-        purchaseOrderPage.addProductToOrder();
-        purchaseOrderPage.verifyProducts();
-        purchaseOrderPage.sendingForApprovalProcess();
-        purchaseOrderPage.approveOrder();
-        purchaseOrderPage.setOrderPlaced();
+    /**
+     * diğer işlemler için sipariş hazırlama kısmı.
+     * @param category sipariş hazırlanırken kategory değerini alır.
+     */
+    public void orderPlacedStatus(String category, String region) {
+        workflowInboxStepdefs.clickCreateOrderLink();
+        orderStepdefs.verifyCreateOrderPage();
+        orderStepdefs.fillOrderCreationDate();
+        orderStepdefs.fillOrderName();
+        orderStepdefs.selectCategoryFromList(category);
+        orderStepdefs.distributorCompanySelection(category);
+        orderStepdefs.selectCompanyContactPerson();
+        orderStepdefs.selectDistributionTargetType();
+        orderStepdefs.selectEntryWarehouse(region);
+        orderStepdefs.selectInvoiceAddress();
+        orderStepdefs.selectDeliveryAddress();
+        orderStepdefs.checkOrderCompleteAutomatically();
+        orderStepdefs.saveOrder();
+        orderStepdefs.addProductToOrder();
+        orderStepdefs.verifyProducts();
+        orderStepdefs.sendingForApprovalProcess();
+        orderStepdefs.approveOrder();
+        orderStepdefs.setOrderPlaced();
+        orderStepdefs.verifyOrderByOrderId();
 
+    }
+
+    /**
+     * sipariş içindeki proforma ve fatura hazırlar
+     */
+    public void setProformaAndInvoice() {
+        workflowInboxStepdefs.clickPurchasingDropdownToggle();
+        workflowInboxStepdefs.clickPurchaseOrderSearch();
+        searchStepdefs.verifyPurchaseOrderSearchPage();
+        searchStepdefs.searchOrderByOrderIdAndEditOder();
+        searchStepdefs.openProformaTab();
+        searchStepdefs.addInfoForProformaAndSave();
+        searchStepdefs.copyOrderItemsAndApproveProforma();
+        searchStepdefs.addOrderInvoices();
+        searchStepdefs.addInfoForInvoiceAndSave();
+        searchStepdefs.copyOrderItemsAndApproveInvoice();
+        searchStepdefs.invoiceCompletionAndApproval();
     }
 }
