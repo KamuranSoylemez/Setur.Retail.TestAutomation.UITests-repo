@@ -9,20 +9,27 @@ TODO: Guide users through getting your code up and running on their own system. 
 4.	API references
 
 # Build and Test
-mvn clean test \
--DcredentialsDir=/Users/gini/Documents/UI_Automation_Files \
+RUN COMMAND - SINGLE SCENARIO EXAMPLE
+mvn clean test -DcredentialsDir=/Users/gini/Documents/UI_Automation_Files \
 -Denv=staging \
 -Dtest=TestRunner \
 "-Dcucumber.features=src/test/resources/login.feature" \
 "-Dcucumber.glue=stepDefs" \
-"-Dcucumber.filter.tags=@unsuccessfulLogin"
+"-Dcucumber.filter.tags=@successfulLogin"
 
-**Use your local path that contains credentials yaml file**
+RUN COMMAND - ALL SCENARIOS IN ONE FEATURE EXAMPLE
+mvn clean test -DcredentialsDir=/Users/gini/Documents/UI_Automation_Files \
+-Denv=staging \
+-Dtest=TestRunner \
+"-Dcucumber.features=src/test/resources/login.feature" \
+"-Dcucumber.glue=stepDefs"
 
-**To run one scenario in any feature:**
-mvn clean test -DcredentialsDir=/Users/gini/Documents/UI_Automation_Files
--Denv=staging -Dtest=TestRunner "-Dcucumber.features=src/test/resources/login.feature"
-"-Dcucumber.glue=stepDefs" "-Dcucumber.filter.tags=@unsuccessfulLogin"
+RUN COMMAND - FOR ALL FEATURE FILES EXAMPLE
+mvn clean test -DcredentialsDir=/Users/gini/Documents/UI_Automation_Files \
+-Denv=staging \
+-Dtest=TestRunner \
+"-Dcucumber.features=src/test/resources" \
+"-Dcucumber.glue=stepDefs"
 
 
 # Contribute
