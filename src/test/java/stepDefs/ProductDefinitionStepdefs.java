@@ -4,6 +4,8 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import pages.retailDefinitionPages.ProductDefinitionPage;
 
+import java.io.IOException;
+
 public class ProductDefinitionStepdefs {
 
     ProductDefinitionPage productDefinitionPage = new ProductDefinitionPage();
@@ -79,7 +81,7 @@ public class ProductDefinitionStepdefs {
     public void saveProductDefinition() {
         productDefinitionPage.saveProductDefinition();
         productDefinitionPage.closeSuccessMessage();
-        productDefinitionPage.closeProductDefinitionFrame();
+        productDefinitionPage.closeProductUpdateFrame();
     }
 
     @Then("verify product definition is saved successfully")
@@ -87,5 +89,47 @@ public class ProductDefinitionStepdefs {
         productDefinitionPage.fillProductName();
         productDefinitionPage.searchProductName();
         productDefinitionPage.verifyNewProduct();
+        productDefinitionPage.closeProductUpdateFrame();
     }
+
+    @And("download excel format for product definition")
+    public void downloadExcelFormatForProductDefinition() {
+        productDefinitionPage.openExcelFrame();
+        productDefinitionPage.selectProductDefinitionCheckbox();
+        productDefinitionPage.downloadExcelFormat();
+
+    }
+    @And("upload excel format for product definition")
+    public void uploadExcelFormatForProductDefinition() throws IOException {
+        productDefinitionPage.openExcelFrame();
+        productDefinitionPage.selectProductDefinitionCheckbox();
+        productDefinitionPage.uploadLatestProductUploadTemplateExcelFile();
+        productDefinitionPage.saveFileUpload();
+    }
+
+    @And("download excel format for product update")
+    public void downloadExcelFormatForProductUpdate() {
+        productDefinitionPage.openExcelFrame();
+        productDefinitionPage.selectProductUpdateCheckbox();
+        productDefinitionPage.downloadExcelFormat();
+    }
+
+    @And("upload excel format for product update")
+    public void uploadExcelFormatForProductUpdate() throws IOException {
+        productDefinitionPage.openExcelFrame();
+        productDefinitionPage.selectProductUpdateCheckbox();
+        productDefinitionPage.uploadLatestProductUpdateTemplateExcelFile();
+        productDefinitionPage.saveFileUpload();
+    }
+
+    @Then("verify excel file is downloaded successfully")
+    public void verifyExcelFileIsDownloadedSuccessfully() {
+        productDefinitionPage.verifyExcelFileIsDownloaded();
+    }
+
+    @Then("verify excel file is uploaded successfully")
+    public void verifyExcelFileIsUploadedSuccessfully() {
+        productDefinitionPage.verifyExcelFileIsUploaded();
+    }
+
 }

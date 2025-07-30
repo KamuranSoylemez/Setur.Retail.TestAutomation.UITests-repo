@@ -7,7 +7,7 @@ Feature: Retail Definition Page
     Then verify successful login
     And click retail definition dropdown toggle
 
-  @productDefinitionTest
+    @productDefinitionTest
   Scenario: Product Definition Page Test
     When click product definition link
     Then verify product definition page is displayed
@@ -19,3 +19,32 @@ Feature: Retail Definition Page
     And fill required fields for corona detail
     And save product definition
     Then verify product definition is saved successfully
+
+
+    @productDefinitionExcelDownloadTest
+  Scenario: Download Excel For Product Definition
+    When click product definition link
+    Then verify product definition page is displayed
+    And download excel format for product definition
+    Then verify excel file is downloaded successfully
+
+  @productDefinitionExcelUploadTest
+  Scenario: Upload Excel For Product Definition
+    When click product definition link
+    Then verify product definition page is displayed
+    And upload excel format for product definition
+    Then verify excel file is uploaded successfully
+
+  @productUpdateExcelDownloadTest
+  Scenario: Download Excel For Product Update
+    When click product definition link
+    Then verify product definition page is displayed
+    And download excel format for product update
+    Then verify excel file is downloaded successfully
+
+  @productUpdateExcelUploadTest
+  Scenario: Upload Excel For Product Update
+    When click product definition link
+    Then verify product definition page is displayed
+    And upload excel format for product update
+    Then verify excel file is uploaded successfully

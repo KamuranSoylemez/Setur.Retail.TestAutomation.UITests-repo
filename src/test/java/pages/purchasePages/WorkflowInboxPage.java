@@ -56,7 +56,7 @@ public class WorkflowInboxPage extends BasePage {
      * Retail Tanımları dropdown toggle linkine tıklar.
      */
     public void clickRetailDefinitionDropdownToggle() {
-        clickElement(retailDropdownToggle);
+        clickElement(retailDropdownToggle.nth(1));
     }
 
     /**

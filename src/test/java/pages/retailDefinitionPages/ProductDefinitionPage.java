@@ -1,11 +1,17 @@
 package pages.retailDefinitionPages;
 
+import com.microsoft.playwright.Download;
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import enums.Categories;
 import enums.DistributorInfo;
 import org.junit.Assert;
 import pages.commonPages.BasePage;
+import pages.commonPages.FileUtils;
+
+import java.io.IOException;
+import java.nio.file.Path;
 
 public class ProductDefinitionPage extends BasePage {
 
@@ -17,6 +23,9 @@ public class ProductDefinitionPage extends BasePage {
     Locator filterProductName = page.locator("#FilterProductNameShort");
     Locator searchButton = page.locator("#FilterButtonId");
     FrameLocator productUpdateFrame = getFrameByDialogTitle("Ürün Güncelleme");
+    FrameLocator excelUploadFrame = page.frameLocator("iframe.k-content-frame");
+
+    private Download downloadedFile;
 
     /**
      * Ürün Tanımlama sayfasının görüntülendiğini doğrular.
@@ -150,6 +159,7 @@ public class ProductDefinitionPage extends BasePage {
 
     /**
      * Kategori alanının seçilen değerini doğrular.
+     *
      * @param category feature dosyasından gelen kategori değeri
      */
     public void verifyCategory(String category) {
@@ -176,8 +186,8 @@ public class ProductDefinitionPage extends BasePage {
     /**
      * Temel Ölçü Değerini doldurur.
      */
-    public void fillBasicMeasureValue(){
-        setKendoNumericTextBoxValue(productDefinitionFrame,"#MainMeasureValue","1");
+    public void fillBasicMeasureValue() {
+        setKendoNumericTextBoxValue(productDefinitionFrame, "#MainMeasureValue", "1");
         productDefinitionFrame.locator("#MainMeasureValue").press("Enter");
 
     }
@@ -239,7 +249,7 @@ public class ProductDefinitionPage extends BasePage {
     /**
      * Web alanındaki İngilizce ismi doldurur.
      */
-    public void fillWebNameEn(){
+    public void fillWebNameEn() {
         String productWebName = getString("productName");
         productDefinitionFrame.locator("#WebNameEn").fill(productWebName);
     }
@@ -263,7 +273,7 @@ public class ProductDefinitionPage extends BasePage {
     /**
      * Ürün Tanımlama sayfasında KDV Oranı seçim kutusuna tıklar.
      */
-    public void clickTaxRate(){
+    public void clickTaxRate() {
         productDefinitionFrame.locator("span.k-select > span.k-icon.k-i-arrow-s")
                 .nth(19).click();
     }
@@ -282,11 +292,18 @@ public class ProductDefinitionPage extends BasePage {
     public void saveProductDefinition() {
         productDefinitionFrame.locator("#btnSave").click();
     }
+
+    /**
+     * Ürün Tanımlama sayfasında başarı mesajını kapatır.
+     */
     public void closeSuccessMessage() {
         page.locator(".ajs-message.ajs-success").click();
     }
 
-    public void closeProductDefinitionFrame() {
+    /**
+     * Ürün Tanımlama sayfasındaki Ürün Güncelleme frame'ini kapatır.
+     */
+    public void closeProductUpdateFrame() {
         page.locator(".k-window-actions .k-window-action .k-i-close").nth(0).click();
 
     }
@@ -312,6 +329,77 @@ public class ProductDefinitionPage extends BasePage {
     public void verifyNewProduct() {
         String expectedProductName = getString("productName");
         String actualProductName = productUpdateFrame.locator("#ProductNameShort").inputValue();
-        Assert.assertEquals(expectedProductName,actualProductName);
+        Assert.assertEquals(expectedProductName, actualProductName);
+    }
+
+    /**
+     * Ürün Excel Upload frame'ini açar.
+     */
+    public void openExcelFrame() {
+        page.locator("#ProductUploadId").click();
+    }
+
+    /**
+     * Excel ile yükleme için Ürün Ekleme checkbox işaretler.
+     */
+    public void selectProductDefinitionCheckbox() {
+        excelUploadFrame.locator("#yes_IsUpload").check();
+    }
+
+    /**
+     * Excel ile yükleme için Ürün Güncelleme checkbox işaretler.
+     */
+    public void selectProductUpdateCheckbox() {
+        excelUploadFrame.locator("#no_IsUpload").check();
+    }
+
+    /**
+     * Excel formatını indirmek için gerekli linke tıklar.
+     */
+    public void downloadExcelFormat() {
+       downloadedFile = page.waitForDownload(() -> excelUploadFrame.locator("#fileLink").click());
+
+    }
+
+    /**
+     * İndirilen Excel dosyasının başarılı bir şekilde indirildiğini doğrular.
+     */
+    public void verifyExcelFileIsDownloaded() {
+        boolean isDownloaded = FileUtils.verifyExcelDownloadWithPlaywright(downloadedFile);
+        Assert.assertTrue("Excel file was not downloaded successfully.", isDownloaded);
+    }
+
+    /**
+     * En son indirilen ProductUploadTemplate Excel dosyasını yükler.
+     * @throws IOException dosya bulunamıyorsa veya okunamıyorsa hata fırlatır.
+     */
+    public void uploadLatestProductUploadTemplateExcelFile() throws IOException {
+        Path uploadFile = FileUtils.getLatestDownloadedFile("ProductUploadTemplate");
+        excelUploadFrame.locator("#File").setInputFiles(uploadFile);
+    }
+
+    /**
+     * En son indirilen ProductUpdateTemplate Excel dosyasını yükler.
+     * @throws IOException dosya bulunamıyorsa veya okunamıyorsa hata fırlatır.
+     */
+    public void uploadLatestProductUpdateTemplateExcelFile() throws IOException {
+        Path updateFile = FileUtils.getLatestDownloadedFile("ProductUpdateTemplate");
+        excelUploadFrame.locator("#File").setInputFiles(updateFile);
+    }
+
+    /**
+     * Excel dosyasını kaydeder.
+     */
+    public void saveFileUpload() {
+        excelUploadFrame.locator("button.k-button.k-info").click();
+    }
+
+    /**
+     * Excel dosyasının başarılı bir şekilde yüklendiğini doğrular.
+     */
+    public void verifyExcelFileIsUploaded() {
+        Locator successMessage = page.locator(".ajs-message.ajs-success");
+        successMessage.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        Assert.assertTrue(successMessage.isVisible());
     }
 }
