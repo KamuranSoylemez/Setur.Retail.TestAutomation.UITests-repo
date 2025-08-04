@@ -22,7 +22,7 @@ public class GlobalPage extends BasePage {
      * diğer işlemler için sipariş hazırlama kısmı.
      * @param category sipariş hazırlanırken kategory değerini alır.
      */
-    public void orderPlacedStatus(String category, String region) {
+    public void orderCompletion(String category, String region) {
         workflowInboxStepdefs.clickCreateOrderLink();
         orderStepdefs.verifyCreateOrderPage();
         orderStepdefs.fillOrderCreationDate();

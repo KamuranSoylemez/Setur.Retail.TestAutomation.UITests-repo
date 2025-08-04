@@ -13,9 +13,9 @@ public class GlobalStepdefs {
         globalPage.navigateToHomePage();
     }
 
-    @When("order placed status by {string}")
-    public void orderPlacedStatusBy(String category, String region) {
-        globalPage.orderPlacedStatus(category,region);
+    @When("order completion {string}")
+    public void orderCompletion(String category, String region) {
+        globalPage.orderCompletion(category,region);
     }
 
     @When("set proforma and invoice")

@@ -7,44 +7,48 @@ Feature: Retail Definition Page
     Then verify successful login
     And click retail definition dropdown toggle
 
-    @productDefinitionTest
+  @productDefinitionTest
   Scenario: Product Definition Page Test
     When click product definition link
     Then verify product definition page is displayed
     And click new record button
     Then verify product definition form is displayed
-    And fill required fields for product features
+    And fill required fields for product features "PRADA"
     And fill required fields for product common features by "PARFÜM-KOZMETİK" and "PRADA"
     And fill required fields for web
-    And fill required fields for corona detail
+    And fill required fields for corona detail "COSMETIC"
     And save product definition
-    Then verify product definition is saved successfully
+    And save barcode number
+    And select origin "FRANSA"
+    And select limit "L - Limitsiz"
+    Then update and verify product definition is saved successfully
+    And activate new record
+    Then verify product definition is activated successfully
+    And copy new record
+    Then verify product definition is copied successfully
 
 
-    @productDefinitionExcelDownloadTest
-  Scenario: Download Excel For Product Definition
+  @excelDownloadTest
+  Scenario Outline: Download Excel For <type> Product
     When click product definition link
     Then verify product definition page is displayed
-    And download excel format for product definition
+    And download excel format for <type> product
     Then verify excel file is downloaded successfully
 
-  @productDefinitionExcelUploadTest
-  Scenario: Upload Excel For Product Definition
+    Examples:
+      | type               |
+      | product_definition |
+      | product_update     |
+
+  @excelUploadTest
+  Scenario Outline: Upload Excel For <type> Product
     When click product definition link
     Then verify product definition page is displayed
-    And upload excel format for product definition
+    And upload excel format for <type> product
     Then verify excel file is uploaded successfully
 
-  @productUpdateExcelDownloadTest
-  Scenario: Download Excel For Product Update
-    When click product definition link
-    Then verify product definition page is displayed
-    And download excel format for product update
-    Then verify excel file is downloaded successfully
+    Examples:
+      | type               |
+      | product_definition |
+      | product_update     |
 
-  @productUpdateExcelUploadTest
-  Scenario: Upload Excel For Product Update
-    When click product definition link
-    Then verify product definition page is displayed
-    And upload excel format for product update
-    Then verify excel file is uploaded successfully

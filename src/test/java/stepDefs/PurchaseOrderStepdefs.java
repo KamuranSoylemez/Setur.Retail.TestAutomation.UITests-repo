@@ -105,13 +105,11 @@ public class PurchaseOrderStepdefs {
             purchaseOrderPage.openOrderProductDescriptionFrame();
             purchaseOrderPage.openProductDescriptionFrame();
             purchaseOrderPage.selectProduct();
-            purchaseOrderPage.enterQuantityForProduct();
-            purchaseOrderPage.saveOrderProductsDescription();
-        } else {
-            // Para birimi eşleşiyorsa: doğrudan devam et
-            purchaseOrderPage.enterQuantityForProduct();
-            purchaseOrderPage.saveOrderProductsDescription();
         }
+
+        // Ortak işlemler
+        purchaseOrderPage.enterQuantityForProduct();
+        purchaseOrderPage.saveOrderProductsDescription();
     }
 
     @Then("verify products added to order")

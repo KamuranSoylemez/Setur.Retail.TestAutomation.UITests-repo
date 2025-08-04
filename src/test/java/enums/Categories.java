@@ -28,6 +28,13 @@ public enum Categories {
         return distributorInfo;
     }
 
+    /**
+     * Verilen etiket (label) değerine karşılık gelen {@link Categories} enum sabitini döner.
+     * Bu metod, bir string etiket ile eşleşen enum sabitini bulmak için
+     * {@link Categories} enum sabitleri arasında case-insensitive (büyük/küçük harf duyarsız) karşılaştırma yapar.
+     * @param label Aranan kategori etiketi (örneğin: "Elektronik", "Giyim" vb.)
+     * @return Etiketle eşleşen {@link Categories} enum sabiti; eşleşme bulunamazsa {@code null} döner.
+     */
     public static Categories fromLabel(String label) {
         for (Categories category : values()) {
             if (category.getLabel().equalsIgnoreCase(label)) {

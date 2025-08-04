@@ -12,12 +12,11 @@ import java.util.stream.Stream;
 public class FileUtils {
 
     /**
-     * Belirtilen filePrefixes ile başlayan ve "Downloads" klasöründe bulunan en son indirilen dosyanın yolunu döner.
      * Bu metot, kullanıcının indirme klasöründe (~/Downloads) dosya adları verilen öneklerden biriyle başlayan
      * tüm dosyaları tarar ve son değiştirilme zamanına göre en güncel olan dosyayı döndürür.
      * @param filePrefixes İlgili dosyaların adlarının başlangıç önekleri. Örneğin, "ProductUploadTemplate".
      * @return En son indirilen dosyanın {@link Path} nesnesi.
-     * @throws IOException Eğer dosya bulunamazsa veya klasöre erişim sırasında hata oluşursa fırlatılır.
+     * @throws IOException Eğer dosya bulunamazsa veya klasöre erişim sırasında hata oluşursa hata fırlatılır.
      */
     public static Path getLatestDownloadedFile(String... filePrefixes) throws IOException {
         String downloadPath = System.getProperty("user.home") + "/Downloads";
