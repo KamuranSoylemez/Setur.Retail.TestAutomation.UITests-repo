@@ -1,6 +1,7 @@
 package pages.purchasePages;
 
 import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
 import pages.commonPages.BasePage;
 
 
@@ -12,7 +13,6 @@ public class WorkflowInboxPage extends BasePage {
     Locator purchaseOrderSearchLink = page.locator("//a[@href='/ApplicationManagement/PurchaseOrderInvoice/Index']");
     Locator purchasePrice = page.locator("//a[@href='/ApplicationManagement/ProductPurchasePrice/Index']");
     Locator purchaseInvoiceTransactions = page.locator("//a[@href='/ApplicationManagement/Invoice/Index']");
-    Locator retailDropdownToggle = page.locator(".glyphicon.glyphicon-file");
     Locator productDefinitionLink = page.locator("//a[@href='/ApplicationManagement/Product/Index']");
 
     /**
@@ -56,7 +56,9 @@ public class WorkflowInboxPage extends BasePage {
      * Retail Tanımları dropdown toggle linkine tıklar.
      */
     public void clickRetailDefinitionDropdownToggle() {
-        clickElement(retailDropdownToggle);
+        Locator retailMenu = page.locator("li.dropdown > a.dropdown-toggle",
+                new Page.LocatorOptions().setHasText("Retail Tanımları"));
+        retailMenu.click();
     }
 
     /**

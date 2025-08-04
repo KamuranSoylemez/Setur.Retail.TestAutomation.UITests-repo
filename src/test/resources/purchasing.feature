@@ -66,7 +66,7 @@ Feature: Purchasing Page
 
   @addingProformaAndInvoicesToOrder
   Scenario: Adding Proforma and Invoices to Order
-   When order placed status by "PARFÜM-KOZMETİK"
+   When order completion "PARFÜM-KOZMETİK"
    And click purchasing dropdown toggle
    And click purchase order search link
    Then verify purchase order search page
@@ -81,7 +81,7 @@ Feature: Purchasing Page
 
   @invoiceCompletionProcess
   Scenario: Invoice Completion Process
-   When order placed status by "PARFÜM-KOZMETİK"
+   When order completion "PARFÜM-KOZMETİK"
    And set proforma and invoice
    And click purchasing dropdown toggle
    And click invoice transactions link

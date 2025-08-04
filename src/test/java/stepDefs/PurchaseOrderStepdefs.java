@@ -28,6 +28,7 @@ public class PurchaseOrderStepdefs {
     public void selectCategoryFromList(String category) {
         purchaseOrderPage.openCategoryList();
         purchaseOrderPage.selectCategoryFromList(category);
+        purchaseOrderPage.verifyCategory(category);
     }
 
     @And("set distributor company by {string}")
@@ -55,6 +56,7 @@ public class PurchaseOrderStepdefs {
         purchaseOrderPage.openWarehouseDefinitionFrame();
         purchaseOrderPage.openSeturRegionFields();
         purchaseOrderPage.selectSeturRegionFromList(region);
+        purchaseOrderPage.verifySeturRegion(region);
         purchaseOrderPage.clickFilterButtonId();
         purchaseOrderPage.selectWarehouse();
     }
@@ -79,6 +81,7 @@ public class PurchaseOrderStepdefs {
     @And("save order")
     public void saveOrder() {
         purchaseOrderPage.saveOrder();
+        purchaseOrderPage.verifyPurchaseOrderTabs();
         purchaseOrderPage.verifyOrderByOrderCode();
     }
 
@@ -94,6 +97,7 @@ public class PurchaseOrderStepdefs {
             // Para birimi eşleşmiyorsa: siparişin para birimini değiştir
             purchaseOrderPage.openOrderCurrencyCodes();
             purchaseOrderPage.selectCurrencyCode();
+            purchaseOrderPage.verifyProductCurrencyCode();
             purchaseOrderPage.saveOrder();
             purchaseOrderPage.confirmPopup();
 
@@ -101,13 +105,11 @@ public class PurchaseOrderStepdefs {
             purchaseOrderPage.openOrderProductDescriptionFrame();
             purchaseOrderPage.openProductDescriptionFrame();
             purchaseOrderPage.selectProduct();
-            purchaseOrderPage.enterQuantityForProduct();
-            purchaseOrderPage.saveOrderProductsDescription();
-        } else {
-            // Para birimi eşleşiyorsa: doğrudan devam et
-            purchaseOrderPage.enterQuantityForProduct();
-            purchaseOrderPage.saveOrderProductsDescription();
         }
+
+        // Ortak işlemler
+        purchaseOrderPage.enterQuantityForProduct();
+        purchaseOrderPage.saveOrderProductsDescription();
     }
 
     @Then("verify products added to order")

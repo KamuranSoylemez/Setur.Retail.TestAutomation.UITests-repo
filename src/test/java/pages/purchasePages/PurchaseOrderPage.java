@@ -76,8 +76,14 @@ public class PurchaseOrderPage extends BasePage {
         Locator selectCategory = page.locator("#CategoryId_listbox li[role='option'].k-item",
                 new Page.LocatorOptions().setHasText(category));
         selectCategory.click(new Locator.ClickOptions().setForce(true));
-
-        verifyTextElementUseTrim(category, selectCategory);
+        //verifyTextElementUseTrim(category, selectCategory);
+    }
+    /**
+     * Kategori alanını doğrular.
+     */
+    public void verifyCategory(String category) {
+        Locator selectedCategory = page.locator(".k-dropdown .k-input").nth(0);
+        verifyTextElementUseTrim(category, selectedCategory);
     }
 
     /**
@@ -167,8 +173,14 @@ public class PurchaseOrderPage extends BasePage {
         Locator allItems = frameLocator.locator("ul#FilterSeturRegionID_listbox li");
         Locator targetItem = allItems.filter(new Locator.FilterOptions().setHasText(region));
         targetItem.click(new Locator.ClickOptions().setForce(true));
-
-        verifyTextElementUseTrim(region, targetItem);
+    }
+    /**
+     * Antrepo Tanımlama frame Setur Bölgesi doğrular.
+     * @param region setur bölgesi
+     */
+    public void verifySeturRegion(String region) {
+        Locator selectedRegion = frameLocator.locator(".k-dropdown .k-input").nth(0);
+        verifyTextElementUseTrim(region, selectedRegion);
     }
 
     /**
@@ -221,7 +233,11 @@ public class PurchaseOrderPage extends BasePage {
      */
     public void saveOrder(){
         clickElement(saveOrderBtn);
-
+    }
+    /**
+     * Kaydedilen siparişi doğrular.
+     */
+    public void verifyPurchaseOrderTabs() {
         page.waitForSelector("#PurchaseOrderTabs");
         verifyIsVisible(purchaseOrderTabs);
     }
@@ -320,7 +336,15 @@ public class PurchaseOrderPage extends BasePage {
                 new Page.LocatorOptions().setHasText(productCurrency));
         currencyOption.click(new Locator.ClickOptions().setTimeout(3000).setForce(true));
 
-        verifyTextElementUseTrim(productCurrency, currencyOption);
+        //verifyTextElementUseTrim(productCurrency, currencyOption);
+    }
+    /**
+     * Sipariş Ürünü Tanımlama frame'inde seçilen para birimini doğrular.
+     */
+    public void verifyProductCurrencyCode() {
+        Locator selectedCurrency = page.locator(".k-dropdown .k-input").nth(3);
+        String productCurrency = getString("productCurrency");
+        verifyTextElementUseTrim(productCurrency, selectedCurrency);
     }
 
 
