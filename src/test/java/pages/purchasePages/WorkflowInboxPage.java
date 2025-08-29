@@ -18,6 +18,7 @@ public class WorkflowInboxPage extends BasePage {
     Locator createDistributionLink = page.locator("//a[@href='/ApplicationManagement/Distribution/Index']");
     Locator eykWaitingPageLink = page.locator("//a[@href='/ApplicationManagement/EykWaiting/Index']");
     Locator creatingEYKLink = page.locator("//a[@href='/ApplicationManagement/StockTransferPreparing/Index']");
+    Locator contractDefinitionLink = page.locator("//a[@href='/ApplicationManagement/Contract/Index']");
 
     /**
      * Giriş yaptıktan sonra ilk açılan sayfayı verify eder.
@@ -92,5 +93,15 @@ public class WorkflowInboxPage extends BasePage {
 
     public void clickCreatingEYKLink() {
         clickElement(creatingEYKLink);
+    }
+
+    public void clickSupplierLink() {
+        Locator retailMenu = page.locator("li.dropdown > a.dropdown-toggle",
+                new Page.LocatorOptions().setHasText("Tedarikçi"));
+        retailMenu.click();
+    }
+
+    public void clickContractDefinitionLink() {
+        clickElement(contractDefinitionLink);
     }
 }
