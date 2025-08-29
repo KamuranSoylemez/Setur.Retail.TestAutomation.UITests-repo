@@ -100,9 +100,9 @@ Feature: Purchasing Page
     Then verify purchase price page
     And new record purchase price
     And create purchase price for defined product
-    And select defined product
+    And select defined product "209"
     And fill purchase price for defined product
-    Then search defined product and verify amount
+    Then search defined product and verify amount "209"
 
   @createNewPurchasePriceForUndefinedProduct
   Scenario: Create New Purchase Price For Undefined Product

@@ -141,7 +141,7 @@ public class ProductDefinitionStepdefs {
         productDefinitionPage.clickIconButton();
         productDefinitionPage.clickCopyButton();
         productDefinitionPage.checkPostedCompanyId();
-        productDefinitionPage.saveCopyNewRecord();
+        productDefinitionPage.saveCopyNewRecord(); //BUG:TM-3833 kaydı açılmıştır.
     }
 
     @Then("verify product definition is copied successfully")

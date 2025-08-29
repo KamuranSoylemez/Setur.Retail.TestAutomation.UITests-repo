@@ -1,8 +1,6 @@
 package pages.commonPages;
 
-import com.microsoft.playwright.FrameLocator;
-import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.Page;
+import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import org.junit.Assert;
@@ -11,6 +9,7 @@ import utils.GlobalVariables;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Random;
 
 public class BasePage {
@@ -83,12 +82,12 @@ public class BasePage {
 
     /**
      * Kendo komponenti kullanıldığı için gereken yerlerde kullanılır.
-     * @param frame hangi frame ise
+     * @param frameLocator hangi frame ise
      * @param inputSelector hangi locator ise
      * @param value locatora girilecek değer
      */
-    public void setKendoNumericTextBoxValue(FrameLocator frame, String inputSelector, String value) {
-        Locator input = frame.locator(inputSelector);
+    public void setKendoNumericTextBoxValue(FrameLocator frameLocator, String inputSelector, String value) {
+        Locator input = frameLocator.locator(inputSelector);
         input.evaluate("(el, val) => {" +
                 "  const widget = $(el).data('kendoNumericTextBox');" +
                 "  if (widget) {" +
@@ -97,6 +96,28 @@ public class BasePage {
                 "  }" +
                 "}", value);
     }
+
+    public void setKendoNumericTextBoxValue1(Locator input, String value) {
+        input.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.ATTACHED));
+
+        ElementHandle inputHandle = input.elementHandle();
+        if (inputHandle != null) {
+            input.page().evaluate("(element, val) => {" +
+                    "  const widget = $(element).data('kendoNumericTextBox');" +
+                    "  if (widget) {" +
+                    "    console.log('Widget bulundu, değer atanıyor');" +
+                    "    widget.value(val);" +
+                    "    widget.trigger('change');" +
+                    "  } else {" +
+                    "    console.warn('Kendo NumericTextBox bulunamadı');" +
+                    "  }" +
+                    "}", Arrays.asList(inputHandle, value));
+        } else {
+            System.out.println("Element bulunamadı veya görünmüyor.");
+        }
+    }
+
+
 
     public int generateRandomNumber(){
         Random random = new Random();
