@@ -59,8 +59,8 @@ public class PurchasePricePage extends BasePage {
     /**
      * Ürün Kodu alanını doldurur.
      */
-    public void fillProductCode(){
-        setKendoNumericTextBoxValue(productDefFrame, "#FilterProductId", "209");
+    public void fillProductCode(String productCode) {
+        setKendoNumericTextBoxValue(productDefFrame, "#FilterProductId", productCode);
     }
 
     /**

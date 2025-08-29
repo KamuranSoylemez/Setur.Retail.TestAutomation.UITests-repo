@@ -26,10 +26,10 @@ public class PurchasePriceStepdefs {
         purchasePricePage.openProductDescriptionFrame();
     }
 
-    @And("select defined product")
-    public void selectDefinedProduct() {
+    @And("select defined product {string}")
+    public void selectDefinedProduct(String productCode) {
         purchasePricePage.verifyProductDescFrame();
-        purchasePricePage.fillProductCode();
+        purchasePricePage.fillProductCode(productCode);
         purchasePricePage.searchProduct();
         purchasePricePage.selectProduct();
     }
@@ -44,10 +44,10 @@ public class PurchasePriceStepdefs {
         //purchasePricePage.closeSuccessMessage();
     }
 
-    @Then("search defined product and verify amount")
-    public void searchCreatedRecordAndVerifyAmount() {
+    @Then("search defined product and verify amount {string}")
+    public void searchCreatedRecordAndVerifyAmount(String productCode) {
         purchasePricePage.openProductDescFrame();
-        purchasePricePage.fillProductCode();
+        purchasePricePage.fillProductCode(productCode);
         purchasePricePage.searchProduct();
         purchasePricePage.selectProduct();
         purchasePricePage.searchProductInMainPage();

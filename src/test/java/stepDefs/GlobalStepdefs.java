@@ -22,4 +22,9 @@ public class GlobalStepdefs {
     public void setProformaAndInvoice() {
         globalPage.setProformaAndInvoice();
     }
+
+    @When("create distribution and transportation with warehouse {string} and product {string}")
+    public void createDistributionAndTransportation(String region, String productCode) {
+        globalPage.createDistributionAndTransportation(region, productCode);
+    }
 }

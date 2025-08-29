@@ -67,7 +67,6 @@ public class PurchaseInvoiceTransactionsPage extends BasePage {
      * Beyanname Güncelleme frame sayım tabına geçer.
      */
     public void selectCountingTab() {
-
         page.waitForLoadState(LoadState.DOMCONTENTLOADED);
         Locator proformaTab = updateDeclarationFrame.locator(".k-item.k-state-default").nth(2);
         proformaTab.scrollIntoViewIfNeeded();

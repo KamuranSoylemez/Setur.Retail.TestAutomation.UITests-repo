@@ -48,4 +48,24 @@ public class WorkflowInboxStepdefs {
     public void clickProductDefinitionLink() {
         inboxPage.clickProductDefinitionLink();
     }
+
+    @And("click distribution and transportation dropdown toggle")
+    public void clickDistributionAndTransportationDropdownToggle() {
+        inboxPage.clickDistributionAndTransportationDropdownToggle();
+    }
+
+    @When("click create distribution link")
+    public void clickCreateDistributionLink() {
+        inboxPage.clickCreateDistributionLink();
+    }
+
+    @And("click EYK waiting page link")
+    public void clickEYKWaitingProcessesLink() {
+        inboxPage.clickEYKWaitingProcessesLink();
+    }
+
+    @And("click creating EYK link")
+    public void clickCreatingEYKLink() {
+        inboxPage.clickCreatingEYKLink();
+    }
 }

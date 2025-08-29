@@ -14,6 +14,10 @@ public class WorkflowInboxPage extends BasePage {
     Locator purchasePrice = page.locator("//a[@href='/ApplicationManagement/ProductPurchasePrice/Index']");
     Locator purchaseInvoiceTransactions = page.locator("//a[@href='/ApplicationManagement/Invoice/Index']");
     Locator productDefinitionLink = page.locator("//a[@href='/ApplicationManagement/Product/Index']");
+    Locator distributionAndTransportationDropdownToggle = page.locator(".glyphicon.glyphicon-transfer");
+    Locator createDistributionLink = page.locator("//a[@href='/ApplicationManagement/Distribution/Index']");
+    Locator eykWaitingPageLink = page.locator("//a[@href='/ApplicationManagement/EykWaiting/Index']");
+    Locator creatingEYKLink = page.locator("//a[@href='/ApplicationManagement/StockTransferPreparing/Index']");
 
     /**
      * Giriş yaptıktan sonra ilk açılan sayfayı verify eder.
@@ -66,5 +70,27 @@ public class WorkflowInboxPage extends BasePage {
      */
     public void clickProductDefinitionLink() {
         clickElement(productDefinitionLink);
+    }
+
+    /**
+     * Dağıtım ve Nakliye dropdown toggle linkine tıklar.
+     */
+    public void clickDistributionAndTransportationDropdownToggle() {
+        clickElement(distributionAndTransportationDropdownToggle);
+    }
+
+    /**
+     * Dağıtım ve Nakliye altındaki Dağıtım Oluşturma linkine tıklar.
+     */
+    public void clickCreateDistributionLink() {
+        clickElement(createDistributionLink);
+    }
+
+    public void clickEYKWaitingProcessesLink() {
+        clickElement(eykWaitingPageLink);
+    }
+
+    public void clickCreatingEYKLink() {
+        clickElement(creatingEYKLink);
     }
 }

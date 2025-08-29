@@ -1,5 +1,6 @@
 package pages.commonPages;
 
+import stepDefs.DistributionStepdefs;
 import stepDefs.PurchaseOrderSearchStepdefs;
 import stepDefs.PurchaseOrderStepdefs;
 import stepDefs.WorkflowInboxStepdefs;
@@ -10,6 +11,7 @@ public class GlobalPage extends BasePage {
     WorkflowInboxStepdefs workflowInboxStepdefs = new WorkflowInboxStepdefs();
     PurchaseOrderStepdefs orderStepdefs = new PurchaseOrderStepdefs();
     PurchaseOrderSearchStepdefs searchStepdefs = new PurchaseOrderSearchStepdefs();
+    DistributionStepdefs distributionStepdefs = new DistributionStepdefs();
 
     /**
      * https://dfs-retail-ui-staging.azurewebsites.net/CustomerManagement/Login sayfasını açar
@@ -60,5 +62,18 @@ public class GlobalPage extends BasePage {
         searchStepdefs.addInfoForInvoiceAndSave();
         searchStepdefs.copyOrderItemsAndApproveInvoice();
         searchStepdefs.invoiceCompletionAndApproval();
+    }
+
+    public void createDistributionAndTransportation(String region, String productCode) {
+        workflowInboxStepdefs.clickCreateDistributionLink();
+        distributionStepdefs.verifyCreateDistributionPageIsDisplayed();
+        distributionStepdefs.fillDistributionFormWithValidData(region);
+        distributionStepdefs.clickSaveButton();
+        distributionStepdefs.verifyDistributionIsCreatedSuccessfully();
+        distributionStepdefs.addProductToDistribution(productCode);
+        distributionStepdefs.verifyProductsAddedToDistribution();
+        distributionStepdefs.distributionDetailSelection();
+        distributionStepdefs.verifyDistributedProducts();
+        distributionStepdefs.sendToTransportation();
     }
 }
