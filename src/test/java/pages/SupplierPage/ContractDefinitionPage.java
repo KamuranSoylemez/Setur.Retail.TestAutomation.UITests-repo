@@ -2,9 +2,11 @@ package pages.SupplierPage;
 
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import enums.Categories;
 import enums.DistributorInfo;
+import org.junit.Assert;
 import pages.commonPages.BasePage;
 
 public class ContractDefinitionPage extends BasePage {
@@ -12,6 +14,7 @@ public class ContractDefinitionPage extends BasePage {
     Locator pageTitle = page.locator("#PageTitle");
     Locator newRecordButton = page.locator(".glyphicon.glyphicon-plus");
     FrameLocator contractDefinitionFrame = getFrameByDialogTitle("Sözleşme Tanımlama");
+    FrameLocator contractUpdateFrame = getFrameByDialogTitle("Sözleşme Güncelleme");
     FrameLocator companyIdentificationFrame = getFrameByDialogTitle("Firma Tanımlama");
 
     /**
@@ -32,7 +35,7 @@ public class ContractDefinitionPage extends BasePage {
      * Firma tanımlama penceresini açar.
      */
     public void openCompanyIdentificationFrame() {
-        contractDefinitionFrame.locator(".glyphicon.glyphicon-search").click();
+        contractDefinitionFrame.locator("#FirmIDButtonId").click();
     }
 
     /**
@@ -44,6 +47,9 @@ public class ContractDefinitionPage extends BasePage {
         if (categoryLabel != null) {
             DistributorInfo distributorInfo = categoryLabel.getDistributorInfo();
             companyIdentificationFrame.locator("#FilterFirmCode").fill(distributorInfo.getFirmCode());
+
+            String firmName = distributorInfo.getFirmName();
+            addString("FirmName", firmName);
         }
     }
 
@@ -64,34 +70,42 @@ public class ContractDefinitionPage extends BasePage {
     /**
      * Kategori çoklu seçim kutusunu açar.
      */
-    public void selectCategory(){
+    public void openCategories(){
         clickElement(contractDefinitionFrame.locator(".k-multiselect-wrap.k-floatwrap").nth(1));
     }
 
     /**
      * Kategori listesinden ilk seçeneği seçer.
      */
-    public void selectCategoryOption() {
-        Locator listBox = contractDefinitionFrame.locator("#CategoryIdArray_listbox");
-        listBox.waitFor(new Locator.WaitForOptions()
+    public void selectCategoryOption(String category) {
+        contractDefinitionFrame.locator("#CategoryIdArray_taglist").
+                locator("xpath=..").locator("input.k-input").click();
+
+        Locator option = contractDefinitionFrame.locator("ul#CategoryIdArray_listbox li")
+                .filter(new Locator.FilterOptions().setHasText(category));
+        option.waitFor(new Locator.WaitForOptions()
                 .setState(WaitForSelectorState.VISIBLE));
-        clickElement(contractDefinitionFrame.locator("#CategoryIdArray_option_selected").nth(0));
+        option.click();
+
+        addString("CategoryName", category);
     }
 
     /**
      * Cins seçim kutusundan verilen metne sahip seçeneği seçer.
-     * @param optionText seçilecek seçenek metni
+     * @param typeOption seçilecek seçenek metni
      */
-    public void selectMultiSelectOption(String optionText) {
+    public void selectTypeOption(String typeOption) {
         Locator input = contractDefinitionFrame.
                 locator("div.k-multiselect-wrap input.k-input").nth(2);
         input.click();
 
         Locator option = contractDefinitionFrame.locator("ul#TypeIdArray_listbox li")
-                .filter(new Locator.FilterOptions().setHasText(optionText));
+                .filter(new Locator.FilterOptions().setHasText(typeOption));
         option.waitFor(new Locator.WaitForOptions()
                 .setState(WaitForSelectorState.VISIBLE));
         option.click();
+
+        addString("TypeName", typeOption);
     }
 
     /**
@@ -147,6 +161,20 @@ public class ContractDefinitionPage extends BasePage {
     }
 
     /**
+     * Marka seçici kutusundan bir marka seçer.
+     */
+    public void selectBrand(String brandOption) {
+        Locator input = contractDefinitionFrame.locator("#BrandIds_taglist")
+                .locator("xpath=following-sibling::input");
+        input.click();
+        page.keyboard().type(brandOption);
+        page.keyboard().press("Enter");
+
+        addString("BrandName", brandOption);
+    }
+
+
+    /**
      * Ödeme Şartları (Vade (Gün)) alanını doldurur.
      */
     public void fillTermDays() {
@@ -166,7 +194,7 @@ public class ContractDefinitionPage extends BasePage {
      */
     public void fillDescription(){
         contractDefinitionFrame.locator("#Description")
-                .fill("KMRN AUTO TEST");
+                .fill("AUTO TEST");
     }
 
     /**
@@ -176,4 +204,147 @@ public class ContractDefinitionPage extends BasePage {
         clickElement(contractDefinitionFrame.locator("#btnSave"));
     }
 
+    /**
+     * Kayıt işleminin başarılı olduğunu doğrular.
+     */
+    public void verifyRecordSavedSuccessfully() {
+        Locator popUpConfMessage = page.locator(".ajs-message.ajs-success.ajs-visible");
+       if (popUpConfMessage.isVisible()) {
+           System.out.println("Kaydetme işlemi başarılı.");
+       } else {
+           System.out.println("Kaydetme işlemi başarısız.");
+       }
+    }
+
+    /**
+     * Sözleşme tanımlama penceresini kapatır.
+     */
+    public void closeContractUpdateFrame() {
+        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
+        page.waitForTimeout(5000); // 5 saniye bekle
+        contractUpdateFrame.locator("#ClosePopupBtn").click();
+    }
+
+
+    /**
+     * Ana sayfada firma tanımlama penceresini açar.
+     */
+    public void openCompanyIdentificationFrameOnMainPage() {
+        Locator button = page.locator("#FilterFirmIDButtonId");
+        button.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        button.click();
+    }
+
+    /**
+     * Ana sayfada kategori açılır menüsünü açar.
+     */
+    public void openCategoriesFromMainPage() {
+        page.locator("#FilterCategoryIds").
+                locator("xpath=..").locator(".k-dropdown-wrap").click();
+
+    }
+
+    /**
+     * Ana sayfada kategori listesinden verilen kategori metnine sahip seçeneği seçer.
+     * @param category seçilecek kategori metni
+     */
+    public void selectCategoryFromList(String category) {
+        Locator option = page.locator("ul#FilterCategoryIds_listbox li")
+                .filter(new Locator.FilterOptions().setHasText(category));
+        option.waitFor(new Locator.WaitForOptions()
+                .setState(WaitForSelectorState.VISIBLE));
+        option.click();
+
+        addString("Category", category);
+    }
+
+    /**
+     * Ana sayfada cins çoklu seçim kutusundan daha önce formda seçilen cins seçeneğini seçer.
+     */
+    public void selectTypeOptionFromMainPage() {
+        String type = getString("Type");
+
+        Locator input = page.locator("input.k-input[aria-owns='FilterTypeIds_taglist FilterTypeIds_listbox']");
+        input.click();
+
+        Locator option = page.locator("ul#FilterTypeIds_listbox li")
+                .filter(new Locator.FilterOptions().setHasText(type));
+
+        option.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        option.click();
+    }
+
+    /**
+     * Ana sayfada kayıt arama butonuna tıklar.
+     */
+    public void searchForRecordOnMainPage() {
+        page.locator("#FilterButtonId").click();
+    }
+
+    /**
+     * Ana sayfada kayıtların listelendiğini doğrular.
+     */
+    public void verifyRecordExistsOnMainPage() {
+        Locator records = page.locator("#ContractGridId tr[data-uid]");
+        if (records.count() > 0) {
+            System.out.println("Kayıt başarıyla oluşturuldu ve listede mevcut.");
+        } else {
+            System.out.println("Kayıt oluşturulamadı veya listede bulunamadı.");
+        }
+    }
+
+    /**
+     * Ana sayfada firma adını doğrular.
+     */
+    public void verifyFirmNameOnMainPage() {
+        String firmName = page.locator("td[data-field-name='FirmName']").textContent();
+        System.out.println("Firma adı: " + firmName);
+        String firmNameFromDistributorInfo = getString("FirmName");
+        Assert.assertEquals(firmName,firmNameFromDistributorInfo);
+    }
+
+    /**
+     * Ana sayfada kategori adını doğrular.
+     * @param category doğrulanacak kategori metni
+     */
+    public void verifyCategoryOnMainPage(String category) {
+        String categoryName = page.locator("td[data-field-name='CategoryNames']").textContent();
+        System.out.println("Kategori adı: " + categoryName);
+        Assert.assertEquals(categoryName,category);
+    }
+
+    /**
+     * Ana sayfada cins adını doğrular.
+     */
+    public void verifyTypeOnMainPage() {
+        String typeName = page.locator("td[data-field-name='TypeNames']").textContent();
+        System.out.println("Cins adı: " + typeName);
+        String typeFromForm = getString("Type");
+        Assert.assertEquals(typeName,typeFromForm);
+    }
+
+    public void verifyCategorySelected() {
+        String categoryName = getString("CategoryName");
+        String selectedCategory = contractDefinitionFrame
+                .locator("#CategoryIdArray_taglist li span:first-child").textContent().trim();
+        Assert.assertEquals(categoryName, selectedCategory);
+    }
+
+    public void verifyTypeOptionSelected() {
+        String typeName = getString("TypeName");
+        String selectedType = contractDefinitionFrame
+                .locator("#TypeIdArray_taglist li span:first-child").textContent().trim();
+        Assert.assertEquals(typeName, selectedType);
+    }
+
+    public void verifyBrandSelected() {
+        String brandName = getString("BrandName");
+        String selectedBrand = contractDefinitionFrame
+                .locator("#BrandIds_taglist li span:first-child").textContent().trim();
+        Assert.assertEquals(brandName, selectedBrand);
+    }
+
+    public void closeContractDefinitionFrame() {
+        contractDefinitionFrame.locator("#ClosePopupBtn").click();
+    }
 }
