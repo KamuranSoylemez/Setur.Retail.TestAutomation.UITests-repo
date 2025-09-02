@@ -1,4 +1,4 @@
-package pages.contractDefinitionPages;
+package pages.SupplierPages;
 
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
@@ -184,13 +184,13 @@ public class ContractDefinitionPage extends BasePage {
     public void fillTermDays() {
         contractDefinitionFrame.locator("input[data-role='numerictextbox']")
                 .evaluate("(el, val) => { " +
-                "var widget = $(el).data('kendoNumericTextBox');" +
-                "if (widget) { " +
-                "    widget.value(val); " +
-                "    widget.trigger('change'); " +
-                "    widget.element.blur(); " + // blur ile formun tepki vermesi sağlanabilir
-                "} " +
-                "}", 75);
+                        "var widget = $(el).data('kendoNumericTextBox');" +
+                        "if (widget) { " +
+                        "    widget.value(val); " +
+                        "    widget.trigger('change'); " +
+                        "    widget.element.blur(); " + // blur ile formun tepki vermesi sağlanabilir
+                        "} " +
+                        "}", 75);
     }
 
     /**

@@ -2,7 +2,7 @@ package stepDefs;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
-import pages.contractDefinitionPages.ContractDefinitionPage;
+import pages.SupplierPages.ContractDefinitionPage;
 
 public class ContractDefinitionStepdefs {
 

@@ -5,7 +5,7 @@ Feature: Contract Definition Page
     When fill username and password
     And click login button
     Then verify successful login
-    And click contract definition dropdown toggle
+    And click supplier dropdown toggle
 
   @contractDefinitionNewRecordTest
   Scenario Outline: Contract Definition Page Test
