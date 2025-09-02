@@ -95,7 +95,7 @@ public class WorkflowInboxPage extends BasePage {
         clickElement(creatingEYKLink);
     }
 
-    public void clickSupplierLink() {
+    public void clickContractDefinitionDropdownToggle() {
         Locator retailMenu = page.locator("li.dropdown > a.dropdown-toggle",
                 new Page.LocatorOptions().setHasText("Tedarikçi"));
         retailMenu.click();

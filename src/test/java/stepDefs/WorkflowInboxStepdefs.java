@@ -69,9 +69,9 @@ public class WorkflowInboxStepdefs {
         inboxPage.clickCreatingEYKLink();
     }
 
-    @And("click supplier dropdown toggle")
-    public void clickSupplierDropdownToggle() {
-        inboxPage.clickSupplierLink();
+    @And("click contract definition dropdown toggle")
+    public void clickContractDefinitionDropdownToggle() {
+        inboxPage.clickContractDefinitionDropdownToggle();
     }
 
     @When("click contract definition link")

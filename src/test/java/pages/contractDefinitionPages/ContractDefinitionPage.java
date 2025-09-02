@@ -1,4 +1,4 @@
-package pages.SupplierPage;
+package pages.contractDefinitionPages;
 
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
@@ -163,14 +163,18 @@ public class ContractDefinitionPage extends BasePage {
     /**
      * Marka seçici kutusundan bir marka seçer.
      */
-    public void selectBrand(String brandOption) {
+    public void selectBrand(String brandOptions) {
         Locator input = contractDefinitionFrame.locator("#BrandIds_taglist")
                 .locator("xpath=following-sibling::input");
         input.click();
-        page.keyboard().type(brandOption);
+        page.keyboard().type(brandOptions);
         page.keyboard().press("Enter");
 
-        addString("BrandName", brandOption);
+        String brandName = contractDefinitionFrame.locator("#BrandIds_taglist li.k-button span")
+                .first().textContent();
+        System.out.println("Marka***: " + brandName);
+
+        addString("BrandName", brandName);
     }
 
 
@@ -208,12 +212,30 @@ public class ContractDefinitionPage extends BasePage {
      * Kayıt işleminin başarılı olduğunu doğrular.
      */
     public void verifyRecordSavedSuccessfully() {
-        Locator popUpConfMessage = page.locator(".ajs-message.ajs-success.ajs-visible");
-       if (popUpConfMessage.isVisible()) {
-           System.out.println("Kaydetme işlemi başarılı.");
-       } else {
-           System.out.println("Kaydetme işlemi başarısız.");
-       }
+        Locator successMessage = page.locator(".ajs-message.ajs-success.ajs-visible");
+        Locator errorMessage = page.locator(".ajs-message.ajs-error.ajs-visible");
+
+        if (successMessage.isVisible()) {
+            System.out.println("Kaydetme işlemi başarılı: " + successMessage.textContent());
+        } else if (errorMessage.isVisible()) {
+            System.out.println("Hata mesajı: " + errorMessage.textContent());
+        } else {
+            System.out.println("Kaydetme işlemi başarısız!!!");
+        }
+    }
+
+    /**
+     * Sözleşme kaydından sonra sözleşme durumunu doğrular.
+     * @param status sözleşme durumu
+     */
+    public void verifyContractStatus(String status) {
+        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
+        page.waitForTimeout(5000); // 5 saniye bekle
+
+        String contractStatus = contractUpdateFrame.locator("#ContractStatus").inputValue();
+        System.out.println("Contract Status: " + contractStatus);
+        Assert.assertEquals(status, contractStatus);
+
     }
 
     /**
@@ -262,7 +284,7 @@ public class ContractDefinitionPage extends BasePage {
      * Ana sayfada cins çoklu seçim kutusundan daha önce formda seçilen cins seçeneğini seçer.
      */
     public void selectTypeOptionFromMainPage() {
-        String type = getString("Type");
+        String type = getString("TypeName");
 
         Locator input = page.locator("input.k-input[aria-owns='FilterTypeIds_taglist FilterTypeIds_listbox']");
         input.click();
@@ -285,7 +307,7 @@ public class ContractDefinitionPage extends BasePage {
      * Ana sayfada kayıtların listelendiğini doğrular.
      */
     public void verifyRecordExistsOnMainPage() {
-        Locator records = page.locator("#ContractGridId tr[data-uid]");
+        Locator records = page.locator("#ContractGridId tr[data-uid]").nth(0);
         if (records.count() > 0) {
             System.out.println("Kayıt başarıyla oluşturuldu ve listede mevcut.");
         } else {
@@ -297,7 +319,7 @@ public class ContractDefinitionPage extends BasePage {
      * Ana sayfada firma adını doğrular.
      */
     public void verifyFirmNameOnMainPage() {
-        String firmName = page.locator("td[data-field-name='FirmName']").textContent();
+        String firmName = page.locator("td[data-field-name='FirmName']").nth(0).textContent();
         System.out.println("Firma adı: " + firmName);
         String firmNameFromDistributorInfo = getString("FirmName");
         Assert.assertEquals(firmName,firmNameFromDistributorInfo);
@@ -308,7 +330,7 @@ public class ContractDefinitionPage extends BasePage {
      * @param category doğrulanacak kategori metni
      */
     public void verifyCategoryOnMainPage(String category) {
-        String categoryName = page.locator("td[data-field-name='CategoryNames']").textContent();
+        String categoryName = page.locator("td[data-field-name='CategoryNames']").nth(0).textContent();
         System.out.println("Kategori adı: " + categoryName);
         Assert.assertEquals(categoryName,category);
     }
@@ -317,12 +339,15 @@ public class ContractDefinitionPage extends BasePage {
      * Ana sayfada cins adını doğrular.
      */
     public void verifyTypeOnMainPage() {
-        String typeName = page.locator("td[data-field-name='TypeNames']").textContent();
+        String typeName = page.locator("td[data-field-name='TypeNames']").nth(0).textContent();
         System.out.println("Cins adı: " + typeName);
-        String typeFromForm = getString("Type");
+        String typeFromForm = getString("TypeName");
         Assert.assertEquals(typeName,typeFromForm);
     }
 
+    /**
+     * Firmaya göre gelen kategori alanını doğrular.
+     */
     public void verifyCategorySelected() {
         String categoryName = getString("CategoryName");
         String selectedCategory = contractDefinitionFrame
@@ -330,6 +355,9 @@ public class ContractDefinitionPage extends BasePage {
         Assert.assertEquals(categoryName, selectedCategory);
     }
 
+    /**
+     * Firmaya ve kayegoriye göre gelen Cins alanını doğrular.
+     */
     public void verifyTypeOptionSelected() {
         String typeName = getString("TypeName");
         String selectedType = contractDefinitionFrame
@@ -337,6 +365,9 @@ public class ContractDefinitionPage extends BasePage {
         Assert.assertEquals(typeName, selectedType);
     }
 
+    /**
+     * Firmaya ve kayegoriye göre gelen Marka alanını doğrular.
+     */
     public void verifyBrandSelected() {
         String brandName = getString("BrandName");
         String selectedBrand = contractDefinitionFrame
@@ -344,6 +375,9 @@ public class ContractDefinitionPage extends BasePage {
         Assert.assertEquals(brandName, selectedBrand);
     }
 
+    /**
+     * Sözleşme Tanımlama Frame kapatır.
+     */
     public void closeContractDefinitionFrame() {
         contractDefinitionFrame.locator("#ClosePopupBtn").click();
     }

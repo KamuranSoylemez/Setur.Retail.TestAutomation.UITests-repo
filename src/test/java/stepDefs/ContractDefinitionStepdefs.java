@@ -2,7 +2,7 @@ package stepDefs;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
-import pages.SupplierPage.ContractDefinitionPage;
+import pages.contractDefinitionPages.ContractDefinitionPage;
 
 public class ContractDefinitionStepdefs {
 
@@ -31,7 +31,7 @@ public class ContractDefinitionStepdefs {
         contractDefinitionPage.selectFirstDayOfMonth();
         contractDefinitionPage.selectFiscalMonthStart();
         contractDefinitionPage.selectIncoterms();
-        contractDefinitionPage.selectBrand("FENERBAHÇE");
+        contractDefinitionPage.selectBrand("***");
         contractDefinitionPage.fillTermDays();
         contractDefinitionPage.fillDescription();
 
@@ -41,6 +41,7 @@ public class ContractDefinitionStepdefs {
     public void saveContractDefinition() {
         contractDefinitionPage.saveContractDefinition();
         contractDefinitionPage.verifyRecordSavedSuccessfully();
+        contractDefinitionPage.verifyContractStatus("Hazırlanıyor");
         contractDefinitionPage.closeContractUpdateFrame();
     }
 
@@ -60,8 +61,8 @@ public class ContractDefinitionStepdefs {
         contractDefinitionPage.verifyTypeOnMainPage();
     }
 
-    @And("fill out the form for each {string} and {string} and {string}")
-    public void fillOutTheFormForEachCategory(String category, String type, String brand) {
+    @And("fill out the form for each {string} and {string}")
+    public void fillOutTheFormForEachCategory(String category, String type) {
         contractDefinitionPage.openCompanyIdentificationFrame();
         contractDefinitionPage.fillCompanyCode(category);
         contractDefinitionPage.searchCompany();
@@ -71,7 +72,7 @@ public class ContractDefinitionStepdefs {
         contractDefinitionPage.verifyCategorySelected();
         contractDefinitionPage.selectTypeOption(type);
         contractDefinitionPage.verifyTypeOptionSelected();
-        contractDefinitionPage.selectBrand(brand);
+        contractDefinitionPage.selectBrand("***");
         contractDefinitionPage.verifyBrandSelected();
         contractDefinitionPage.closeContractDefinitionFrame();
     }
