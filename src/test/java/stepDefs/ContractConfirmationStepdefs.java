@@ -13,9 +13,15 @@ public class ContractConfirmationStepdefs {
         contractConfirmationPage.verifyContractConfirmationPageIsDisplayed();
     }
 
-    @Then("fill out the form")
-    public void fillOutTheForm() {
+    @Then("fill out the form {string}")
+    public void fillOutTheForm(String status) {
         contractConfirmationPage.fillFirmCode();
+        contractConfirmationPage.fillContractName();
+        contractConfirmationPage.fillFirmName();
+        contractConfirmationPage.selectStartDate();
+        contractConfirmationPage.selectEndDate();
+        contractConfirmationPage.selectIncoterm();
+        contractConfirmationPage.selectContractStatus(status);
 
     }
 
@@ -29,8 +35,25 @@ public class ContractConfirmationStepdefs {
         contractConfirmationPage.clicktoEdit();
     }
 
+    @Then("verify contract cancellation approve button is visible")
+    public void verifyContractCancellationApproveButtonIsVisible() {
+        contractConfirmationPage.verifyContractCancellationApproveButtonIsVisible();
+    }
+
+    @And("verify contract cancellation reject button is visible")
+    public void verifyContractCancellationRejectButtonIsVisible() {
+        contractConfirmationPage.verifyContractCancellationRejectButtonIsVisible();
+    }
+
     @Then("verify contract approve button is visible")
     public void verifyContractApproveButtonIsVisible() {
         contractConfirmationPage.verifyContractApproveButtonIsVisible();
     }
+
+    @And("verify contract reject button is visible")
+    public void verifyContractRejectButtonIsVisible() {
+        contractConfirmationPage.verifyContractRejectButtonIsVisible();
+    }
+
+
 }

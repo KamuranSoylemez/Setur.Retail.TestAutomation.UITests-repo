@@ -38,6 +38,14 @@ public class LoginPage extends BasePage {
         passwordLocator.fill(pass);
     }
 
+
+    /**
+     * Role özel kullanıcı ile giriş yapar
+     */    public void loginAsSpecialUser(String user, String pass) {
+        userNameLocator.fill(user);
+        passwordLocator.fill(pass);
+    }
+
     /**
      * Hatalı girişleri verify eder
      */

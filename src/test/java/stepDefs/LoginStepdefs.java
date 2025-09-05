@@ -18,6 +18,7 @@ public class LoginStepdefs {
     public void clickLoginButton() {
         loginPage.clickLoginButton();
     }
+
     @When("try login with incorrect {string} or {string}")
     public void tryLoginWithIncorrectUserAndPass(String user, String pass) {
         loginPage.tryLoginWithUserAndPass(user,pass);
@@ -27,4 +28,11 @@ public class LoginStepdefs {
     public void verifyUnsuccessfulLogin() {
         loginPage.verifyUnsuccessfulLogin();
     }
+
+
+    @When("login as special user {string} {string}")
+    public void loginAsSpecialUser(String user, String pass) {
+    loginPage.loginAsSpecialUser(user,pass);
+}
+
 }
