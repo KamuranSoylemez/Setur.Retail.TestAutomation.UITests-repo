@@ -20,6 +20,7 @@ public class ContractConfirmationPage extends BasePage {
     Locator editLinks = page.locator(".gridCmdBtn.cmdLink.ContractWaitingForApprovalGridCmd");
 
 
+
     /**
      * Sözleşme Onay İşlemleri sayfasının açıldığını doğrular.
      */
@@ -166,6 +167,33 @@ public class ContractConfirmationPage extends BasePage {
         Locator rejectButton = targetFrame.locator("#ContractApprove");
         assert rejectButton.isVisible();
     }
+
+    public void countButtons() {
+        Frame targetFrame = identifyIFramesAndReturnTargetFrame();
+        Locator buttons = targetFrame.locator("button");
+        int buttonCount = buttons.count();
+        System.out.println("Buton sayısı: " + buttonCount);
+        assert buttonCount == 2 : "Buton sayısı beklenen değerden farklı: " + buttonCount;
+    }
+
+    public void verifyCallBackButtonIsVisible(){
+        Frame targetFrame = identifyIFramesAndReturnTargetFrame();
+        Locator callBackButton = targetFrame.locator("#ContractWithdraw");
+        assert callBackButton.isVisible();
+    }
+
+    public void verifyContractDirectorRejectButtonIsVisible(){
+        Frame targetFrame = identifyIFramesAndReturnTargetFrame();
+        Locator directorRejectButton = targetFrame.locator("#ContractDirectorReject");
+        assert directorRejectButton.isVisible();
+    }
+
+    public void verifyContractDirectorApproveButtonIsVisible(){
+        Frame targetFrame = identifyIFramesAndReturnTargetFrame();
+        Locator directorApproveButton = targetFrame.locator("#ContractDirectorApprove");
+        assert directorApproveButton.isVisible();
+    }
+
 
 
 }

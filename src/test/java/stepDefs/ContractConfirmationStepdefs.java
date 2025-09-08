@@ -55,5 +55,24 @@ public class ContractConfirmationStepdefs {
         contractConfirmationPage.verifyContractRejectButtonIsVisible();
     }
 
+    @And("check button count")
+    public void checkButtonCount() {
+        contractConfirmationPage.countButtons();
+    }
 
+    @And("verify callBack button is visible")
+    public void verifyCallBackButtonIsVisible() {
+        contractConfirmationPage.verifyCallBackButtonIsVisible();
+    }
+
+    @And("verify contract director reject button is visible")
+    public void verifyContractDirectorRejectButtonIsVisible() {
+        contractConfirmationPage.verifyContractDirectorRejectButtonIsVisible();
+    }
+
+    @And("verify contract director approve button is visible")
+    public void verifyContractDirectorApproveButtonIsVisible() {
+        contractConfirmationPage.verifyContractDirectorApproveButtonIsVisible();
+
+    }
 }
