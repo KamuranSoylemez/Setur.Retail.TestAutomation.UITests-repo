@@ -21,23 +21,20 @@ Feature: Contract Definition Page
       | BUTİK-AKSESUAR  |
 
 
-
-  @contractDefinitionCompanyBasedControlTest
-  Scenario Outline: Contract Definition Main Page Search Test
+  @contractDefinitionCompanyBasedControlTest1
+  Scenario: Contract Definition Category and Type And Brand Test
     When click contract definition link
     Then verify contract definition page is displayed
-    And open new contract definition form
-    And fill out the form for each "<category>" and "<type>"
+    And fill out the form for categories
+      | category        | type             | brand          |
+      | PARFÜM-KOZMETİK | MAKYAJ           | CHRISTIAN DIOR |
+      | GIDA            | ÇİKOLATA         | TADELLE        |
+      | TÜTÜN ÜRÜNLERİ  | PURO             | MARLBORO       |
+      | BUTİK-AKSESUAR  | AKSESUAR         | FOSSIL         |
+      | İÇKİ            | BİRA             | PATRON         |
+      | OYUNCAK         | OYUNCAK-BEDELSİZ | SUNMAN         |
+      | BAZAAR          | LOKUM            | DİVAN          |
+      | ELEKTRONİK      | TABLET           | ARZUM          |
+      | POŞET           | POSET            | ARCE PLASTİK   |
+      | EŞANTİYON       | ACC HEDİYE ÜRÜN  | MUMAY ÇANTA    |
 
-    Examples: Categories and Types
-      | category        | type            |
-      | PARFÜM-KOZMETİK | MAKYAJ          |
-      | GIDA            | ÇİKOLATA        |
-      | TÜTÜN ÜRÜNLERİ  | PURO            |
-      | BUTİK-AKSESUAR  | BUTİK           |
-      | İÇKİ            | BİRA            |
-      | OYUNCAK         | OYUNCAK         |
-      | BAZAAR          | LOKUM           |
-      | ELEKTRONİK      | TABLET          |
-      | POŞET           | POSET           |
-      | EŞANTİYON       | ACC HEDİYE ÜRÜN |
