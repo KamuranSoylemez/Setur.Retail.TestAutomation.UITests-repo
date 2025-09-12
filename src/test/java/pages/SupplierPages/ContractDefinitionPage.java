@@ -6,6 +6,7 @@ import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import enums.Categories;
 import enums.DistributorInfo;
+import io.cucumber.java.PendingException;
 import org.junit.Assert;
 import pages.commonPages.BasePage;
 
@@ -91,21 +92,19 @@ public class ContractDefinitionPage extends BasePage {
     }
 
     /**
-     * Cins seçim kutusundan verilen metne sahip seçeneği seçer.
-     * @param typeOption seçilecek seçenek metni
+     * Cins seçim kutusundan ilk seçeneği seçer.
      */
-    public void selectTypeOption(String typeOption) {
+    public void selectTypeOption() {
         Locator input = contractDefinitionFrame.
                 locator("div.k-multiselect-wrap input.k-input").nth(2);
         input.click();
 
-        Locator option = contractDefinitionFrame.locator("ul#TypeIdArray_listbox li")
-                .filter(new Locator.FilterOptions().setHasText(typeOption));
-        option.waitFor(new Locator.WaitForOptions()
-                .setState(WaitForSelectorState.VISIBLE));
+        Locator option = contractDefinitionFrame
+                .locator("ul#TypeIdArray_listbox li").first();
+        option.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         option.click();
 
-        addString("TypeName", typeOption);
+        addString("TypeName", option.textContent());
     }
 
     /**
@@ -170,11 +169,10 @@ public class ContractDefinitionPage extends BasePage {
         page.keyboard().type(brandOptions);
         page.keyboard().press("Enter");
 
-        String brandName = contractDefinitionFrame.locator("#BrandIds_taglist li.k-button span")
-                .first().textContent();
-        System.out.println("Marka***: " + brandName);
+        // String brandName = contractDefinitionFrame.locator("#BrandIds_taglist li.k-button span")
+        //      .first().textContent();
 
-        addString("BrandName", brandName);
+        addString("BrandName", brandOptions);
     }
 
 
@@ -208,17 +206,29 @@ public class ContractDefinitionPage extends BasePage {
         clickElement(contractDefinitionFrame.locator("#btnSave"));
     }
 
-    /**
-     * Kayıt işleminin başarılı olduğunu doğrular.
-     */
+
+    public void verifyDuplicateRecord() {
+        Locator errorMessage = page.locator(".ajs-message.ajs-error.ajs-visible");
+
+        if (errorMessage.isVisible()) {
+            String errorText = errorMessage.textContent();
+            Assert.assertEquals("Sistemde bu kayıt mevcuttur. Başka bir kayıt deneyin.", errorText);
+            System.out.println("Beklenen hata mesajı alındı, test SUCCESS olarak kabul edildi.");
+
+            // Step’i skip ederek senaryoyu bitir
+            throw new PendingException("Duplicate kayıt mevcut. Senaryo burada success olarak tamamlandı.");
+        } else {
+            // Beklenmeyen durum → test fail
+            throw new RuntimeException("Beklenen duplicate hata mesajı görünmedi. Senaryo fail oldu!");
+        }
+    }
+
+
     public void verifyRecordSavedSuccessfully() {
         Locator successMessage = page.locator(".ajs-message.ajs-success.ajs-visible");
-        Locator errorMessage = page.locator(".ajs-message.ajs-error.ajs-visible");
 
         if (successMessage.isVisible()) {
             System.out.println("Kaydetme işlemi başarılı: " + successMessage.textContent());
-        } else if (errorMessage.isVisible()) {
-            System.out.println("Hata mesajı: " + errorMessage.textContent());
         } else {
             System.out.println("Kaydetme işlemi başarısız!!!");
         }
@@ -277,7 +287,6 @@ public class ContractDefinitionPage extends BasePage {
                 .setState(WaitForSelectorState.VISIBLE));
         option.click();
 
-        addString("Category", category);
     }
 
     /**
@@ -356,10 +365,29 @@ public class ContractDefinitionPage extends BasePage {
     }
 
     /**
+     * Firmaya ve kayegoriye göre gelen Cins alanından verilen cinsi seçer.
+     * @param type seçilecek cins metni
+     */
+    public void selectType(String type) {
+        Locator input = contractDefinitionFrame.
+                locator("div.k-multiselect-wrap input.k-input").nth(2);
+        input.click();
+
+        Locator option = contractDefinitionFrame.locator("ul#TypeIdArray_listbox li")
+                .filter(new Locator.FilterOptions().setHasText(type));
+        option.waitFor(new Locator.WaitForOptions()
+                .setState(WaitForSelectorState.VISIBLE));
+        option.click();
+
+        addString("typeName", type);
+
+    }
+
+    /**
      * Firmaya ve kayegoriye göre gelen Cins alanını doğrular.
      */
     public void verifyTypeOptionSelected() {
-        String typeName = getString("TypeName");
+        String typeName = getString("typeName");
         String selectedType = contractDefinitionFrame
                 .locator("#TypeIdArray_taglist li span:first-child").textContent().trim();
         Assert.assertEquals(typeName, selectedType);

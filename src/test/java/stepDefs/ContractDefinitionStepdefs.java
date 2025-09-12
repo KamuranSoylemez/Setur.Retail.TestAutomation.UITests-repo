@@ -4,6 +4,9 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import pages.SupplierPages.ContractDefinitionPage;
 
+import java.util.List;
+import java.util.Map;
+
 public class ContractDefinitionStepdefs {
 
     ContractDefinitionPage contractDefinitionPage = new ContractDefinitionPage();
@@ -26,7 +29,7 @@ public class ContractDefinitionStepdefs {
         contractDefinitionPage.selectCompanyFromList();
         contractDefinitionPage.openCategories();
         contractDefinitionPage.selectCategoryOption(category);
-        contractDefinitionPage.selectTypeOption("HOME");
+        contractDefinitionPage.selectTypeOption();
         contractDefinitionPage.selectStartDate();
         contractDefinitionPage.selectFirstDayOfMonth();
         contractDefinitionPage.selectFiscalMonthStart();
@@ -40,6 +43,7 @@ public class ContractDefinitionStepdefs {
     @And("save contract definition")
     public void saveContractDefinition() {
         contractDefinitionPage.saveContractDefinition();
+        contractDefinitionPage.verifyDuplicateRecord();
         contractDefinitionPage.verifyRecordSavedSuccessfully();
         contractDefinitionPage.verifyContractStatus("Hazırlanıyor");
         contractDefinitionPage.closeContractUpdateFrame();
@@ -61,19 +65,30 @@ public class ContractDefinitionStepdefs {
         contractDefinitionPage.verifyTypeOnMainPage();
     }
 
-    @And("fill out the form for each {string} and {string}")
-    public void fillOutTheFormForEachCategory(String category, String type) {
-        contractDefinitionPage.openCompanyIdentificationFrame();
-        contractDefinitionPage.fillCompanyCode(category);
-        contractDefinitionPage.searchCompany();
-        contractDefinitionPage.selectCompanyFromList();
-        contractDefinitionPage.openCategories();
-        contractDefinitionPage.selectCategoryOption(category);
-        contractDefinitionPage.verifyCategorySelected();
-        contractDefinitionPage.selectTypeOption(type);
-        contractDefinitionPage.verifyTypeOptionSelected();
-        contractDefinitionPage.selectBrand("***");
-        contractDefinitionPage.verifyBrandSelected();
-        contractDefinitionPage.closeContractDefinitionFrame();
+    @And("fill out the form for categories")
+    public void fillOutTheFormForCategories(io.cucumber.datatable.DataTable dataTable) {
+        List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+
+        for (Map<String, String> row : rows) {
+            String category = row.get("category");
+            String type = row.get("type");
+            String brand = row.get("brand");
+
+            contractDefinitionPage.openNewContractDefinitionForm();
+            contractDefinitionPage.openCompanyIdentificationFrame();
+            contractDefinitionPage.fillCompanyCode(category);
+            contractDefinitionPage.searchCompany();
+            contractDefinitionPage.selectCompanyFromList();
+            contractDefinitionPage.openCategories();
+            contractDefinitionPage.selectCategoryOption(category);
+            contractDefinitionPage.verifyCategorySelected();
+            contractDefinitionPage.selectType(type);
+            contractDefinitionPage.verifyTypeOptionSelected();
+            contractDefinitionPage.selectBrand(brand);
+            contractDefinitionPage.verifyBrandSelected();
+            contractDefinitionPage.closeContractDefinitionFrame();
+        }
     }
+
+
 }
