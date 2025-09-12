@@ -25,6 +25,12 @@ public class ContractConfirmationStepdefs {
 
     }
 
+
+    @Then("fill sample contract field {string}")
+    public void fillContractField(String contractName) {
+        contractConfirmationPage.fillContractName();
+    }
+
     @Then("click to search button")
     public void clickToSearchButton() {
         contractConfirmationPage.clicktoSearchButton();
