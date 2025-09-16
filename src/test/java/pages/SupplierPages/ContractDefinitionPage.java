@@ -317,6 +317,11 @@ public class ContractDefinitionPage extends BasePage {
         page.locator("#FilterButtonId").click();
     }
 
+    public void clickToFirstEdit(){
+        Locator editLinks = page.locator("a.k-button.gridCmdBtn.k-success.cmdLink.ContractGridIdCmd");
+        editLinks.first().click();
+    }
+
     /**
      * Ana sayfada kayıtların listelendiğini doğrular.
      */

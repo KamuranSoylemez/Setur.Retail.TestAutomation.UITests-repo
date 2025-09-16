@@ -26,3 +26,13 @@ Feature: Contract Confirmation Page
     Then click to first edit
     Then verify contract cancellation reject button is visible
     Then verify contract cancellation approve button is visible
+
+
+  @supplierTest
+  Scenario: Director Confirmation Test for Manager Approval Status
+    When click contract confirmation link
+    Then verify contract confirmation page is displayed
+    Then fill out the form "Müdür Onayı Bekleniyor"
+    Then click to search button
+    Then click to first edit
+    Then check button count

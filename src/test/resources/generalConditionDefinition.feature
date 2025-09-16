@@ -12,4 +12,8 @@ Feature: Genel Kondisyon Oluşturma ve Tanımlama
     When click contract definition link
     Then verify contract definition page is displayed
     Given click to sample contract "FOS-2025-FCA"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click to new general condition button
+
 
