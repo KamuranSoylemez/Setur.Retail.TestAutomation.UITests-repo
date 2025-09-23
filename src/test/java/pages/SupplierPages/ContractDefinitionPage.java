@@ -107,9 +107,9 @@ public class ContractDefinitionPage extends BasePage {
         addString("TypeName", option.textContent());
     }
 
-    public void fillContractName() {
+    public void fillContractName(String contractName) {
         Locator contractNameInput = page.locator("#FilterContractName");
-        contractNameInput.fill("SWRI-2025-CF");
+        contractNameInput.fill(contractName);
     }
 
     /**
