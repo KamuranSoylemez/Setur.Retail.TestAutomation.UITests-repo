@@ -13,7 +13,7 @@ Feature: Contract Confirmation Page
     Then fill out the form "Müdür Onayı Bekleniyor"
     Then click to search button
     Then click to first edit
-    Then verify contract reject button is visible
+    Then verify contract approve button is visible
     Then verify contract reject button is visible
 
 

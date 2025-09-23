@@ -158,13 +158,14 @@ public class ContractConfirmationPage extends BasePage {
 
     public void verifyContractApproveButtonIsVisible() {
         Frame targetFrame = identifyIFramesAndReturnTargetFrame();
-        Locator rejectButton = targetFrame.locator("#ContractReject");
-        assert rejectButton.isVisible();
+        Locator approveButton = targetFrame.locator("#ContractApprove");
+        assert approveButton.isVisible();
+        System.out.println(approveButton.isVisible() + approveButton.textContent());
     }
 
     public void verifyContractRejectButtonIsVisible() {
         Frame targetFrame = identifyIFramesAndReturnTargetFrame();
-        Locator rejectButton = targetFrame.locator("#ContractApprove");
+        Locator rejectButton = targetFrame.locator("#ContractReject");
         assert rejectButton.isVisible();
     }
 
