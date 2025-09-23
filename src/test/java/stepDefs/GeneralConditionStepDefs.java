@@ -18,7 +18,7 @@ public class GeneralConditionStepDefs {
     // TEST1 Steps
     @Given("click to sample contract {string}")
     public void clickToSampleContract(String contractName) {
-       contractDefinitionPage.fillContractName();
+       contractDefinitionPage.fillContractName(contractName);
         System.out.println("✅ Sözleşme adı: " + contractName + " olan sözleşme kontrol edildi");
     }
 

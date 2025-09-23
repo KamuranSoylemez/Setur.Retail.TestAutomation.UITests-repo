@@ -25,38 +25,38 @@ public class ContractConfirmationPage extends BasePage {
      * Sözleşme Onay İşlemleri sayfasının açıldığını doğrular.
      */
 
-    public void verifyContractConfirmationPageIsDisplayed() {
-        verifyTextElementUseTrim("Sözleşme Onay İşlemleri", pageTitle);
+    public void verifyContractConfirmationPageIsDisplayed(String expectedTitle) {
+        verifyTextElementUseTrim(expectedTitle, pageTitle);
 
     }
 
     /**
      * Firma kodu, firma adı ve sözleşme adı alanlarını doldurur.
      */
-    public void fillFirmCode() {
-        firmCodeInput.fill("1350-SWRI");
+    public void fillFirmCode(String firmCode) {
+        firmCodeInput.fill(firmCode);
     }
 
-    public void fillFirmName() {
-        firmNameInput.fill("SWAROVSKI INTERNATIONAL");
+    public void fillFirmName(String firmName) {
+        firmNameInput.fill(firmName);
     }
 
-    public void fillContractName() {
-        contractNameInput.fill("SWRI-2025-CF");
+    public void fillContractName(String contractName) {
+        contractNameInput.fill(contractName);
     }
 
     /**
      * Başlangıç tarihi seçici butonuna tıklar.
      */
-    public void selectStartDate() {
-        page.locator("#FilterStartDate").fill("01.09.2025");
+    public void selectStartDate(String startDate) {
+        page.locator("#FilterStartDate").fill(startDate);
     }
 
     /**
      * Bitiş tarihi seçici butonuna tıklar.
      */
-    public void selectEndDate() {
-        page.locator("#FilterEndDate").fill("31.08.2026");
+    public void selectEndDate(String endDate) {
+        page.locator("#FilterEndDate").fill(endDate);
     }
 
     /**

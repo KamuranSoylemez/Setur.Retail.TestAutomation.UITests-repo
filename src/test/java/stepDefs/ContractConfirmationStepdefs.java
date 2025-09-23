@@ -8,27 +8,29 @@ public class ContractConfirmationStepdefs {
 
     ContractConfirmationPage contractConfirmationPage = new ContractConfirmationPage();
 
-    @Then("verify contract confirmation page is displayed")
-    public void verifyContractConfirmationPageIsDisplayed() {
-        contractConfirmationPage.verifyContractConfirmationPageIsDisplayed();
+    @Then("verify contract confirmation page is displayed {string}")
+    public void verifyContractConfirmationPageIsDisplayed(String expectedTitle) {
+        contractConfirmationPage.verifyContractConfirmationPageIsDisplayed(expectedTitle);
     }
 
-    @Then("fill out the form {string}")
-    public void fillOutTheForm(String status) {
-        contractConfirmationPage.fillFirmCode();
-        contractConfirmationPage.fillContractName();
-        contractConfirmationPage.fillFirmName();
-        contractConfirmationPage.selectStartDate();
-        contractConfirmationPage.selectEndDate();
+    @Then("fill out the form by dates and status {string} {string} {string}")
+    public void fillOutTheForm(String status,String startDate, String endDate) {
+        contractConfirmationPage.selectStartDate(startDate);
+        contractConfirmationPage.selectEndDate(endDate);
         contractConfirmationPage.selectIncoterm();
         contractConfirmationPage.selectContractStatus(status);
 
     }
 
+    @Then("fill firm field {string} {string}")
+    public void fillFirmField(String firmCode, String firmName) {
+        contractConfirmationPage.fillFirmCode(firmCode);
+        contractConfirmationPage.fillFirmName(firmName);
+    }
 
     @Then("fill sample contract field {string}")
     public void fillContractField(String contractName) {
-        contractConfirmationPage.fillContractName();
+        contractConfirmationPage.fillContractName(contractName);
     }
 
     @Then("click to search button")
