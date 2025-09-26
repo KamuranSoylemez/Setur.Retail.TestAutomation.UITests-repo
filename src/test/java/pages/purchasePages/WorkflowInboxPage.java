@@ -20,6 +20,7 @@ public class WorkflowInboxPage extends BasePage {
     Locator creatingEYKLink = page.locator("//a[@href='/ApplicationManagement/StockTransferPreparing/Index']");
     Locator contractDefinitionLink = page.locator("//a[@href='/ApplicationManagement/Contract/Index']");
     Locator contractConfirmationLink = page.locator("//a[@href='/ApplicationManagement/Contract/WaitingForApproval']");
+    Locator creditNoteLink = page.locator("//a[@href='/ApplicationManagement/CreditNote/Index']");
 
     /**
      * Giriş yaptıktan sonra ilk açılan sayfayı verify eder.
@@ -38,6 +39,10 @@ public class WorkflowInboxPage extends BasePage {
      */
     public void clickCreateOrderLink() {
         clickElement(purchaseOrderLink);
+    }
+
+    public void  clickCreditNoteLink(){
+        clickElement(creditNoteLink);
     }
     /**
      * Satın Alma altındaki  Sipariş Sorgulama linkine tıklar.

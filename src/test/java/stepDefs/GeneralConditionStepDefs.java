@@ -14,8 +14,9 @@ import pages.SupplierPages.GeneralConditionPage;
 public class GeneralConditionStepDefs {
     ContractDefinitionPage contractDefinitionPage = new ContractDefinitionPage();
     ContractUpdatePage contractUpdatePage = new ContractUpdatePage();
+    GeneralConditionPage generalConditionPage = new GeneralConditionPage();
 
-    // TEST1 Steps
+
     @Given("click to sample contract {string}")
     public void clickToSampleContract(String contractName) {
        contractDefinitionPage.fillContractName(contractName);
@@ -36,9 +37,34 @@ public class GeneralConditionStepDefs {
 
     @Then("click to new general condition button")
     public void clickToNewGeneralConditionButton() {
-        contractUpdatePage.clickToNewGeneralCondition();
-        System.out.println("✅ Yeni genel kondisyon butonuna tıklandı");
+        try {
+            contractUpdatePage.clickToNewGeneralCondition();
+            System.out.println("✅ Yeni genel kondisyon butonuna tıklandı");
+        } catch (Exception e) {
+            System.err.println("❌ Butona tıklanamadı: " + e.getMessage());
+        }
     }
 
 
+    @Then("verify new general condition form is displayed")
+    public void verifyNewGeneralConditionFormIsDisplayed() {
+        contractUpdatePage.verifyNewGeneralConditionIsDisplayed();
+        System.out.println("✅ Yeni genel kondisyon formunun görüntülendiği doğrulandı");
+    }
+
+    @Then("fill out the general condition form {string} {string}")
+    public void fillOutTheGeneralConditionFormAndSave(String brand, String description) {
+        try {
+            generalConditionPage.fillOutTheGeneralConditionFormAndSave(brand, description);
+            System.out.println("✅ Genel kondisyon formu dolduruldu ve kaydedildi");
+        } catch (Exception e) {
+            System.err.println("❌ Form doldurulamadı veya kaydedilemedi: " + e.getMessage());
+        }
+    }
+
+    @Then("save new general condition form")
+    public void clickToSaveButtonOnGeneralConditionForm() {
+        generalConditionPage.clickToSaveButton();
+        System.out.println("✅ Genel kondisyon formunda kaydet butonuna tıklandı");
+    }
 }

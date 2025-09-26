@@ -83,4 +83,9 @@ public class WorkflowInboxStepdefs {
     public void clickContractConfirmationLink(){
         inboxPage.clickContractConfirmationLink();
     }
+
+    @When("click credit note link")
+    public void clickCreditNoteLink(){
+        inboxPage.clickCreditNoteLink();
+    }
 }
