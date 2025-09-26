@@ -107,6 +107,11 @@ public class ContractDefinitionPage extends BasePage {
         addString("TypeName", option.textContent());
     }
 
+    public void fillContractName(String contractName) {
+        Locator contractNameInput = page.locator("#FilterContractName");
+        contractNameInput.fill(contractName);
+    }
+
     /**
      * Başlangıç tarihi seçici butonuna tıklar.
      */
@@ -310,6 +315,11 @@ public class ContractDefinitionPage extends BasePage {
      */
     public void searchForRecordOnMainPage() {
         page.locator("#FilterButtonId").click();
+    }
+
+    public void clickToFirstEdit(){
+        Locator editLinks = page.locator("a.k-button.gridCmdBtn.k-success.cmdLink.ContractGridIdCmd");
+        editLinks.first().click();
     }
 
     /**
