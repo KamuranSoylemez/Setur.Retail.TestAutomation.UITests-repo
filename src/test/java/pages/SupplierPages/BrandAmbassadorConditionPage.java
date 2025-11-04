@@ -176,77 +176,72 @@ public class BrandAmbassadorConditionPage extends BasePage {
     }
 
     public void selectCalculationType(String calculationType) {
-        // Inline grid edit modunda Hedef Tipi dropdown'ını seç
+        // Hedef Tipi (Calculation Type) dropdown'ını seç
+        // DOĞRU ID: ReckoningSourceId_listbox
         page.waitForTimeout(1000);
         
         FrameLocator frame = getBrandAmbassadorConditionFrame();
         
         try {
-            // Hedef Tipi dropdown'ını bul
-            // Muhtemel ID'ler: ContractRepresentativeTargetTypeId, TargetTypeId, etc.
-            // Önce bilinen ID'leri dene
-            Locator hedefTipiDropdown = frame.locator(
-                "span[aria-owns='ContractRepresentativeTargetTypeId_listbox'], " +
-                "span[aria-owns='TargetTypeId_listbox'], " +
-                "span.k-dropdown:has(input[name*='TargetType'], input[name*='Target'])"
-            ).first();
+            // Hedef Tipi dropdown'ını ReckoningSourceId ile bul
+            Locator hedefTipiDropdown = frame.locator("span[aria-owns='ReckoningSourceId_listbox']");
             
             if (hedefTipiDropdown.count() == 0) {
+                System.out.println("❌ ReckoningSourceId dropdown bulunamadı!");
+                
                 // Debug: Tüm dropdown'ları listele
                 Locator allDropdowns = frame.locator("span.k-dropdown[aria-owns]");
-                System.out.println("🔍 Grid'de " + allDropdowns.count() + " aria-owns dropdown bulundu:");
+                System.out.println("🔍 Frame'de " + allDropdowns.count() + " dropdown var:");
                 for (int i = 0; i < Math.min(allDropdowns.count(), 10); i++) {
                     String ariaOwns = allDropdowns.nth(i).getAttribute("aria-owns");
-                    System.out.println("  Dropdown " + i + ": aria-owns='" + ariaOwns + "'");
+                    System.out.println("  [" + i + "] aria-owns: " + ariaOwns);
                 }
-                throw new RuntimeException("Hedef Tipi dropdown bulunamadı");
+                throw new RuntimeException("Hedef Tipi dropdown (ReckoningSourceId) bulunamadı");
             }
             
-            System.out.println("✅ Hedef Tipi dropdown bulundu");
+            System.out.println("✅ Hedef Tipi dropdown bulundu (ReckoningSourceId)");
+            
+            // Dropdown disabled mi kontrol et
+            String ariaDisabled = hedefTipiDropdown.getAttribute("aria-disabled");
+            if ("true".equals(ariaDisabled)) {
+                System.out.println("⚠️ Hedef Tipi dropdown disabled! (aria-disabled=true)");
+                throw new RuntimeException("Hedef Tipi dropdown disabled durumda - önce Kondisyon Tipi seçilmeli");
+            }
+            
             hedefTipiDropdown.click();
             page.waitForTimeout(1500);
             
-            // Listbox'ı hem frame içinde hem page'de ara
-            Locator listboxInFrame = frame.locator("ul[role='listbox'], ul.k-list");
-            Locator listboxInPage = page.locator("ul[role='listbox'], ul.k-list");
+            // ReckoningSourceId_listbox'ı frame içinde ara (Kendo UI genelde frame içinde açar)
+            Locator listbox = frame.locator("#ReckoningSourceId_listbox");
             
-            System.out.println("🔍 Frame'de listbox count: " + listboxInFrame.count());
-            System.out.println("🔍 Page'de listbox count: " + listboxInPage.count());
-            
-            Locator listbox = null;
-            String location = "";
-            
-            if (listboxInFrame.count() > 0) {
-                listbox = listboxInFrame.last();
-                location = "frame";
-                System.out.println("✅ Listbox frame içinde bulundu");
-            } else if (listboxInPage.count() > 0) {
-                listbox = listboxInPage.last();
-                location = "page";
-                System.out.println("✅ Listbox page'de bulundu");
+            // Frame içinde yoksa page'de ara
+            if (listbox.count() == 0) {
+                listbox = page.locator("#ReckoningSourceId_listbox");
+                System.out.println("🔍 Listbox page'de aranıyor...");
             } else {
-                throw new RuntimeException("Listbox bulunamadı");
+                System.out.println("🔍 Listbox frame içinde bulundu");
             }
             
-            // Debug: Listbox'daki tüm seçenekleri listele
-            Locator allOptions = listbox.locator("li");
-            int optionCount = allOptions.count();
-            System.out.println("🔍 Listbox'da toplam " + optionCount + " seçenek var:");
-            for (int i = 0; i < Math.min(optionCount, 10); i++) {
-                String optionText = allOptions.nth(i).textContent();
-                System.out.println("  Option " + i + ": '" + optionText + "'");
+            if (listbox.count() == 0) {
+                throw new RuntimeException("ReckoningSourceId_listbox bulunamadı");
             }
             
+            // Seçeneği bul ve tıkla
             Locator option = listbox.locator("li").filter(new Locator.FilterOptions().setHasText(calculationType));
-            System.out.println("🔍 '" + calculationType + "' için option count: " + option.count());
             
             if (option.count() == 0) {
-                throw new RuntimeException("'" + calculationType + "' option'ı bulunamadı");
+                // Debug: Tüm seçenekleri listele
+                Locator allOptions = listbox.locator("li");
+                System.out.println("❌ '" + calculationType + "' bulunamadı! Mevcut seçenekler:");
+                for (int i = 0; i < allOptions.count(); i++) {
+                    System.out.println("  [" + i + "] " + allOptions.nth(i).textContent());
+                }
+                throw new RuntimeException("Hedef Tipi option bulunamadı: " + calculationType);
             }
             
             option.first().click();
             page.waitForTimeout(500);
-            System.out.println("✅ Hedef Tipi seçildi (" + location + "): " + calculationType);
+            System.out.println("✅ Hedef Tipi seçildi: " + calculationType);
         } catch (Exception e) {
             System.err.println("❌ Hedef Tipi seçilemedi: " + e.getMessage());
             throw e;

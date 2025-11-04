@@ -25,31 +25,89 @@ public class ContractUpdatePage extends BasePage{
     public void clickBrandAmbassadorConditionsTab() {
         FrameLocator modalFrame = page.frameLocator("#SeturModalWin iframe");
         
-        // Önce tab'ları listele
+        // Debug: List all tabs
         System.out.println("🔍 Mevcut tab'ları kontrol ediyoruz...");
         Locator allTabs = modalFrame.locator("li[role='tab']");
-        int tabCount = allTabs.count();
-        System.out.println("Toplam " + tabCount + " tab bulundu");
+        System.out.println("Toplam " + allTabs.count() + " tab bulundu");
+        for (int i = 0; i < allTabs.count(); i++) {
+            String tabText = allTabs.nth(i).textContent();
+            String ariaSelected = allTabs.nth(i).getAttribute("aria-selected");
+            System.out.println("  Tab " + i + ": '" + tabText + "' (aria-selected=" + ariaSelected + ")");
+        }
         
-        for (int i = 0; i < Math.min(tabCount, 10); i++) {
-            try {
-                String tabText = allTabs.nth(i).textContent();
-                System.out.println("  Tab " + i + ": '" + tabText.trim() + "'");
-            } catch (Exception e) {
-                System.out.println("  Tab " + i + " okunamadı");
+        // Use JavaScript inside the frame context to trigger Kendo TabStrip
+        System.out.println("🔍 Kendo TabStrip API ile tab switch yapılıyor...");
+        Object result = modalFrame.locator("body").evaluate(
+            "() => {" +
+            "  const tabstrip = document.querySelector('.k-tabstrip');" +
+            "  if (!tabstrip) { return 'no_tabstrip'; }" +
+            "  const kendoTabStrip = $(tabstrip).data('kendoTabStrip');" +
+            "  if (!kendoTabStrip) { return 'no_kendo'; }" +
+            "  const tabs = kendoTabStrip.tabGroup.find('li[role=tab]');" +
+            "  let targetIndex = -1;" +
+            "  tabs.each(function(index) {" +
+            "    if ($(this).text().trim() === 'Temsilci Kondisyon') {" +
+            "      targetIndex = index;" +
+            "    }" +
+            "  });" +
+            "  if (targetIndex === -1) { return 'no_tab_found'; }" +
+            "  kendoTabStrip.select(targetIndex);" +
+            "  return 'success_' + targetIndex;" +
+            "}"
+        );
+        
+        System.out.println("✅ Kendo TabStrip.select() sonucu: " + result);
+        page.waitForTimeout(3000);
+        
+        // Verify tab switched
+        System.out.println("🔍 Tab switch sonucunu kontrol ediyoruz...");
+        Locator brandAmbassadorTab = modalFrame.locator("li[role='tab']:has(a.k-link:has-text('Temsilci Kondisyon'))").first();
+        String ariaSelected = brandAmbassadorTab.getAttribute("aria-selected");
+        System.out.println("🔍 Temsilci Kondisyon tab aria-selected: " + ariaSelected);
+        
+        // Check tabpanel visibility
+        Locator tabPanel = modalFrame.locator("#ContractRebateTab-2");
+        if (tabPanel.count() > 0) {
+            String ariaHidden = tabPanel.getAttribute("aria-hidden");
+            boolean isVisible = tabPanel.isVisible();
+            System.out.println("🔍 Temsilci Kondisyon tabpanel: aria-hidden=" + ariaHidden + ", visible=" + isVisible);
+        }
+        
+        // Wait for ContractRepresentativeGridId to become visible
+        Locator representativeGrid = modalFrame.locator("#ContractRepresentativeGridId");
+        try {
+            representativeGrid.waitFor(new Locator.WaitForOptions()
+                .setState(WaitForSelectorState.VISIBLE)
+                .setTimeout(15000));
+            System.out.println("✅ ContractRepresentativeGridId visible oldu");
+        } catch (Exception e) {
+            System.out.println("❌ ContractRepresentativeGridId 15 saniye içinde visible olmadı!");
+            
+            // Debug: Check tab content divs
+            System.out.println("🔍 Tab content div'lerini kontrol ediyoruz...");
+            Locator tabContents = modalFrame.locator("div[role='tabpanel']");
+            System.out.println("Toplam " + tabContents.count() + " tabpanel var:");
+            for (int i = 0; i < tabContents.count(); i++) {
+                String id = tabContents.nth(i).getAttribute("id");
+                String ariaHidden = tabContents.nth(i).getAttribute("aria-hidden");
+                boolean isVisible = tabContents.nth(i).isVisible();
+                System.out.println("  TabPanel " + i + ": id='" + id + "', aria-hidden=" + ariaHidden + ", visible=" + isVisible);
             }
+            
+            // Debug: List all grids
+            Locator allGrids = modalFrame.locator("div[data-role='grid']");
+            System.out.println("🔍 Toplam " + allGrids.count() + " grid var:");
+            for (int i = 0; i < allGrids.count(); i++) {
+                String gridId = allGrids.nth(i).getAttribute("id");
+                boolean isVisible = allGrids.nth(i).isVisible();
+                System.out.println("  Grid " + i + ": id='" + gridId + "', visible=" + isVisible);
+            }
+            
+            throw new RuntimeException("❌ Temsilci Kondisyon grid'i yüklenmedi! Tab switch başarısız oldu.");
         }
         
-        // "Temsilci Kondisyon" tab'ına tıkla
-        Locator brandAmbassadorTab = modalFrame.locator("li[role='tab']:has-text('Temsilci Kondisyon'), .k-tabstrip-items li:has-text('Temsilci Kondisyon')").first();
-        
-        if (brandAmbassadorTab.count() > 0) {
-            brandAmbassadorTab.click();
-            System.out.println("✅ 'Temsilci Kondisyon' tab'ına tıklandı");
-            page.waitForTimeout(2000); // Tab içeriğinin yüklenmesini bekle
-        } else {
-            throw new RuntimeException("⚠️ 'Temsilci Kondisyon' tab'ı bulunamadı!");
-        }
+        page.waitForTimeout(1000);
+        System.out.println("✅ Temsilci Kondisyon tab'ı tamamen yüklendi");
     }
 
     public void clickToNewBrandAmbassadorConditionButton() {
