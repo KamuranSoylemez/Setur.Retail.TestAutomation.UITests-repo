@@ -31,4 +31,20 @@ public class ConditionUpdateStepDefs {
         conditionUpdatePage.verifyUpdateButtonIsVisible();
     }
     
+    @Then("click settings button for condition with status {string}")
+    public void clickSettingsButtonForConditionWithStatus(String status) {
+        conditionUpdatePage.clickSettingsButtonForConditionWithStatus(status);
+        System.out.println("✅ Durum='" + status + "' olan kondisyon için ayar butonuna tıklandı");
+    }
+    
+    @Then("verify update button is visible in settings menu")
+    public void verifyUpdateButtonIsVisibleInSettingsMenu() {
+        conditionUpdatePage.verifyUpdateButtonIsVisibleInSettingsMenu();
+    }
+    
+    @Then("verify update button is visible for condition with status {string}")
+    public void verifyUpdateButtonIsVisibleForConditionWithStatus(String status) {
+        conditionUpdatePage.verifyUpdateButtonIsVisibleForConditionWithStatus(status);
+    }
+    
 }

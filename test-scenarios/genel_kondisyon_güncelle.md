@@ -16,3 +16,14 @@ Expected: Onaylandı durumundaki genel kondisyon detayı görüntülenir.
 Güncelle butonunun görünürlüğünü kontrol et
 Expected: “Güncelle” butonu görünür.
 
+Test Case: T2 - Genel Kondisyon Güncelle Butonu Kontrolü 2
+Steps:
+
+Sözleşme ara PMI-2026-FCA
+Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
+İlgili sözleşme detayını aç
+Expected: Detay ekranı açılır.
+Onaylandı durumundaki genel kondisyonun ayar butonuna tıkla
+Expected: Ayar menüsü açılır.
+Güncelle butonunun görünürlüğünü kontrol et
+Expected: “Güncelle” butonu görünür.
