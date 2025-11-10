@@ -226,4 +226,45 @@ public class ConditionUpdatePage extends BasePage {
         }
     }
     
+    public void verifyHistoryButtonIsVisibleForConditionWithStatus(String expectedStatus) {
+        FrameLocator modalFrame = page.frameLocator("#SeturModalWin iframe");
+        
+        // Wait for grid to be visible
+        Locator generalConditionGrid = modalFrame.locator("#ContractRebateGridId");
+        generalConditionGrid.waitFor(new Locator.WaitForOptions()
+            .setState(WaitForSelectorState.VISIBLE)
+            .setTimeout(10000));
+        
+        page.waitForTimeout(1000);
+        
+        // Find all rows
+        Locator allRows = modalFrame.locator("#ContractRebateGridId tbody tr[role='row']");
+        int rowCount = allRows.count();
+        System.out.println("🔍 Toplam " + rowCount + " satır bulundu, durum='" + expectedStatus + "' için Tarihçe butonu arıyoruz");
+        
+        boolean found = false;
+        for (int i = 0; i < rowCount; i++) {
+            Locator row = allRows.nth(i);
+            String rowText = row.textContent();
+            
+            // Check if row contains the status
+            if (rowText.contains(expectedStatus)) {
+                System.out.println("✅ Durum='" + expectedStatus + "' olan satır bulundu");
+                
+                // Check if "Tarihçe" text exists in the row
+                if (rowText.contains("Tarihçe")) {
+                    System.out.println("✅ 'Tarihçe' butonu durum='" + expectedStatus + "' olan satırda mevcut");
+                    found = true;
+                    break;
+                } else {
+                    throw new AssertionError("Durum='" + expectedStatus + "' olan satırda 'Tarihçe' butonu bulunamadı!");
+                }
+            }
+        }
+        
+        if (!found) {
+            throw new AssertionError("Durum='" + expectedStatus + "' olan kondisyon bulunamadı!");
+        }
+    }
+    
 }

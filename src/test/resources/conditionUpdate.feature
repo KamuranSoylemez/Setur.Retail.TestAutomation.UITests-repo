@@ -25,3 +25,4 @@ Feature: Kondisyon Güncelleme
     And click to first edit button on definition page
     And click general condition tab
     Then verify update button is visible for condition with status "Onaylandı"
+    And verify history button is visible for condition with status "Onaylandı"

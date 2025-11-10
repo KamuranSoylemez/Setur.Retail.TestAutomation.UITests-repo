@@ -47,4 +47,9 @@ public class ConditionUpdateStepDefs {
         conditionUpdatePage.verifyUpdateButtonIsVisibleForConditionWithStatus(status);
     }
     
+    @Then("verify history button is visible for condition with status {string}")
+    public void verifyHistoryButtonIsVisibleForConditionWithStatus(String status) {
+        conditionUpdatePage.verifyHistoryButtonIsVisibleForConditionWithStatus(status);
+    }
+    
 }
