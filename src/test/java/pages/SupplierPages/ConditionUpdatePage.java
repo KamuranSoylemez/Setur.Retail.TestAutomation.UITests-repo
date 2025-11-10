@@ -267,4 +267,71 @@ public class ConditionUpdatePage extends BasePage {
         }
     }
     
+    public void clickUpdateButtonForConditionWithStatus(String expectedStatus) {
+        FrameLocator modalFrame = page.frameLocator("#SeturModalWin iframe");
+        
+        // Wait for grid to be visible
+        Locator generalConditionGrid = modalFrame.locator("#ContractRebateGridId");
+        generalConditionGrid.waitFor(new Locator.WaitForOptions()
+            .setState(WaitForSelectorState.VISIBLE)
+            .setTimeout(10000));
+        
+        page.waitForTimeout(2000);
+        
+        // Find all rows
+        Locator allRows = modalFrame.locator("#ContractRebateGridId tbody tr[role='row']");
+        int rowCount = allRows.count();
+        System.out.println("🔍 Toplam " + rowCount + " satır bulundu, durum='" + expectedStatus + "' için Güncelle butonuna tıklayacağız");
+        
+        boolean found = false;
+        for (int i = 0; i < rowCount; i++) {
+            Locator row = allRows.nth(i);
+            String rowText = row.textContent();
+            
+            // Check if row contains the status
+            if (rowText.contains(expectedStatus)) {
+                System.out.println("✅ Durum='" + expectedStatus + "' olan satır bulundu");
+                
+                // Try to click the green edit button with glyphicon-edit icon
+                // The button structure: <a class="k-button gridCmdBtn k-success"><i class="glyphicon glyphicon-edit"></i></a>
+                Locator editButton = row.locator(
+                    "a.k-success:has(i.glyphicon-edit), " +
+                    "a#Edit, " +
+                    "a.gridCmdBtn.k-success"
+                ).first();
+                
+                if (editButton.count() > 0) {
+                    editButton.click();
+                    System.out.println("✅ Yeşil düzenleme butonuna (Edit) tıklandı");
+                    found = true;
+                    page.waitForTimeout(2000);
+                    break;
+                } else {
+                    throw new AssertionError("Durum='" + expectedStatus + "' olan satırda yeşil düzenleme butonu bulunamadı!");
+                }
+            }
+        }
+        
+        if (!found) {
+            throw new AssertionError("Durum='" + expectedStatus + "' olan kondisyon bulunamadı!");
+        }
+    }
+    
+    public void verifyConditionUpdatePopupIsDisplayed() {
+        // Look for update popup - it could be in a new window or modal
+        Locator updatePopup = page.locator(
+            "span.k-window-title:has-text('Güncelleme'), " +
+            "span.k-window-title:has-text('Kondisyon Güncelleme'), " +
+            "span.k-window-title:has-text('Genel Kondisyon Güncelleme'), " +
+            "div.k-window:has-text('Güncelleme')"
+        ).first();
+        
+        updatePopup.waitFor(new Locator.WaitForOptions()
+            .setState(WaitForSelectorState.VISIBLE)
+            .setTimeout(5000));
+        
+        String popupTitle = updatePopup.textContent();
+        System.out.println("✅ Kondisyon güncelleme pop-up açıldı: '" + popupTitle + "'");
+    }
+    
 }

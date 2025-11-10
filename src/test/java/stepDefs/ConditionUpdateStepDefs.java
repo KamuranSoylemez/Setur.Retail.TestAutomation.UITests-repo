@@ -52,4 +52,15 @@ public class ConditionUpdateStepDefs {
         conditionUpdatePage.verifyHistoryButtonIsVisibleForConditionWithStatus(status);
     }
     
+    @Then("click update button for condition with status {string}")
+    public void clickUpdateButtonForConditionWithStatus(String status) {
+        conditionUpdatePage.clickUpdateButtonForConditionWithStatus(status);
+        System.out.println("✅ Durum='" + status + "' olan kondisyon için Güncelle butonuna tıklandı");
+    }
+    
+    @Then("verify condition update popup is displayed")
+    public void verifyConditionUpdatePopupIsDisplayed() {
+        conditionUpdatePage.verifyConditionUpdatePopupIsDisplayed();
+    }
+    
 }

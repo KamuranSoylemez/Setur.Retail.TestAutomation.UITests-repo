@@ -27,3 +27,13 @@ Onaylandı durumundaki genel kondisyonun ayar butonuna tıkla
 Expected: Ayar menüsü açılır.
 Güncelle butonunun görünürlüğünü kontrol et
 Expected: “Güncelle” butonu görünür.
+
+Test Case: T3 - Kondisyon Güncelleme Pop-up Kontrolü
+Steps:
+
+Sözleşme ara PMI-2026-FCA
+Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
+İlgili sözleşme detayını aç
+Expected: Detay ekranı açılır.
+Genel Kondisyon Güncelleme ekranında “Güncelle” butonuna tıkla
+Expected: Kondisyon Güncelleme pop-up açılır.
