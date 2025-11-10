@@ -26,10 +26,57 @@ public class GeneralConditionPage extends BasePage {
         iframe.locator("#SaveBtn").click();
     }
 
+    // TODO: Following methods need to be implemented (from TODO list)
+    public void selectConditionType(String conditionType) {
+        throw new UnsupportedOperationException("TODO: selectConditionType not implemented yet");
+    }
 
+    public void selectMarginType(String marginType) {
+        throw new UnsupportedOperationException("TODO: selectMarginType not implemented yet");
+    }
 
+    public void selectCalculationType(String calculationType) {
+        throw new UnsupportedOperationException("TODO: selectCalculationType not implemented yet");
+    }
 
+    public boolean verifyFieldIsDisabled(String fieldName) {
+        throw new UnsupportedOperationException("TODO: verifyFieldIsDisabled not implemented yet");
+    }
 
+    public boolean verifyFieldIsOptional(String fieldName) {
+        throw new UnsupportedOperationException("TODO: verifyFieldIsOptional not implemented yet");
+    }
 
+    public boolean verifyFieldIsMandatory(String fieldName) {
+        throw new UnsupportedOperationException("TODO: verifyFieldIsMandatory not implemented yet");
+    }
+
+    public boolean verifyFieldHasRequiredAsterisk(String fieldName) {
+        throw new UnsupportedOperationException("TODO: verifyFieldHasRequiredAsterisk not implemented yet");
+    }
+
+    public void fillField(String fieldName, String value) {
+        throw new UnsupportedOperationException("TODO: fillField not implemented yet");
+    }
+
+    public void clearField(String fieldName) {
+        throw new UnsupportedOperationException("TODO: clearField not implemented yet");
+    }
+
+    public void selectRadioButton(String fieldName, String option) {
+        throw new UnsupportedOperationException("TODO: selectRadioButton not implemented yet");
+    }
+
+    public boolean verifyFieldShowsValidationErrorOnSave(String fieldName) {
+        throw new UnsupportedOperationException("TODO: verifyFieldShowsValidationErrorOnSave not implemented yet");
+    }
+
+    public boolean verifyFieldIsVisuallyDisabled(String fieldName) {
+        throw new UnsupportedOperationException("TODO: verifyFieldIsVisuallyDisabled not implemented yet");
+    }
+
+    public boolean verifyFieldIsNotDisabled(String fieldName) {
+        throw new UnsupportedOperationException("TODO: verifyFieldIsNotDisabled not implemented yet");
+    }
 
 }

@@ -21,6 +21,8 @@ public class WorkflowInboxPage extends BasePage {
     Locator contractDefinitionLink = page.locator("//a[@href='/ApplicationManagement/Contract/Index']");
     Locator contractConfirmationLink = page.locator("//a[@href='/ApplicationManagement/Contract/WaitingForApproval']");
     Locator creditNoteLink = page.locator("//a[@href='/ApplicationManagement/CreditNote/Index']");
+    Locator receivablePoolLink = page.locator("//a[@href='/ApplicationManagement/ContractReceivableInvoice/Index']");
+    Locator rebateInvoicePoolLink = page.locator("//a[@href='/ApplicationManagement/ContractInvoice/Index']");
 
     /**
      * Giriş yaptıktan sonra ilk açılan sayfayı verify eder.
@@ -113,6 +115,20 @@ public class WorkflowInboxPage extends BasePage {
 
     public void clickContractConfirmationLink() {
         clickElement(contractConfirmationLink);
+    }
+
+    /**
+     * Tedarikçi altındaki Alacak Havuzu linkine tıklar.
+     */
+    public void clickReceivablePoolLink() {
+        clickElement(receivablePoolLink);
+    }
+
+    /**
+     * Tedarikçi altındaki Rebate Fatura Havuzu linkine tıklar.
+     */
+    public void clickRebateInvoicePoolLink() {
+        clickElement(rebateInvoicePoolLink);
     }
 
 }

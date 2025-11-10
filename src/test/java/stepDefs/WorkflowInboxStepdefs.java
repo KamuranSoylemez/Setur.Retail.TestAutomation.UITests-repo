@@ -88,4 +88,14 @@ public class WorkflowInboxStepdefs {
     public void clickCreditNoteLink(){
         inboxPage.clickCreditNoteLink();
     }
+
+    @When("click receivable pool link")
+    public void clickReceivablePoolLink() {
+        inboxPage.clickReceivablePoolLink();
+    }
+
+    @When("click rebate invoice pool link")
+    public void clickRebateInvoicePoolLink() {
+        inboxPage.clickRebateInvoicePoolLink();
+    }
 }

@@ -21,6 +21,40 @@ public class ContractUpdatePage extends BasePage{
         verifyTextElementUseTrim("Genel Kondisyon Tanımlama", conditionPageTitle);
     }
 
+    public void clickGeneralConditionTab() {
+        FrameLocator modalFrame = page.frameLocator("#SeturModalWin iframe");
+        
+        // Use Kendo TabStrip API to switch to Genel Kondisyon tab
+        modalFrame.locator("body").evaluate(
+            "() => {" +
+            "  const tabstrip = document.querySelector('.k-tabstrip');" +
+            "  if (!tabstrip) { return 'no_tabstrip'; }" +
+            "  const kendoTabStrip = $(tabstrip).data('kendoTabStrip');" +
+            "  if (!kendoTabStrip) { return 'no_kendo'; }" +
+            "  const tabs = kendoTabStrip.tabGroup.find('li[role=tab]');" +
+            "  let targetIndex = -1;" +
+            "  tabs.each(function(index) {" +
+            "    if ($(this).text().trim() === 'Genel Kondisyon') {" +
+            "      targetIndex = index;" +
+            "    }" +
+            "  });" +
+            "  if (targetIndex === -1) { return 'no_tab_found'; }" +
+            "  kendoTabStrip.select(targetIndex);" +
+            "  return 'success_' + targetIndex;" +
+            "}"
+        );
+        
+        page.waitForTimeout(2000);
+        
+        // Wait for ContractRebateGridId to become visible
+        Locator generalConditionGrid = modalFrame.locator("#ContractRebateGridId");
+        generalConditionGrid.waitFor(new Locator.WaitForOptions()
+            .setState(WaitForSelectorState.VISIBLE)
+            .setTimeout(10000));
+        
+        page.waitForTimeout(1000);
+    }
+
     // Brand Ambassador Condition Methods
     public void clickBrandAmbassadorConditionsTab() {
         FrameLocator modalFrame = page.frameLocator("#SeturModalWin iframe");
