@@ -58,4 +58,21 @@ Feature: Kondisyon Güncelleme
     And verify description field is mandatory
     And verify error message "Açıklama Alanı Boş Bırakılamaz." is displayed
 
+  @TEST5 @CONDITION_UPDATE
+  Scenario: TEST5 - Kondisyon Güncelleme - Kondisyon İyileşmesi
+    Given click to sample contract "PMI-2026-FCA"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    And click update button for condition with status "Onaylandı"
+    Then verify condition detail popup is displayed
+    When click update button on condition detail popup
+    Then verify condition update popup is displayed
+    When click update button on condition update popup
+    Then verify final update popup is displayed
+    When select update type "Kondisyon İyileşmesi" on final update popup
+    And enter description "test otomasyon" on final update popup
+    And click save button on final update popup
+    Then verify condition definition page is displayed
+
         

@@ -108,4 +108,24 @@ public class ConditionUpdateStepDefs {
         conditionUpdatePage.verifyErrorMessageIsDisplayed(errorMessage);
     }
     
+    @When("select update type {string} on final update popup")
+    public void selectUpdateTypeOnFinalUpdatePopup(String updateType) {
+        conditionUpdatePage.selectUpdateTypeOnFinalUpdatePopup(updateType);
+    }
+    
+    @When("enter description {string} on final update popup")
+    public void enterDescriptionOnFinalUpdatePopup(String description) {
+        conditionUpdatePage.enterDescriptionOnFinalUpdatePopup(description);
+    }
+    
+    @When("click save button on final update popup")
+    public void clickSaveButtonOnFinalUpdatePopup() {
+        conditionUpdatePage.clickSaveButtonOnFinalUpdatePopup();
+    }
+    
+    @Then("verify condition definition page is displayed")
+    public void verifyConditionDefinitionPageIsDisplayed() {
+        conditionUpdatePage.verifyConditionDefinitionPageIsDisplayed();
+    }
+    
 }

@@ -54,9 +54,9 @@ Sözleşme ara PMI-2026-FCA
 Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
 İlgili sözleşme detayını aç
 Expected: Detay ekranı açılır.
-Genel Kondisyon Güncelleme ekranında “Kondisyon İyileşmesi” seç
-Expected: Güncelleme türü olarak Kondisyon İyileşmesi seçilir.
-Açıklama alanına metin gir
-Expected: Açıklama alanı doldurulur.
-“Kaydet” butonuna tıkla
+Güncelle butonuna bas.
+Expected: Kondisyon güncelleme pop açıldığını gör.
+Kondisyon Güncelleme ekranında “Kondisyon İyileşmesi” seç
+Açıklama alanına metin gir: "test otomasyon"
+“Kaydet” butonuna tıkla.
 Expected: Genel Kondisyon Tanımlama ekranı açılır.

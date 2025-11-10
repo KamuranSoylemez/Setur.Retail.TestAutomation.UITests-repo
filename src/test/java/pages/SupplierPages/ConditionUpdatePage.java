@@ -2,6 +2,7 @@ package pages.SupplierPages;
 
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.options.SelectOption;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import pages.commonPages.BasePage;
 
@@ -647,7 +648,142 @@ public class ConditionUpdatePage extends BasePage {
         
         throw new AssertionError("❌ Beklenen hata mesajı bulunamadı: '" + expectedMessage + "'");
     }
-
+    
+    /**
+     * Selects update type (Güncelleme Türü) from dropdown in final update popup
+     * @param updateType The update type to select (e.g., "Kondisyon İyileşmesi")
+     */
+    public void selectUpdateTypeOnFinalUpdatePopup(String updateType) {
+        page.waitForTimeout(1500);
+        
+        // Access the iframe in the final popup
+        Locator iframe = page.locator("iframe.k-content-frame, iframe[title='Setur']").last();
+        
+        if (iframe.count() == 0) {
+            throw new AssertionError("❌ Iframe bulunamadı!");
+        }
+        
+        FrameLocator modalFrame = iframe.contentFrame();
+        
+        // Look for the Kendo dropdown
+        Locator updateTypeDropdown = modalFrame.locator("span.k-dropdown").first();
+        
+        if (updateTypeDropdown.count() == 0) {
+            throw new AssertionError("❌ Güncelleme Türü dropdown bulunamadı!");
+        }
+        
+        String tagName = updateTypeDropdown.evaluate("el => el.tagName").toString();
+        
+        if (tagName.equalsIgnoreCase("SELECT")) {
+            updateTypeDropdown.selectOption(new SelectOption().setLabel(updateType));
+            System.out.println("✅ Güncelleme Türü seçildi (select): '" + updateType + "'");
+        } else {
+            // Kendo dropdown
+            updateTypeDropdown.click();
+            page.waitForTimeout(800);
+            
+            // Options appear in main page, not iframe
+            Locator option = page.locator("li.k-item:has-text('" + updateType + "')").first();
+            
+            if (option.count() == 0) {
+                // Try in iframe
+                option = modalFrame.locator("li.k-item:has-text('" + updateType + "')").first();
+            }
+            
+            option.click();
+            System.out.println("✅ Güncelleme Türü seçildi (Kendo): '" + updateType + "'");
+        }
+        
+        page.waitForTimeout(500);
+    }
+    
+    /**
+     * Enters description text in final update popup
+     * @param description The description text to enter
+     */
+    public void enterDescriptionOnFinalUpdatePopup(String description) {
+        page.waitForTimeout(1000);
+        
+        // Access the iframe in the final popup
+        Locator iframe = page.locator("iframe.k-content-frame, iframe[title='Setur']").last();
+        
+        if (iframe.count() == 0) {
+            throw new AssertionError("❌ Iframe bulunamadı!");
+        }
+        
+        FrameLocator modalFrame = iframe.contentFrame();
+        
+        // Look for description field - use textarea directly
+        Locator descriptionField = modalFrame.locator("textarea#StatusDescription, textarea").first();
+        
+        if (descriptionField.count() == 0) {
+            throw new AssertionError("❌ Açıklama alanı (textarea) bulunamadı!");
+        }
+        
+        if (!descriptionField.isVisible()) {
+            System.out.println("⚠️ Açıklama alanı görünmüyor, yine de doldurmayı deniyorum...");
+        }
+        
+        descriptionField.click(); // Focus
+        descriptionField.clear();
+        descriptionField.fill(description);
+        System.out.println("✅ Açıklama girildi: '" + description + "'");
+        page.waitForTimeout(500);
+    }
+    
+    /**
+     * Clicks save button on final update popup (with filled fields)
+     */
+    public void clickSaveButtonOnFinalUpdatePopup() {
+        page.waitForTimeout(1000);
+        
+        // Access the iframe in the final popup
+        Locator iframe = page.locator("iframe.k-content-frame, iframe[title='Setur']").last();
+        
+        if (iframe.count() == 0) {
+            throw new AssertionError("❌ Iframe bulunamadı!");
+        }
+        
+        FrameLocator modalFrame = iframe.contentFrame();
+        
+        // Look for "Kaydet" button
+        Locator saveButton = modalFrame.locator(
+            "button:has-text('Kaydet'), " +
+            "a:has-text('Kaydet'), " +
+            "#btnSave, " +
+            "input[type='submit'][value='Kaydet'], " +
+            ".btn:has-text('Kaydet')"
+        ).first();
+        
+        if (saveButton.count() == 0 || !saveButton.isVisible()) {
+            throw new AssertionError("❌ Kaydet butonu bulunamadı!");
+        }
+        
+        saveButton.click();
+        System.out.println("✅ Kaydet butonuna tıklandı (form doldurulmuş)");
+        page.waitForTimeout(2000); // Wait for save operation
+    }
+    
+    /**
+     * Verifies that condition definition page is displayed after save
+     */
+    public void verifyConditionDefinitionPageIsDisplayed() {
+        page.waitForTimeout(2000);
+        
+        // Look for general condition grid or contract rebate grid
+        FrameLocator modalFrame = page.frameLocator("#SeturModalWin iframe");
+        
+        Locator conditionGrid = modalFrame.locator(
+            "#ContractRebateGridId, " +
+            "div.k-grid:has-text('Genel Kondisyon')"
+        ).first();
+        
+        conditionGrid.waitFor(new Locator.WaitForOptions()
+            .setState(WaitForSelectorState.VISIBLE)
+            .setTimeout(5000));
+        
+        System.out.println("✅ Genel Kondisyon Tanımlama ekranı görüntülendi (kayıt başarılı)");
+    }
 
     
 }
