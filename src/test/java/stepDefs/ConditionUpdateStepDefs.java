@@ -55,12 +55,57 @@ public class ConditionUpdateStepDefs {
     @Then("click update button for condition with status {string}")
     public void clickUpdateButtonForConditionWithStatus(String status) {
         conditionUpdatePage.clickUpdateButtonForConditionWithStatus(status);
-        System.out.println("✅ Durum='" + status + "' olan kondisyon için Güncelle butonuna tıklandı");
+        System.out.println("✅ Durum='" + status + "' olan kondisyon için yeşil Edit butonuna tıklandı");
+    }
+    
+    @Then("verify condition detail popup is displayed")
+    public void verifyConditionDetailPopupIsDisplayed() {
+        conditionUpdatePage.verifyConditionDetailPopupIsDisplayed();
+    }
+    
+    @When("click update button on condition detail popup")
+    public void clickUpdateButtonOnConditionDetailPopup() {
+        conditionUpdatePage.clickUpdateButtonOnConditionDetailPopup();
     }
     
     @Then("verify condition update popup is displayed")
     public void verifyConditionUpdatePopupIsDisplayed() {
         conditionUpdatePage.verifyConditionUpdatePopupIsDisplayed();
+    }
+    
+    @When("click update button on condition update popup")
+    public void clickUpdateButtonOnConditionUpdatePopup() {
+        conditionUpdatePage.clickUpdateButtonOnConditionUpdatePopup();
+    }
+    
+    @Then("verify final update popup is displayed")
+    public void verifyFinalUpdatePopupIsDisplayed() {
+        conditionUpdatePage.verifyFinalUpdatePopupIsDisplayed();
+    }
+    
+    @When("click save button on final update popup without filling required fields")
+    public void clickSaveButtonOnFinalUpdatePopupWithoutFillingRequiredFields() {
+        conditionUpdatePage.clickSaveButtonOnFinalUpdatePopupWithoutFillingRequiredFields();
+    }
+    
+    @When("click save button on condition update popup without filling required fields")
+    public void clickSaveButtonOnConditionUpdatePopupWithoutFillingRequiredFields() {
+        conditionUpdatePage.clickSaveButtonOnConditionUpdatePopupWithoutFillingRequiredFields();
+    }
+    
+    @Then("verify update type field is mandatory")
+    public void verifyUpdateTypeFieldIsMandatory() {
+        conditionUpdatePage.verifyUpdateTypeFieldIsMandatory();
+    }
+    
+    @Then("verify description field is mandatory")
+    public void verifyDescriptionFieldIsMandatory() {
+        conditionUpdatePage.verifyDescriptionFieldIsMandatory();
+    }
+    
+    @Then("verify error message {string} is displayed")
+    public void verifyErrorMessageIsDisplayed(String errorMessage) {
+        conditionUpdatePage.verifyErrorMessageIsDisplayed(errorMessage);
     }
     
 }

@@ -28,7 +28,7 @@ Expected: Ayar menüsü açılır.
 Güncelle butonunun görünürlüğünü kontrol et
 Expected: “Güncelle” butonu görünür.
 
-Test Case: T3 - Kondisyon Güncelleme Pop-up Kontrolü
+Test Case: T3 - Kondisyon Güncelleme Pop-up Kontrolü ve T4 
 Steps:
 
 Sözleşme ara PMI-2026-FCA
@@ -37,3 +37,12 @@ Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
 Expected: Detay ekranı açılır.
 Genel Kondisyon Güncelleme ekranında “Güncelle” butonuna tıkla
 Expected: Kondisyon Güncelleme pop-up açılır.
+
+Test Case: T4 - Kondisyon Güncelleme Pop-up Olumsuz Durum
+Steps:
+
+İlgili sözleşme detayını aç
+Expected: Detay ekranı açılır.
+Genel Kondisyon Güncelleme ekranında “Kaydet” butonuna tıkla (hiçbir seçim yapılmadan)
+Expected: Güncelleme Türü ve Açıklama alanlarının zorunlu olduğu uyarısı görünür.
+Expected: “Açıklama Alanı Boş Bırakılamaz.” uyarısı görüntülenir.

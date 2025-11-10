@@ -28,12 +28,34 @@ Feature: Kondisyon Güncelleme
     And verify history button is visible for condition with status "Onaylandı"
 
   @TEST3 @CONDITION_UPDATE
-  Scenario: TEST3 - Kondisyon Güncelleme Pop-up Kontrolü
+  Scenario: TEST3 - Kondisyon Güncelleme Pop-up Kontrolü 
     Given click to sample contract "PMI-2026-FCA"
     And click to search button on definition page
     And click to first edit button on definition page
     And click general condition tab
     And click update button for condition with status "Onaylandı"
+    Then verify condition detail popup is displayed
+    When click update button on condition detail popup
     Then verify condition update popup is displayed
+    When click update button on condition update popup
+    Then verify final update popup is displayed
+   
+
+  @TEST4 @CONDITION_UPDATE
+  Scenario: TEST4 - Kondisyon Güncelleme Zorunlu Alan Kontrolü
+    Given click to sample contract "PMI-2026-FCA"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    And click update button for condition with status "Onaylandı"
+    Then verify condition detail popup is displayed
+    When click update button on condition detail popup
+    Then verify condition update popup is displayed
+    When click update button on condition update popup
+    Then verify final update popup is displayed
+    When click save button on final update popup without filling required fields
+    Then verify update type field is mandatory
+    And verify description field is mandatory
+    And verify error message "Açıklama Alanı Boş Bırakılamaz." is displayed
 
         
