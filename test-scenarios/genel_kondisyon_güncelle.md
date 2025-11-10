@@ -46,3 +46,17 @@ Expected: Detay ekranı açılır.
 Genel Kondisyon Güncelleme ekranında “Kaydet” butonuna tıkla (hiçbir seçim yapılmadan)
 Expected: Güncelleme Türü ve Açıklama alanlarının zorunlu olduğu uyarısı görünür.
 Expected: “Açıklama Alanı Boş Bırakılamaz.” uyarısı görüntülenir.
+
+Test Case: T5 - Kondisyon Güncelleme Kondisyon İyileşmesi
+Steps:
+
+Sözleşme ara PMI-2026-FCA
+Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
+İlgili sözleşme detayını aç
+Expected: Detay ekranı açılır.
+Genel Kondisyon Güncelleme ekranında “Kondisyon İyileşmesi” seç
+Expected: Güncelleme türü olarak Kondisyon İyileşmesi seçilir.
+Açıklama alanına metin gir
+Expected: Açıklama alanı doldurulur.
+“Kaydet” butonuna tıkla
+Expected: Genel Kondisyon Tanımlama ekranı açılır.

@@ -532,107 +532,122 @@ public class ConditionUpdatePage extends BasePage {
     
     /**
      * Verifies that update type field is mandatory (has validation error)
+     * This method checks for Alertify notification messages
      */
     public void verifyUpdateTypeFieldIsMandatory() {
-        page.waitForTimeout(500);
+        page.waitForTimeout(1500);
         
-        // The validation happens in the iframe
-        Locator iframe = page.locator("iframe.k-content-frame, iframe[title='Setur']").last();
+        // Alertify messages appear in the main page, not iframe
+        Locator alertifyMessage = page.locator(
+            "div.ajs-message.ajs-error.ajs-visible, " +
+            "div.ajs-message.ajs-error, " +
+            "div.ajs-message:has-text('Açıklama')"
+        ).first();
         
-        if (iframe.count() > 0) {
-            FrameLocator modalFrame = iframe.contentFrame();
+        if (alertifyMessage.count() == 0 || !alertifyMessage.isVisible()) {
+            System.out.println("⚠️  Alertify mesajı bulunamadı, iframe içinde aranıyor...");
             
-            // Look for validation message or required indicator for update type field
-            Locator validationMessage = modalFrame.locator(
-                "span.field-validation-error, " +
-                ".text-danger, " +
-                ".validation-message, " +
-                "span.k-tooltip-validation, " +
-                "span:has-text('zorunlu'), " +
-                "span:has-text('gerekli')"
-            ).first();
-            
-            if (validationMessage.count() > 0 && validationMessage.isVisible()) {
-                System.out.println("✅ Güncelleme Türü alanı zorunlu alan olarak işaretlendi");
-                return;
+            // If not in main page, check iframe
+            Locator iframe = page.locator("iframe.k-content-frame, iframe[title='Setur']").last();
+            if (iframe.count() > 0) {
+                FrameLocator modalFrame = iframe.contentFrame();
+                alertifyMessage = modalFrame.locator(
+                    "div.ajs-message.ajs-error.ajs-visible, " +
+                    "div.ajs-message.ajs-error"
+                ).first();
             }
         }
         
-        System.out.println("⚠️  Güncelleme Türü zorunlu alan kontrolü atlandı (validation mesajı bulunamadı)");
-    }
-    
-    /**
+        if (alertifyMessage.count() == 0 || !alertifyMessage.isVisible()) {
+            throw new AssertionError("❌ Zorunlu alan validation mesajı bulunamadı (Alertify notification)!");
+        }
+        
+        String messageText = alertifyMessage.textContent().trim();
+        System.out.println("✅ Zorunlu alan validation mesajı doğrulandı: '" + messageText + "'");
+    }    /**
      * Verifies that description field is mandatory (has validation error)
+     * This method checks for Alertify notification messages
      */
     public void verifyDescriptionFieldIsMandatory() {
         page.waitForTimeout(500);
         
-        // The validation happens in the iframe
-        Locator iframe = page.locator("iframe.k-content-frame, iframe[title='Setur']").last();
+        // Alertify messages appear in the main page, not iframe
+        Locator alertifyMessage = page.locator(
+            "div.ajs-message.ajs-error.ajs-visible, " +
+            "div.ajs-message.ajs-error, " +
+            "div.ajs-message:has-text('Açıklama')"
+        ).first();
         
-        if (iframe.count() > 0) {
-            FrameLocator modalFrame = iframe.contentFrame();
+        if (alertifyMessage.count() == 0 || !alertifyMessage.isVisible()) {
+            System.out.println("⚠️  Alertify mesajı bulunamadı, iframe içinde aranıyor...");
             
-            // Look for validation message for description field
-            Locator validationMessage = modalFrame.locator(
-                "span.field-validation-error, " +
-                ".text-danger, " +
-                ".validation-message, " +
-                "span.k-tooltip-validation, " +
-                "span:has-text('Açıklama'), " +
-                "span:has-text('zorunlu')"
-            ).first();
-            
-            if (validationMessage.count() > 0 && validationMessage.isVisible()) {
-                System.out.println("✅ Açıklama alanı zorunlu alan olarak işaretlendi");
-                return;
+            // If not in main page, check iframe
+            Locator iframe = page.locator("iframe.k-content-frame, iframe[title='Setur']").last();
+            if (iframe.count() > 0) {
+                FrameLocator modalFrame = iframe.contentFrame();
+                alertifyMessage = modalFrame.locator(
+                    "div.ajs-message.ajs-error.ajs-visible, " +
+                    "div.ajs-message.ajs-error"
+                ).first();
             }
         }
         
-        System.out.println("⚠️  Açıklama alanı zorunlu alan kontrolü atlandı (validation mesajı bulunamadı)");
+        if (alertifyMessage.count() == 0 || !alertifyMessage.isVisible()) {
+            throw new AssertionError("❌ Açıklama alanı zorunlu alan validation mesajı bulunamadı (Alertify notification)!");
+        }
+        
+        String messageText = alertifyMessage.textContent().trim();
+        System.out.println("✅ Açıklama alanı zorunlu alan validation mesajı doğrulandı: '" + messageText + "'");
     }
     
     /**
      * Verifies that specific error message is displayed
+     * Checks for Alertify notification messages
      * @param expectedMessage The expected error message text
      */
     public void verifyErrorMessageIsDisplayed(String expectedMessage) {
-        page.waitForTimeout(500);
+        page.waitForTimeout(1000);
         
-        // The error message might be in iframe or main page
+        // Alertify messages appear in the main page
+        Locator alertifyMessage = page.locator(
+            "div.ajs-message.ajs-error.ajs-visible:has-text('" + expectedMessage + "'), " +
+            "div.ajs-message.ajs-error:has-text('" + expectedMessage + "'), " +
+            "div.ajs-message:has-text('" + expectedMessage + "')"
+        ).first();
+        
+        if (alertifyMessage.count() > 0 && alertifyMessage.isVisible()) {
+            String actualMessage = alertifyMessage.textContent().trim();
+            System.out.println("✅ Beklenen hata mesajı görüntülendi (Alertify): '" + actualMessage + "'");
+            return;
+        }
+        
+        // If not found, check iframe as fallback
         Locator iframe = page.locator("iframe.k-content-frame, iframe[title='Setur']").last();
-        
         if (iframe.count() > 0) {
             FrameLocator modalFrame = iframe.contentFrame();
-            
-            // Look for error message in iframe
-            Locator errorMessage = modalFrame.locator(
-                "div.alert-danger, " +
-                ".validation-summary-errors, " +
-                ".text-danger, " +
-                "span.field-validation-error, " +
-                ".error-message, " +
-                "div:has-text('" + expectedMessage + "'), " +
-                "span:has-text('" + expectedMessage + "')"
+            alertifyMessage = modalFrame.locator(
+                "div.ajs-message:has-text('" + expectedMessage + "'), " +
+                "div:has-text('" + expectedMessage + "')"
             ).first();
             
-            if (errorMessage.count() > 0 && errorMessage.isVisible()) {
-                System.out.println("✅ Hata mesajı görüntülendi: '" + expectedMessage + "'");
+            if (alertifyMessage.count() > 0 && alertifyMessage.isVisible()) {
+                System.out.println("✅ Beklenen hata mesajı görüntülendi (iframe): '" + alertifyMessage.textContent() + "'");
                 return;
             }
         }
         
-        // Also check main page
-        Locator errorMessage = page.locator(
-            "div:has-text('" + expectedMessage + "'), " +
-            "span:has-text('" + expectedMessage + "')"
-        ).first();
-        
-        if (errorMessage.count() > 0 && errorMessage.isVisible()) {
-            System.out.println("✅ Hata mesajı görüntülendi (main page): '" + expectedMessage + "'");
-        } else {
-            System.out.println("⚠️  Hata mesajı kontrolü atlandı: '" + expectedMessage + "' bulunamadı");
+        // Debug: Show all alertify messages
+        System.out.println("🔍 Tüm Alertify mesajları kontrol ediliyor...");
+        Locator allAlertify = page.locator("div.ajs-message");
+        int count = allAlertify.count();
+        System.out.println("🔍 Bulunan Alertify mesajları: " + count);
+        for (int i = 0; i < Math.min(count, 5); i++) {
+            System.out.println("  - " + allAlertify.nth(i).textContent().trim());
         }
+        
+        throw new AssertionError("❌ Beklenen hata mesajı bulunamadı: '" + expectedMessage + "'");
     }
+
+
     
 }
