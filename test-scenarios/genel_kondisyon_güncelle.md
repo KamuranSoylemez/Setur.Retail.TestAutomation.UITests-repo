@@ -7,11 +7,11 @@ Test Case: T1 - Genel Kondisyon Güncelle Butonu Kontrolü 1
 Steps:
 
 
-Sözleşme ara PMI-2026-FCA
+Sözleşme ara PMI-2026-DAP
 Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
 İlgili sözleşme detayını aç
 Expected: Detay ekranı açılır.
-Genel Kondisyon Durumu:Onaylandı olan 632 id li kondsiyon için detayı aç
+Genel Kondisyon Durumu:Onaylandı olan kondisyon için detayı aç
 Expected: Onaylandı durumundaki genel kondisyon detayı görüntülenir.
 Güncelle butonunun görünürlüğünü kontrol et
 Expected: “Güncelle” butonu görünür.
@@ -19,7 +19,7 @@ Expected: “Güncelle” butonu görünür.
 Test Case: T2 - Genel Kondisyon Güncelle Butonu Kontrolü 2
 Steps:
 
-Sözleşme ara PMI-2026-FCA
+Sözleşme ara PMI-2026-DAP
 Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
 İlgili sözleşme detayını aç
 Expected: Detay ekranı açılır.
@@ -31,7 +31,7 @@ Expected: “Güncelle” butonu görünür.
 Test Case: T3 - Kondisyon Güncelleme Pop-up Kontrolü ve T4 
 Steps:
 
-Sözleşme ara PMI-2026-FCA
+Sözleşme ara PMI-2026-DAP
 Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
 İlgili sözleşme detayını aç
 Expected: Detay ekranı açılır.
@@ -50,7 +50,7 @@ Expected: “Açıklama Alanı Boş Bırakılamaz.” uyarısı görüntülenir.
 Test Case: T5 - Kondisyon Güncelleme Kondisyon İyileşmesi
 Steps:
 
-Sözleşme ara PMI-2026-FCA
+Sözleşme ara PMI-2026-DAP
 Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
 İlgili sözleşme detayını aç
 Expected: Detay ekranı açılır.
@@ -64,46 +64,39 @@ Expected: Genel Kondisyon Tanımlama ekranı açılır.
 Test Case: T6 - Kondisyon İyileşmesi Yukarı Yönlü Değişiklik
 Steps:
 
-Sözleşme ara PMI-2026-FCA
+Sözleşme ara PMI-2026-DAP
 Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
 İlgili sözleşme detayını aç
 Expected: Detay ekranı açılır.
 Güncelle butonuna bas.
 Expected: Kondisyon güncelleme pop açıldığını gör.
 Kondisyon Güncelleme ekranında “Kondisyon İyileşmesi” seç
-Açıklama alanına metin gir: "test otomasyon"
+Açıklama alanına metin gir: "test otomasyon kondisyon iyileşme"
 “Kaydet” butonuna tıkla.
 Expected: Genel Kondisyon Tanımlama ekranı açılır.
-Sayısal değer alanlarında yukarı yönlü değişiklik yap
-Expected: Değerler yukarı yönlü olarak güncellenir.
-Aşağı yönlü değişiklik yapmaya çalış
+Birim çarpanı değerini 1 azalt.
 Expected: Aşağı yönlü değişiklik yapılamaz, sistem engeller.
+Birim çarpanı değerini 1 artır.
+Kaydet butonuna tıkla.
+Expected: İşleminiz başarıyla gerçekleştirildi mesajı gör.
+
+
 
 Test Case: T7 - Kondisyon İyileşmesi Yeni Açılan Kondisyonun Kaydedilmesi
 Steps:
  
-Sözleşme ara PMI-2026-FCA
+Sözleşme ara PMI-2026-DAP
 Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
 İlgili sözleşme detayını aç
 Expected: Detay ekranı açılır.
-Güncelle butonuna bas.
-Expected: Kondisyon güncelleme pop açıldığını gör.
-Kondisyon Güncelleme ekranında “Kondisyon İyileşmesi” seç
-Açıklama alanına metin gir: "test otomasyon"
-“Kaydet” butonuna tıkla.
-Expected: Genel Kondisyon Tanımlama ekranı açılır.
-Marj, Hedef Ciro, Hedef Miktar, Hesaplama Tutar, Hesaplama Oran (%), Birim Çarpanı alanlarından editable olanları bir birim arttır.
-Expected: Editable olan değerler birer birim artar.
-Kondisyon Tanımalama ekranında "Kaydet" butonuna tıkla.
-Expected: Kaydetme işlemi başarılı Sözleşme Güncelleme ekranı açıldığını gör.
-Yeni oluşan kondisyonun Genel Kondsiyon Durumunu kontrol et.
-Expected: Yeni kondisyon durumu "Onay Bekleniyor" olduğunu gör.
+T6 ile oluşturulan kaydın genel kondisyon durumu kontrol edilir.
+Expected: Yeni kondisyon durumu "Onay Bekleniyor" olduğunu görülür.
 
 
 Test Case: T8 - Kondisyon İyileşmesi Yeni Açılan Kondisyonun Onaylanması
 Steps:
  
-Sözleşme ara PMI-2026-FCA
+Sözleşme ara PMI-2026-DAP
 Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
 Onay Bekleniyor durumundaki ilgili sözleşme detayını aç
 Expected: Detay ekranı açılır.

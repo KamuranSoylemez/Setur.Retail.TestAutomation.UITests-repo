@@ -11,7 +11,7 @@ Feature: Kondisyon Güncelleme
 
   @TEST1 @CONDITION_UPDATE
   Scenario: TEST1 - Genel Kondisyon Güncelle Butonu Kontrolü
-    Given click to sample contract "PMI-2026-FCA"
+    Given click to sample contract "PMI-2025-DAP"
     And click to search button on definition page
     And click to first edit button on definition page
     And click general condition tab
@@ -20,7 +20,7 @@ Feature: Kondisyon Güncelleme
 
   @TEST2 @CONDITION_UPDATE
   Scenario: TEST2 - Genel Kondisyon Ayar Menüsünde Güncelle Butonu Kontrolü
-    Given click to sample contract "PMI-2026-FCA"
+    Given click to sample contract "PMI-2025-DAP"
     And click to search button on definition page
     And click to first edit button on definition page
     And click general condition tab
@@ -29,7 +29,7 @@ Feature: Kondisyon Güncelleme
 
   @TEST3 @CONDITION_UPDATE
   Scenario: TEST3 - Kondisyon Güncelleme Pop-up Kontrolü 
-    Given click to sample contract "PMI-2026-FCA"
+    Given click to sample contract "PMI-2025-DAP"
     And click to search button on definition page
     And click to first edit button on definition page
     And click general condition tab
@@ -43,7 +43,7 @@ Feature: Kondisyon Güncelleme
 
   @TEST4 @CONDITION_UPDATE
   Scenario: TEST4 - Kondisyon Güncelleme Zorunlu Alan Kontrolü
-    Given click to sample contract "PMI-2026-FCA"
+    Given click to sample contract "PMI-2025-DAP"
     And click to search button on definition page
     And click to first edit button on definition page
     And click general condition tab
@@ -60,7 +60,7 @@ Feature: Kondisyon Güncelleme
 
   @TEST5 @CONDITION_UPDATE
   Scenario: TEST5 - Kondisyon Güncelleme - Kondisyon İyileşmesi
-    Given click to sample contract "PMI-2026-FCA"
+    Given click to sample contract "PMI-2025-DAP"
     And click to search button on definition page
     And click to first edit button on definition page
     And click general condition tab
@@ -75,9 +75,39 @@ Feature: Kondisyon Güncelleme
     And click save button on final update popup
     Then verify condition definition page is displayed
 
+  @TEST6 @CONDITION_UPDATE
+  Scenario: TEST6 - Kondisyon İyileşmesi Yukarı Yönlü Değişiklik
+    Given click to sample contract "PMI-2025-DAP"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    And click update button for condition with status "Onaylandı"
+    Then verify condition detail popup is displayed
+    When click update button on condition detail popup
+    Then verify condition update popup is displayed
+    When click update button on condition update popup
+    Then verify final update popup is displayed
+    When select update type "Kondisyon İyileşmesi" on final update popup
+    And enter description "test otomasyon kondisyon iyileşme" on final update popup
+    And click save button on final update popup
+    Then verify condition definition page is displayed
+    When decrease unit multiplier by 1
+    Then verify downward change is blocked
+    When increase unit multiplier by 1
+    And click save button on condition definition page
+    Then verify success message is displayed
+
+  @TEST7 @CONDITION_UPDATE
+  Scenario: TEST7 - Kondisyon İyileşmesi Yeni Açılan Kondisyonun Kaydedilmesi
+    Given click to sample contract "PMI-2025-DAP"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    Then verify newly created condition status is "Onay Bekleniyor"
+
   @TEST8 @CONDITION_UPDATE
   Scenario: TEST8 - Kondisyon Onaylama - Onay Bekleniyor Durumundaki Kondisyonun Onaylanması
-    Given click to sample contract "PMI-2026-FCA"
+    Given click to sample contract "PMI-2025-DAP"
     And click to search button on definition page
     And click to first edit button on definition page
     And click general condition tab

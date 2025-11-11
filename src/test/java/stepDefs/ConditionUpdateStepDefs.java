@@ -153,4 +153,36 @@ public class ConditionUpdateStepDefs {
         conditionUpdatePage.verifyConditionStatus(expectedStatus);
     }
     
+    // TEST6 steps
+    @When("decrease unit multiplier by 1")
+    public void decreaseUnitMultiplierBy1() {
+        conditionUpdatePage.decreaseUnitMultiplier();
+    }
+    
+    @Then("verify downward change is blocked")
+    public void verifyDownwardChangeIsBlocked() {
+        conditionUpdatePage.verifyDownwardChangeBlocked();
+    }
+    
+    @When("increase unit multiplier by 1")
+    public void increaseUnitMultiplierBy1() {
+        conditionUpdatePage.increaseUnitMultiplier();
+    }
+    
+    @When("click save button on condition definition page")
+    public void clickSaveButtonOnConditionDefinitionPage() {
+        conditionUpdatePage.clickSaveButtonOnConditionPage();
+    }
+    
+    @Then("verify success message is displayed")
+    public void verifySuccessMessageIsDisplayed() {
+        conditionUpdatePage.verifySuccessMessage();
+    }
+    
+    // TEST7 steps
+    @Then("verify newly created condition status is {string}")
+    public void verifyNewlyCreatedConditionStatusIs(String expectedStatus) {
+        conditionUpdatePage.verifyNewlyCreatedConditionStatus(expectedStatus);
+    }
+    
 }
