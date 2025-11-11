@@ -81,9 +81,10 @@ Feature: Kondisyon Güncelleme
     And click to search button on definition page
     And click to first edit button on definition page
     And click general condition tab
-    When click approve button for condition with status "Onay Bekleniyor"
-    Then verify approval popup is displayed
-    When click approve button on approval popup
+    And click update button for condition with status "Onay bekleniyor"
+    Then verify condition detail popup is displayed
+    When click approve button on condition update popup
+    When click to enter from keyboard
     Then verify condition definition page is displayed
     And verify condition status is "Onaylandı" for the approved condition
 

@@ -803,7 +803,7 @@ public class ConditionUpdatePage extends BasePage {
         // Find all rows
         Locator allRows = modalFrame.locator("#ContractRebateGridId tbody tr[role='row']");
         int rowCount = allRows.count();
-        System.out.println("🔍 Toplam " + rowCount + " satır bulundu, durum='" + expectedStatus + "' için Onayla butonu arıyoruz");
+        System.out.println("🔍 Toplam " + rowCount + " satır bulundu, durum='" + expectedStatus + "' için Güncelle butonu arıyoruz");
         
         boolean found = false;
         for (int i = 0; i < rowCount; i++) {
@@ -814,34 +814,23 @@ public class ConditionUpdatePage extends BasePage {
             if (rowText.contains(expectedStatus)) {
                 System.out.println("✅ Durum='" + expectedStatus + "' olan satır bulundu");
                 
-                // Look for approve button (Onayla)
-                Locator approveButton = row.locator(
-                    "a:has-text('Onayla'), " +
-                    "button:has-text('Onayla'), " +
-                    "a.k-button:has-text('Onayla'), " +
-                    "a.k-grid-approve"
-                ).first();
+                // Look for "Güncelle" button text
+                Locator updateButton = row.locator("a:has-text('Güncelle')").first();
                 
-                if (approveButton.count() > 0) {
-                    approveButton.click();
-                    System.out.println("✅ Onayla butonuna tıklandı");
+                if (updateButton.count() > 0) {
+                    updateButton.click();
+                    System.out.println("✅ Güncelle butonuna tıklandı");
                     found = true;
                     page.waitForTimeout(2000);
                     break;
                 } else {
-                    System.out.println("⚠️ Onayla butonu bulunamadı, tüm butonları listeliyorum...");
-                    Locator allButtons = row.locator("a, button");
-                    int buttonCount = allButtons.count();
-                    for (int j = 0; j < buttonCount; j++) {
-                        String buttonText = allButtons.nth(j).textContent();
-                        System.out.println("  Button " + j + ": " + buttonText);
-                    }
+                    System.out.println("❌ Güncelle butonu bulunamadı!");
                 }
             }
         }
         
         if (!found) {
-            throw new AssertionError("Durum='" + expectedStatus + "' olan kondisyon için Onayla butonu bulunamadı!");
+            throw new AssertionError("Durum='" + expectedStatus + "' olan kondisyon için Güncelle butonu bulunamadı!");
         }
     }
     
@@ -871,42 +860,15 @@ public class ConditionUpdatePage extends BasePage {
     public void clickApproveButtonOnApprovalPopup() {
         page.waitForTimeout(1000);
         
-        // Check if there's an iframe
-        Locator iframe = page.locator("iframe.k-content-frame, iframe[title='Setur']").last();
+        // Look for Alertify OK button (ajs-ok class)
+        Locator alertifyButton = page.locator("button.ajs-button.ajs-ok");
         
-        if (iframe.count() > 0) {
-            System.out.println("🔍 Onay popup'ı iframe içeriyor");
-            FrameLocator modalFrame = iframe.contentFrame();
-            
-            Locator approveButton = modalFrame.locator(
-                "button:has-text('Onayla'), " +
-                "a:has-text('Onayla'), " +
-                "input[type='button'][value='Onayla'], " +
-                ".btn:has-text('Onayla')"
-            ).first();
-            
-            if (approveButton.count() > 0) {
-                approveButton.click();
-                System.out.println("✅ Popup içindeki Onayla butonuna tıklandı");
-                page.waitForTimeout(2000);
-                return;
-            }
+        if (alertifyButton.count() == 0 || !alertifyButton.isVisible()) {
+            throw new AssertionError("❌ Onay popup'ında Onay butonu bulunamadı!");
         }
         
-        // Try without iframe
-        Locator approveButton = page.locator(
-            "button:has-text('Onayla'), " +
-            "a:has-text('Onayla'), " +
-            "input[type='button'][value='Onayla'], " +
-            ".btn-primary:has-text('Onayla')"
-        ).first();
-        
-        if (approveButton.count() == 0) {
-            throw new AssertionError("❌ Onay popup'ında Onayla butonu bulunamadı!");
-        }
-        
-        approveButton.click();
-        System.out.println("✅ Onayla butonuna tıklandı (popup)");
+        alertifyButton.click();
+        System.out.println("✅ Onay butonuna tıklandı (Alertify popup)");
         page.waitForTimeout(2000);
     }
     
@@ -937,6 +899,67 @@ public class ConditionUpdatePage extends BasePage {
         }
         
         System.out.println("✅ Genel Kondisyon Durumu: '" + expectedStatus + "' olarak doğrulandı");
+    }
+    
+    /**
+     * Clicks approve button on condition update popup (first popup after clicking Güncelle)
+     */
+    public void clickApproveButtonOnConditionUpdatePopup() {
+        page.waitForTimeout(1500);
+        
+        // This is in the condition detail popup (3rd level iframe)
+        FrameLocator iframe = page.frameLocator("iframe.k-content-frame").last();
+        
+        // Look for Onayla button
+        Locator approveButton = iframe.locator("button:has-text('Onayla'), a:has-text('Onayla')");
+        
+        int buttonCount = approveButton.count();
+        System.out.println("🔍 Onayla buton sayısı: " + buttonCount);
+        
+        if (buttonCount == 0) {
+            // Try alternative selectors
+            System.out.println("⚠️ 'Onayla' text'i ile bulunamadı, tüm butonları listeliyorum...");
+            Locator allButtons = iframe.locator("button, a.k-button");
+            int allCount = allButtons.count();
+            for (int i = 0; i < allCount; i++) {
+                String btnText = allButtons.nth(i).textContent();
+                System.out.println("  Button " + i + ": " + btnText);
+            }
+            throw new AssertionError("❌ Kondisyon detay popup'ında Onayla butonu bulunamadı!");
+        }
+        
+        approveButton.first().click();
+        System.out.println("✅ Kondisyon detay popup'ındaki Onayla butonuna tıklandı");
+        page.waitForTimeout(3000); // Alertify açılması için daha uzun bekle
+    }
+    
+    /**
+     * Verifies that approval confirmation popup is opened
+     */
+    public void verifyApprovalPopupOpened() {
+        page.waitForTimeout(1000);
+        
+        // Look for Alertify OK button - simpler selector
+        Locator alertifyButton = page.locator("button.ajs-ok");
+        
+        // Wait for it to be visible
+        try {
+            alertifyButton.waitFor(new Locator.WaitForOptions()
+                .setState(WaitForSelectorState.VISIBLE)
+                .setTimeout(8000));
+            System.out.println("✅ Onay popup'ı açıldı (Alertify button.ajs-ok bulundu)");
+        } catch (Exception e) {
+            throw new AssertionError("❌ Onay popup'ı açılmadı! " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Presses Enter key to confirm Alertify popup
+     */
+    public void pressEnterKey() {
+        page.keyboard().press("Enter");
+        System.out.println("✅ Enter tuşuna basıldı (Alertify onayı)");
+        page.waitForTimeout(2000);
     }
 
     

@@ -113,3 +113,4 @@ Açılan pop-up Onay butonuna tıkla.
 Expected: Genel Kondisyon Güncelleme ekranı açılır.
 Açılan ekranda Genel Kondisyon Durumu kontrol et.
 Expected: Genel Kondisyon Durumu Onaylandı olmalıdır.
+
