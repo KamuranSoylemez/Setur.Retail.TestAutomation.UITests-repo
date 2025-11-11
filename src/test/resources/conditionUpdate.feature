@@ -75,4 +75,16 @@ Feature: Kondisyon Güncelleme
     And click save button on final update popup
     Then verify condition definition page is displayed
 
+  @TEST8 @CONDITION_UPDATE
+  Scenario: TEST8 - Kondisyon Onaylama - Onay Bekleniyor Durumundaki Kondisyonun Onaylanması
+    Given click to sample contract "PMI-2026-FCA"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    When click approve button for condition with status "Onay Bekleniyor"
+    Then verify approval popup is displayed
+    When click approve button on approval popup
+    Then verify condition definition page is displayed
+    And verify condition status is "Onaylandı" for the approved condition
+
         

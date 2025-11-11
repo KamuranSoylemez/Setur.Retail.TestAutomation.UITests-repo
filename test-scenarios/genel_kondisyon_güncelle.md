@@ -60,3 +60,56 @@ Kondisyon Güncelleme ekranında “Kondisyon İyileşmesi” seç
 Açıklama alanına metin gir: "test otomasyon"
 “Kaydet” butonuna tıkla.
 Expected: Genel Kondisyon Tanımlama ekranı açılır.
+
+Test Case: T6 - Kondisyon İyileşmesi Yukarı Yönlü Değişiklik
+Steps:
+
+Sözleşme ara PMI-2026-FCA
+Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
+İlgili sözleşme detayını aç
+Expected: Detay ekranı açılır.
+Güncelle butonuna bas.
+Expected: Kondisyon güncelleme pop açıldığını gör.
+Kondisyon Güncelleme ekranında “Kondisyon İyileşmesi” seç
+Açıklama alanına metin gir: "test otomasyon"
+“Kaydet” butonuna tıkla.
+Expected: Genel Kondisyon Tanımlama ekranı açılır.
+Sayısal değer alanlarında yukarı yönlü değişiklik yap
+Expected: Değerler yukarı yönlü olarak güncellenir.
+Aşağı yönlü değişiklik yapmaya çalış
+Expected: Aşağı yönlü değişiklik yapılamaz, sistem engeller.
+
+Test Case: T7 - Kondisyon İyileşmesi Yeni Açılan Kondisyonun Kaydedilmesi
+Steps:
+ 
+Sözleşme ara PMI-2026-FCA
+Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
+İlgili sözleşme detayını aç
+Expected: Detay ekranı açılır.
+Güncelle butonuna bas.
+Expected: Kondisyon güncelleme pop açıldığını gör.
+Kondisyon Güncelleme ekranında “Kondisyon İyileşmesi” seç
+Açıklama alanına metin gir: "test otomasyon"
+“Kaydet” butonuna tıkla.
+Expected: Genel Kondisyon Tanımlama ekranı açılır.
+Marj, Hedef Ciro, Hedef Miktar, Hesaplama Tutar, Hesaplama Oran (%), Birim Çarpanı alanlarından editable olanları bir birim arttır.
+Expected: Editable olan değerler birer birim artar.
+Kondisyon Tanımalama ekranında "Kaydet" butonuna tıkla.
+Expected: Kaydetme işlemi başarılı Sözleşme Güncelleme ekranı açıldığını gör.
+Yeni oluşan kondisyonun Genel Kondsiyon Durumunu kontrol et.
+Expected: Yeni kondisyon durumu "Onay Bekleniyor" olduğunu gör.
+
+
+Test Case: T8 - Kondisyon İyileşmesi Yeni Açılan Kondisyonun Onaylanması
+Steps:
+ 
+Sözleşme ara PMI-2026-FCA
+Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
+Onay Bekleniyor durumundaki ilgili sözleşme detayını aç
+Expected: Detay ekranı açılır.
+Onayla butonuna bas.
+Expected: Onay pop-up açılır.
+Açılan pop-up Onay butonuna tıkla.
+Expected: Genel Kondisyon Güncelleme ekranı açılır.
+Açılan ekranda Genel Kondisyon Durumu kontrol et.
+Expected: Genel Kondisyon Durumu Onaylandı olmalıdır.

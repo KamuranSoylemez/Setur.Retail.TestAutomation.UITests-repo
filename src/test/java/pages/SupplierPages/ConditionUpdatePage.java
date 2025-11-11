@@ -784,6 +784,160 @@ public class ConditionUpdatePage extends BasePage {
         
         System.out.println("✅ Genel Kondisyon Tanımlama ekranı görüntülendi (kayıt başarılı)");
     }
+    
+    /**
+     * Clicks approve button for condition with specific status
+     * @param expectedStatus The status to filter (e.g., "Onay Bekleniyor")
+     */
+    public void clickApproveButtonForConditionWithStatus(String expectedStatus) {
+        FrameLocator modalFrame = page.frameLocator("#SeturModalWin iframe");
+        
+        // Wait for grid to be visible
+        Locator generalConditionGrid = modalFrame.locator("#ContractRebateGridId");
+        generalConditionGrid.waitFor(new Locator.WaitForOptions()
+            .setState(WaitForSelectorState.VISIBLE)
+            .setTimeout(10000));
+        
+        page.waitForTimeout(2000);
+        
+        // Find all rows
+        Locator allRows = modalFrame.locator("#ContractRebateGridId tbody tr[role='row']");
+        int rowCount = allRows.count();
+        System.out.println("🔍 Toplam " + rowCount + " satır bulundu, durum='" + expectedStatus + "' için Onayla butonu arıyoruz");
+        
+        boolean found = false;
+        for (int i = 0; i < rowCount; i++) {
+            Locator row = allRows.nth(i);
+            String rowText = row.textContent();
+            
+            // Check if row contains the status
+            if (rowText.contains(expectedStatus)) {
+                System.out.println("✅ Durum='" + expectedStatus + "' olan satır bulundu");
+                
+                // Look for approve button (Onayla)
+                Locator approveButton = row.locator(
+                    "a:has-text('Onayla'), " +
+                    "button:has-text('Onayla'), " +
+                    "a.k-button:has-text('Onayla'), " +
+                    "a.k-grid-approve"
+                ).first();
+                
+                if (approveButton.count() > 0) {
+                    approveButton.click();
+                    System.out.println("✅ Onayla butonuna tıklandı");
+                    found = true;
+                    page.waitForTimeout(2000);
+                    break;
+                } else {
+                    System.out.println("⚠️ Onayla butonu bulunamadı, tüm butonları listeliyorum...");
+                    Locator allButtons = row.locator("a, button");
+                    int buttonCount = allButtons.count();
+                    for (int j = 0; j < buttonCount; j++) {
+                        String buttonText = allButtons.nth(j).textContent();
+                        System.out.println("  Button " + j + ": " + buttonText);
+                    }
+                }
+            }
+        }
+        
+        if (!found) {
+            throw new AssertionError("Durum='" + expectedStatus + "' olan kondisyon için Onayla butonu bulunamadı!");
+        }
+    }
+    
+    /**
+     * Verifies that approval popup is displayed
+     */
+    public void verifyApprovalPopupIsDisplayed() {
+        page.waitForTimeout(1000);
+        
+        // Look for approval confirmation popup
+        Locator approvalPopup = page.locator(
+            "div.k-window:has-text('Onay'), " +
+            "div.k-window:has-text('Onayla'), " +
+            "span.k-window-title:has-text('Onay')"
+        ).first();
+        
+        approvalPopup.waitFor(new Locator.WaitForOptions()
+            .setState(WaitForSelectorState.VISIBLE)
+            .setTimeout(5000));
+        
+        System.out.println("✅ Onay pop-up açıldı");
+    }
+    
+    /**
+     * Clicks approve button on approval popup
+     */
+    public void clickApproveButtonOnApprovalPopup() {
+        page.waitForTimeout(1000);
+        
+        // Check if there's an iframe
+        Locator iframe = page.locator("iframe.k-content-frame, iframe[title='Setur']").last();
+        
+        if (iframe.count() > 0) {
+            System.out.println("🔍 Onay popup'ı iframe içeriyor");
+            FrameLocator modalFrame = iframe.contentFrame();
+            
+            Locator approveButton = modalFrame.locator(
+                "button:has-text('Onayla'), " +
+                "a:has-text('Onayla'), " +
+                "input[type='button'][value='Onayla'], " +
+                ".btn:has-text('Onayla')"
+            ).first();
+            
+            if (approveButton.count() > 0) {
+                approveButton.click();
+                System.out.println("✅ Popup içindeki Onayla butonuna tıklandı");
+                page.waitForTimeout(2000);
+                return;
+            }
+        }
+        
+        // Try without iframe
+        Locator approveButton = page.locator(
+            "button:has-text('Onayla'), " +
+            "a:has-text('Onayla'), " +
+            "input[type='button'][value='Onayla'], " +
+            ".btn-primary:has-text('Onayla')"
+        ).first();
+        
+        if (approveButton.count() == 0) {
+            throw new AssertionError("❌ Onay popup'ında Onayla butonu bulunamadı!");
+        }
+        
+        approveButton.click();
+        System.out.println("✅ Onayla butonuna tıklandı (popup)");
+        page.waitForTimeout(2000);
+    }
+    
+    /**
+     * Verifies condition status for the approved condition
+     * @param expectedStatus The expected status after approval (e.g., "Onaylandı")
+     */
+    public void verifyConditionStatus(String expectedStatus) {
+        page.waitForTimeout(2000);
+        
+        FrameLocator modalFrame = page.frameLocator("#SeturModalWin iframe");
+        
+        // Wait for grid to be visible
+        Locator generalConditionGrid = modalFrame.locator("#ContractRebateGridId");
+        generalConditionGrid.waitFor(new Locator.WaitForOptions()
+            .setState(WaitForSelectorState.VISIBLE)
+            .setTimeout(10000));
+        
+        page.waitForTimeout(1000);
+        
+        // Look for the status in the grid
+        Locator statusCell = modalFrame.locator(
+            "#ContractRebateGridId tbody tr[role='row'] td:has-text('" + expectedStatus + "')"
+        ).first();
+        
+        if (statusCell.count() == 0 || !statusCell.isVisible()) {
+            throw new AssertionError("❌ Beklenen durum '" + expectedStatus + "' bulunamadı!");
+        }
+        
+        System.out.println("✅ Genel Kondisyon Durumu: '" + expectedStatus + "' olarak doğrulandı");
+    }
 
     
 }

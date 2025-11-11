@@ -128,4 +128,24 @@ public class ConditionUpdateStepDefs {
         conditionUpdatePage.verifyConditionDefinitionPageIsDisplayed();
     }
     
+    @When("click approve button for condition with status {string}")
+    public void clickApproveButtonForConditionWithStatus(String status) {
+        conditionUpdatePage.clickApproveButtonForConditionWithStatus(status);
+    }
+    
+    @Then("verify approval popup is displayed")
+    public void verifyApprovalPopupIsDisplayed() {
+        conditionUpdatePage.verifyApprovalPopupIsDisplayed();
+    }
+    
+    @When("click approve button on approval popup")
+    public void clickApproveButtonOnApprovalPopup() {
+        conditionUpdatePage.clickApproveButtonOnApprovalPopup();
+    }
+    
+    @Then("verify condition status is {string} for the approved condition")
+    public void verifyConditionStatusForTheApprovedCondition(String expectedStatus) {
+        conditionUpdatePage.verifyConditionStatus(expectedStatus);
+    }
+    
 }
