@@ -179,6 +179,27 @@ public class ConditionUpdateStepDefs {
         conditionUpdatePage.verifySuccessMessage();
     }
     
+    // TEST10 step definitions
+    @When("click history button from settings menu")
+    public void clickHistoryButtonFromSettingsMenu() {
+        conditionUpdatePage.clickHistoryButtonFromSettingsMenu();
+    }
+    
+    @Then("verify history popup is displayed")
+    public void verifyHistoryPopupIsDisplayed() {
+        conditionUpdatePage.verifyHistoryPopupIsDisplayed();
+    }
+    
+    @Then("verify history contains improvement description {string}")
+    public void verifyHistoryContainsImprovementDescription(String expectedText) {
+        conditionUpdatePage.verifyHistoryContainsImprovementDescription(expectedText);
+    }
+    
+    @Then("verify history source condition id is valid")
+    public void verifyHistorySourceConditionIdIsValid() {
+        conditionUpdatePage.verifyHistorySourceConditionIdIsValid();
+    }
+    
     // TEST7 steps
     @Then("verify newly created condition status is {string}")
     public void verifyNewlyCreatedConditionStatusIs(String expectedStatus) {

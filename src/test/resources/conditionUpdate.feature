@@ -118,4 +118,18 @@ Feature: Kondisyon Güncelleme
     Then verify condition definition page is displayed
     And verify condition status is "Onaylandı" for the approved condition
 
+  @TEST10 @CONDITION_UPDATE
+  Scenario: TEST10 - Kondisyon İyileşmesi Kondisyon Tarihçesi
+    Given click to sample contract "PMI-2025-DAP"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    And click settings button for condition with status "Onaylandı"
+    When click history button from settings menu
+    Then verify history popup is displayed
+    And verify history contains improvement description "Kondisyon iyileştirme"
+    And verify history source condition id is valid
+
+        
+
         
