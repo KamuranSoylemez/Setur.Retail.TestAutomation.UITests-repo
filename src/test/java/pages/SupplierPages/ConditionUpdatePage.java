@@ -187,12 +187,28 @@ public class ConditionUpdatePage extends BasePage {
                 ".btn:has-text('Güncelle')"
             ).first();
             
-            if (updateButton.count() > 0) {
+            int buttonCount = updateButton.count();
+            System.out.println("🔍 Iframe içinde Güncelle buton sayısı: " + buttonCount);
+            
+            if (buttonCount > 0) {
                 updateButton.click();
                 System.out.println("✅ 2. popup'ın iframe içindeki Güncelle butonuna tıklandı");
                 page.waitForTimeout(2000);
             } else {
-                throw new AssertionError("2. popup'ın iframe içinde Güncelle butonu bulunamadı!");
+                // Maybe iframe is closed/changed, try to find button in the main page
+                System.out.println("⚠️ Iframe içinde buton yok, sayfada arıyorum...");
+                Locator directButton = page.locator(
+                    "button:has-text('Güncelle'), " +
+                    "a:has-text('Güncelle')"
+                ).last();
+                
+                if (directButton.count() > 0) {
+                    directButton.click();
+                    System.out.println("✅ Sayfa üzerindeki Güncelle butonuna tıklandı");
+                    page.waitForTimeout(2000);
+                } else {
+                    throw new AssertionError("2. popup'ın iframe içinde ve sayfa üzerinde Güncelle butonu bulunamadı!");
+                }
             }
         } else {
             // No iframe, try to find button directly in popup

@@ -107,3 +107,20 @@ Expected: Genel Kondisyon Güncelleme ekranı açılır.
 Açılan ekranda Genel Kondisyon Durumu kontrol et.
 Expected: Genel Kondisyon Durumu Onaylandı olmalıdır.
 
+
+Test Case: T9 - Kondisyon İyileşmesi Yeni Açılan Kondisyonun Red Edilmesi
+Atla
+
+Test Case: T10 - Kondisyon İyileşmesi Kondisyon Tarihçesi
+Steps:
+ 
+Sözleşme ara PMI-2026-FCDAPA
+Expected: Sözleşme listesinde ilgili sözleşme görüntülenir.
+Onaylandı durumundaki genel kondisyonun ayar butonuna tıkla
+İlgili sözleşme tarihçesini aç
+Expected: Tarihçe ekranı açılır
+Kondisyon tarihçesi ekranında "Açıklama" alanlarını kontrol et.
+Expected: Açıklama içinde "Kondisyon iyileştirme" metninin geçtiğini doğrula, Açıklama ve Kaynak kondisyon Id alanlarının doğruuğunu kontrol et.
+
+
+
