@@ -133,6 +133,11 @@ public class ConditionUpdateStepDefs {
         conditionUpdatePage.clickApproveButtonOnConditionUpdatePopup();
     }
     
+    @When("click reject button on condition update popup")
+    public void clickRejectButtonOnConditionUpdatePopup() {
+        conditionUpdatePage.clickRejectButtonOnConditionUpdatePopup();
+    }
+    
     @Then("verify approval popup opened")
     public void verifyApprovalPopupOpened() {
         conditionUpdatePage.verifyApprovalPopupOpened();
@@ -150,6 +155,11 @@ public class ConditionUpdateStepDefs {
     
     @Then("verify condition status is {string} for the approved condition")
     public void verifyConditionStatusForTheApprovedCondition(String expectedStatus) {
+        conditionUpdatePage.verifyConditionStatus(expectedStatus);
+    }
+    
+    @Then("verify condition status is {string} for the rejected condition")
+    public void verifyConditionStatusForTheRejectedCondition(String expectedStatus) {
         conditionUpdatePage.verifyConditionStatus(expectedStatus);
     }
     

@@ -944,6 +944,38 @@ public class ConditionUpdatePage extends BasePage {
     }
     
     /**
+     * Clicks reject button on condition update popup (first popup after clicking Güncelle)
+     */
+    public void clickRejectButtonOnConditionUpdatePopup() {
+        page.waitForTimeout(1500);
+        
+        // This is in the condition detail popup (3rd level iframe)
+        FrameLocator iframe = page.frameLocator("iframe.k-content-frame").last();
+        
+        // Look for Reddet button
+        Locator rejectButton = iframe.locator("button:has-text('Reddet'), a:has-text('Reddet')");
+        
+        int buttonCount = rejectButton.count();
+        System.out.println("🔍 Reddet buton sayısı: " + buttonCount);
+        
+        if (buttonCount == 0) {
+            // Try alternative selectors
+            System.out.println("⚠️ 'Reddet' text'i ile bulunamadı, tüm butonları listeliyorum...");
+            Locator allButtons = iframe.locator("button, a.k-button");
+            int allCount = allButtons.count();
+            for (int i = 0; i < allCount; i++) {
+                String btnText = allButtons.nth(i).textContent();
+                System.out.println("  Button " + i + ": " + btnText);
+            }
+            throw new AssertionError("❌ Kondisyon detay popup'ında Reddet butonu bulunamadı!");
+        }
+        
+        rejectButton.first().click();
+        System.out.println("✅ Kondisyon detay popup'ındaki Reddet butonuna tıklandı");
+        page.waitForTimeout(3000); // Alertify açılması için daha uzun bekle
+    }
+    
+    /**
      * Verifies that approval confirmation popup is opened
      */
     public void verifyApprovalPopupOpened() {

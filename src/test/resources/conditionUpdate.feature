@@ -206,3 +206,35 @@ Feature: Kondisyon Güncelleme
     Then verify history popup is displayed
     And verify history contains improvement description "Kondisyon kaybı"
     And verify history source condition id is valid
+
+
+
+  @TEST19 @CONDITION_UPDATE
+  Scenario: TEST19 - Kondisyon İptali Seçimi
+    Given click to sample contract "PMI-2025-DAP"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    And click update button for condition with status "Onaylandı"
+    Then verify condition detail popup is displayed
+    When click update button on condition detail popup
+    Then verify condition update popup is displayed
+    When click update button on condition update popup
+    Then verify final update popup is displayed
+    When select update type "Kondisyon İptali" on final update popup
+    And enter description "test otomasyon kond iptal" on final update popup
+    And click save button on final update popup
+    Then verify condition definition page is displayed
+
+  @TEST20 @CONDITION_UPDATE
+  Scenario: TEST20 - Kondisyon İptali Reddi
+    Given click to sample contract "PMI-2025-DAP"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    And click update button for condition with status "Onay bekleniyor"
+    Then verify condition detail popup is displayed
+    When click reject button on condition update popup
+    When click to enter from keyboard
+    Then verify condition definition page is displayed
+    And verify condition status is "Onaylandı" for the approved condition
