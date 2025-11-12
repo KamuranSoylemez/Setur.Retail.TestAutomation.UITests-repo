@@ -1261,14 +1261,14 @@ public class ConditionUpdatePage extends BasePage {
         // Wait for dropdown menu to appear after settings button click
         page.waitForTimeout(1000);
         
-        // Settings menu should be open, find "Tarihçe" button
+        // The dropdown menu should be visible now, click "Tarihçe" button in the dropdown
         // <a href="#" id="btnStatusHistory" class="gridCmdBtn cmdLink ContractRebateGridIdCmd" func="ContractRebateGridIdbtnStatusHistoryItem">Tarihçe</a>
         FrameLocator modalFrame = page.frameLocator("#SeturModalWin iframe");
         
         Locator historyButton = modalFrame.locator(
             "a#btnStatusHistory, " +
-            "a.gridCmdBtn:has-text('Tarihçe'), " +
-            "a:has-text('Tarihçe')"
+            ".dropdown-menu a:has-text('Tarihçe'), " +
+            "ul.dropdown-menu a:has-text('Tarihçe')"
         ).first();
         
         historyButton.waitFor(new Locator.WaitForOptions()
@@ -1276,7 +1276,7 @@ public class ConditionUpdatePage extends BasePage {
             .setTimeout(5000));
         
         historyButton.click();
-        System.out.println("✅ Tarihçe butonuna tıklandı");
+        System.out.println("✅ Dropdown menüden Tarihçe butonuna tıklandı");
         page.waitForTimeout(2000);
     }
     
@@ -1310,49 +1310,45 @@ public class ConditionUpdatePage extends BasePage {
     public void verifyHistoryContainsImprovementDescription(String expectedText) {
         page.waitForTimeout(2000);
         
-        // History popup might have an iframe
-        FrameLocator historyFrame = page.frameLocator("iframe.k-content-frame").first();
+        System.out.println("🔍 Tarihçe içinde '" + expectedText + "' arıyoruz...");
         
-        // Debug: Print all text content
-        System.out.println("🔍 Tarihçe pop-up içeriği kontrol ediliyor...");
+        // Try in new iframe first (history popup might have its own iframe)
+        FrameLocator historyFrame = page.frameLocator("iframe.k-content-frame").last();
+        Locator reasonCells = historyFrame.locator("td[data-field-name='Reason']");
         
-        // Try to get all rows in iframe first
-        Locator iframeRows = historyFrame.locator("table tbody tr, .k-grid tbody tr");
-        if (iframeRows.count() > 0) {
-            System.out.println("📋 Iframe içinde " + iframeRows.count() + " satır bulundu:");
-            for (int i = 0; i < Math.min(5, iframeRows.count()); i++) {
-                System.out.println("  Satır " + i + ": " + iframeRows.nth(i).textContent());
-            }
-        } else {
-            // Try without iframe
-            Locator pageRows = page.locator("table tbody tr, .k-grid tbody tr");
-            System.out.println("📋 Page içinde " + pageRows.count() + " satır bulundu:");
-            for (int i = 0; i < Math.min(5, pageRows.count()); i++) {
-                System.out.println("  Satır " + i + ": " + pageRows.nth(i).textContent());
+        int count = reasonCells.count();
+        System.out.println("� iframe.last() içinde " + count + " adet Reason hücresi bulundu");
+        
+        if (count == 0) {
+            // Try with different iframe selector
+            historyFrame = page.frameLocator("#SeturModalWin iframe iframe");
+            reasonCells = historyFrame.locator("td[data-field-name='Reason']");
+            count = reasonCells.count();
+            System.out.println("📋 SeturModalWin iframe iframe içinde " + count + " adet Reason hücresi bulundu");
+        }
+        
+        if (count == 0) {
+            // Try directly on page
+            reasonCells = page.locator("td[data-field-name='Reason']");
+            count = reasonCells.count();
+            System.out.println("📋 Page içinde " + count + " adet Reason hücresi bulundu");
+        }
+        
+        boolean found = false;
+        for (int i = 0; i < count; i++) {
+            String cellText = reasonCells.nth(i).textContent();
+            System.out.println("  Reason " + i + ": " + cellText);
+            
+            if (cellText.contains(expectedText)) {
+                found = true;
+                System.out.println("✅ Tarihçe içinde '" + expectedText + "' metni bulundu!");
+                break;
             }
         }
         
-        // Look for the expected text in the history grid/table
-        Locator descriptionCell = historyFrame.locator(
-            "td:has-text('" + expectedText + "'), " +
-            ".k-grid td:has-text('" + expectedText + "'), " +
-            "tr:has-text('" + expectedText + "')"
-        ).first();
-        
-        if (descriptionCell.count() == 0) {
-            // Try without iframe
-            descriptionCell = page.locator(
-                "td:has-text('" + expectedText + "'), " +
-                ".k-grid td:has-text('" + expectedText + "'), " +
-                "tr:has-text('" + expectedText + "')"
-            ).first();
-        }
-        
-        if (descriptionCell.count() == 0) {
+        if (!found) {
             throw new AssertionError("❌ Tarihçe içinde '" + expectedText + "' metni bulunamadı!");
         }
-        
-        System.out.println("✅ Tarihçe içinde '" + expectedText + "' metni bulundu");
     }
     
     /**
@@ -1361,35 +1357,38 @@ public class ConditionUpdatePage extends BasePage {
     public void verifyHistorySourceConditionIdIsValid() {
         page.waitForTimeout(1000);
         
-        // History popup might have an iframe
-        FrameLocator historyFrame = page.frameLocator("iframe.k-content-frame").first();
+        // History popup has an iframe - use last() to get the history iframe
+        FrameLocator historyFrame = page.frameLocator("iframe.k-content-frame").last();
         
-        // Look for source condition ID column (Kaynak Kondisyon Id)
-        Locator sourceIdCell = historyFrame.locator(
-            "td[aria-describedby*='SourceConditionId'], " +
-            "td[role='gridcell']:has-text(/\\d+/)"
-        ).first();
+        // Look for Reason field which contains "Kaynak kondisyon Id : XXX"
+        Locator reasonCells = historyFrame.locator("td[data-field-name='Reason']");
         
-        if (sourceIdCell.count() == 0) {
-            // Try without iframe
-            sourceIdCell = page.locator(
-                "td[aria-describedby*='SourceConditionId'], " +
-                "td[role='gridcell']:has-text(/\\d+/)"
-            ).first();
+        boolean found = false;
+        for (int i = 0; i < reasonCells.count(); i++) {
+            String cellText = reasonCells.nth(i).textContent();
+            
+            // Check if this cell contains "Kaynak kondisyon Id"
+            if (cellText.contains("Kaynak kondisyon Id")) {
+                System.out.println("✅ Kaynak Kondisyon Id bulundu: " + cellText);
+                
+                // Extract the ID number (after "Kaynak kondisyon Id : ")
+                String[] parts = cellText.split("Kaynak kondisyon Id\\s*:\\s*");
+                if (parts.length > 1) {
+                    String idPart = parts[1].trim();
+                    // Get just the number (may have other text after it)
+                    String id = idPart.replaceAll("[^0-9].*", "");
+                    
+                    if (!id.isEmpty() && id.matches("\\d+")) {
+                        System.out.println("✅ Kaynak Kondisyon Id geçerli: " + id);
+                        found = true;
+                        break;
+                    }
+                }
+            }
         }
         
-        if (sourceIdCell.count() > 0) {
-            String sourceId = sourceIdCell.textContent().trim();
-            System.out.println("✅ Kaynak Kondisyon Id bulundu: " + sourceId);
-            
-            // Check if it's a valid number
-            if (sourceId.matches("\\d+")) {
-                System.out.println("✅ Kaynak Kondisyon Id geçerli bir sayı");
-            } else {
-                System.out.println("⚠️ Kaynak Kondisyon Id sayı değil: " + sourceId);
-            }
-        } else {
-            System.out.println("⚠️ Kaynak Kondisyon Id alanı bulunamadı, ancak tarihçe kaydı var");
+        if (!found) {
+            throw new AssertionError("❌ Tarihçe içinde geçerli Kaynak Kondisyon Id bulunamadı!");
         }
     }
 
