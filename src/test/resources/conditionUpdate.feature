@@ -15,7 +15,7 @@ Feature: Kondisyon Güncelleme
     And click to search button on definition page
     And click to first edit button on definition page
     And click general condition tab
-    Then open general condition detail with id "632" and status "Onaylandı"
+    Then open general condition detail with status "Onaylandı"
     And verify update button is visible on condition detail
 
   @TEST2 @CONDITION_UPDATE
@@ -71,7 +71,7 @@ Feature: Kondisyon Güncelleme
     When click update button on condition update popup
     Then verify final update popup is displayed
     When select update type "Kondisyon İyileşmesi" on final update popup
-    And enter description "test otomasyon" on final update popup
+    And enter description "test otomasyon KI" on final update popup
     And click save button on final update popup
     Then verify condition definition page is displayed
 
@@ -106,7 +106,7 @@ Feature: Kondisyon Güncelleme
     Then verify newly created condition status is "Onay Bekleniyor"
 
   @TEST8 @CONDITION_UPDATE
-  Scenario: TEST8 - Kondisyon Onaylama - Onay Bekleniyor Durumundaki Kondisyonun Onaylanması
+  Scenario: TEST8 - Kondisyon Onaylama - Onay Bekleniyor Durumundaki Kondisyon İyileşmenin Onaylanması
     Given click to sample contract "PMI-2025-DAP"
     And click to search button on definition page
     And click to first edit button on definition page
@@ -130,6 +130,79 @@ Feature: Kondisyon Güncelleme
     And verify history contains improvement description "Kondisyon iyileştirme"
     And verify history source condition id is valid
 
+
+
+  @TEST11 @CONDITION_UPDATE
+  Scenario: TEST11 - Kondisyon Güncelleme - Kondisyon Kaybı
+    Given click to sample contract "PMI-2025-DAP"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    And click update button for condition with status "Onaylandı"
+    Then verify condition detail popup is displayed
+    When click update button on condition detail popup
+    Then verify condition update popup is displayed
+    When click update button on condition update popup
+    Then verify final update popup is displayed
+    When select update type "Kondisyon Kaybı" on final update popup
+    And enter description "test otomasyon KK" on final update popup
+    And click save button on final update popup
+    Then verify condition definition page is displayed
         
 
-        
+
+  @TEST12 @CONDITION_UPDATE
+  Scenario: TEST12 and TEST13 - Kondisyon Kaybı Aşağı Yönlü Değişiklik
+    Given click to sample contract "PMI-2025-DAP"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    And click update button for condition with status "Onaylandı"
+    Then verify condition detail popup is displayed
+    When click update button on condition detail popup
+    Then verify condition update popup is displayed
+    When click update button on condition update popup
+    Then verify final update popup is displayed
+    When select update type "Kondisyon Kaybı" on final update popup
+    And enter description "test otomasyon KK" on final update popup
+    And click save button on final update popup
+    Then verify condition definition page is displayed
+    When decrease unit multiplier by 1
+    Then verify downward change is blocked
+    When increase unit multiplier by 1
+    And click save button on condition definition page
+    Then verify success message is displayed
+
+  @TEST13 @CONDITION_UPDATE
+  Scenario: TEST7 - Kondisyon Kaybı Yeni Açılan Kondisyonun Kaydedilmesi
+    Given click to sample contract "PMI-2025-DAP"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    Then verify newly created condition status is "Onay Bekleniyor"
+
+  @TEST14 @CONDITION_UPDATE
+  Scenario: TEST14 - Kondisyon Onaylama - Onay Bekleniyor Durumundaki Kondisyon Kaybının Onaylanması
+    Given click to sample contract "PMI-2025-DAP"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    And click update button for condition with status "Onay bekleniyor"
+    Then verify condition detail popup is displayed
+    When click approve button on condition update popup
+    When click to enter from keyboard
+    Then verify condition definition page is displayed
+
+
+
+  @TEST16 @CONDITION_UPDATE
+  Scenario: TEST10 - Kondisyon Kaybı Tarihçesi
+    Given click to sample contract "PMI-2025-DAP"
+    And click to search button on definition page
+    And click to first edit button on definition page
+    And click general condition tab
+    And click settings button for condition with status "Onaylandı"
+    When click history button from settings menu
+    Then verify history popup is displayed
+    And verify history contains improvement description "Kondisyon kaybı"
+    And verify history source condition id is valid
