@@ -152,4 +152,18 @@ public class ReceivablePoolSearchStepDefs {
         Assertions.assertTrue(hasValidContent, "Tarihçe açıklaması kondisyon ID ve açıklama içermeli!");
         System.out.println("✅ Tarihçe açıklaması geçerli içerik içerdiği doğrulandı");
     }
+    
+    // ============ INVOICE CREATION STEPS (T10-T14) ============
+    
+    @When("user clicks create rebate invoice button without selection")
+    public void userClicksCreateRebateInvoiceButtonWithoutSelection() {
+        receivablePoolPage.clickCreateRebateInvoiceButtonWithoutSelection();
+    }
+    
+    @Then("verify warning message {string} is displayed")
+    public void verifyWarningMessageIsDisplayed(String expectedMessage) {
+        boolean isDisplayed = receivablePoolPage.verifyWarningMessage(expectedMessage);
+        Assertions.assertTrue(isDisplayed, "Uyarı mesajı '" + expectedMessage + "' görünmeli!");
+        System.out.println("✅ Uyarı mesajı doğrulandı: " + expectedMessage);
+    }
 }

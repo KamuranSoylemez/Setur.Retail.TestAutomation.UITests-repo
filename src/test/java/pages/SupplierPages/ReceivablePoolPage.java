@@ -9,6 +9,7 @@ public class ReceivablePoolPage extends BasePage {
     
     // Search form elements
     private Locator searchButton;
+    private Locator createRebateInvoiceButton;
     private Locator companyMultiSelect;
     private Locator rebateDateInput;
     private Locator conditionTypeDropdown;
@@ -24,6 +25,9 @@ public class ReceivablePoolPage extends BasePage {
     private Locator gridRows;
     private Locator noRecordsMessage;
     
+    // Alert/Warning messages
+    private Locator warningMessage;
+    
     public ReceivablePoolPage() {
         super();
         initializeLocators();
@@ -32,6 +36,7 @@ public class ReceivablePoolPage extends BasePage {
     private void initializeLocators() {
         // Button
         searchButton = page.locator("#FilterButtonId");
+        createRebateInvoiceButton = page.locator("#checkboxReceivableInvoice");
         
         // Search inputs
         companyMultiSelect = page.locator("#FilterFirmId"); // Hidden input
@@ -48,6 +53,9 @@ public class ReceivablePoolPage extends BasePage {
         // Grid
         gridRows = page.locator("table tbody tr, .k-grid tbody tr");
         noRecordsMessage = page.locator(".k-grid-norecords, td:has-text('Kayıt bulunamadı'), td:has-text('No records')");
+        
+        // Warning/Alert messages
+        warningMessage = page.locator(".alert-warning, .alert-danger, div[role='alert'], .k-notification-warning, .k-notification-error, .toast-warning, .toast-error");
     }
     
     /**
@@ -633,5 +641,71 @@ public class ReceivablePoolPage extends BasePage {
         }
         
         return allSortsSuccessful;
+    }
+    
+    /**
+     * Click "Rebate Faturası Oluştur" button without selecting any record
+     * Hiçbir kayıt seçmeden "Rebate Faturası Oluştur" butonuna tıklar
+     */
+    public void clickCreateRebateInvoiceButtonWithoutSelection() {
+        System.out.println("\n🔍 'Rebate Faturası Oluştur' butonuna tıklanıyor (kayıt seçilmeden)...");
+        initializeLocators();
+        
+        if (createRebateInvoiceButton.count() > 0) {
+            createRebateInvoiceButton.first().click();
+            page.waitForTimeout(1500); // Uyarı mesajının görünmesi için bekle
+            System.out.println("✅ 'Rebate Faturası Oluştur' butonuna tıklandı");
+        } else {
+            System.out.println("❌ 'Rebate Faturası Oluştur' butonu bulunamadı!");
+        }
+    }
+    
+    /**
+     * Verify warning message is displayed
+     * Uyarı mesajının görüntülendiğini ve belirtilen metni içerdiğini kontrol eder
+     */
+    public boolean verifyWarningMessage(String expectedMessage) {
+        System.out.println("\n🔍 Uyarı mesajı kontrol ediliyor...");
+        System.out.println("🔍 Beklenen mesaj: \"" + expectedMessage + "\"");
+        
+        page.waitForTimeout(1000); // Mesajın görünmesi için bekle
+        
+        // Önce genel uyarı mesajı var mı kontrol et
+        if (warningMessage.count() > 0) {
+            String actualMessage = warningMessage.first().textContent().trim();
+            System.out.println("📝 Bulunan mesaj: \"" + actualMessage + "\"");
+            
+            boolean matches = actualMessage.contains(expectedMessage);
+            
+            if (matches) {
+                System.out.println("✅ Uyarı mesajı doğru şekilde gösterildi");
+            } else {
+                System.out.println("⚠️ Uyarı mesajı gösterildi ama içerik uyuşmuyor");
+            }
+            
+            return matches;
+        }
+        
+        // Alternatif: Herhangi bir element'te bu mesaj var mı kontrol et
+        Locator anyElementWithMessage = page.locator("*:has-text('" + expectedMessage + "')").first();
+        
+        if (anyElementWithMessage.count() > 0 && anyElementWithMessage.isVisible()) {
+            System.out.println("✅ Uyarı mesajı alternatif element'te bulundu");
+            return true;
+        }
+        
+        System.out.println("❌ Uyarı mesajı bulunamadı!");
+        
+        // Debug için sayfadaki tüm alert/notification'ları listele
+        Locator allAlerts = page.locator(".alert, .notification, [role='alert'], .toast");
+        int alertCount = allAlerts.count();
+        System.out.println("🔍 Sayfada toplam " + alertCount + " alert/notification bulundu:");
+        
+        for (int i = 0; i < Math.min(alertCount, 5); i++) {
+            String text = allAlerts.nth(i).textContent().trim();
+            System.out.println("  [" + i + "] " + text);
+        }
+        
+        return false;
     }
 }

@@ -59,3 +59,12 @@ Feature: Rebate Fatura Havuzu (Rebate Invoice Pool) Arama Testleri
     And user clicks rebate invoice pool history button
     Then verify rebate invoice pool history modal is opened
     And verify rebate invoice pool history columns are displayed
+
+  @REBATE_INVOICE_POOL_SEARCH @TEST8 @MULTI_FILTER
+  Scenario: TEST8 - Çoklu filtre ile arama (Tüm kriterler kombinasyonu)
+    When user fills rebate invoice pool contract name with "1"
+    And user fills rebate invoice pool invoice date with "17.11.2025"
+    And user fills rebate invoice pool accounting date with "17.11.2025"
+    And user selects rebate invoice pool invoice currency "EUR"
+    And user clicks rebate invoice pool search button
+    Then verify rebate invoice pool grid has results or no records message

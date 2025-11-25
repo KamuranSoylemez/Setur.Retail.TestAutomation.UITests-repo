@@ -36,6 +36,56 @@ public class ConditionUpdatePage extends BasePage {
         System.out.println("✅ Genel kondisyon detayı '" + expectedStatus + "' durumunda görüntülendi");
     }
     
+    /**
+     * Opens general condition detail by status only (first match)
+     */
+    public void openGeneralConditionDetailWithStatus(String expectedStatus) {
+        FrameLocator modalFrame = page.frameLocator("#SeturModalWin iframe");
+        
+        // Wait for grid to be visible
+        Locator generalConditionGrid = modalFrame.locator("#ContractRebateGridId");
+        generalConditionGrid.waitFor(new Locator.WaitForOptions()
+            .setState(WaitForSelectorState.VISIBLE)
+            .setTimeout(10000));
+        
+        page.waitForTimeout(2000);
+        
+        // Find all rows
+        Locator allRows = modalFrame.locator("#ContractRebateGridId tbody tr[role='row']");
+        int rowCount = allRows.count();
+        System.out.println("🔍 Toplam " + rowCount + " satır bulundu, durum='" + expectedStatus + "' arıyoruz");
+        
+        boolean found = false;
+        for (int i = 0; i < rowCount; i++) {
+            Locator row = allRows.nth(i);
+            String rowText = row.textContent();
+            
+            // Check if row contains the status
+            if (rowText.contains(expectedStatus)) {
+                System.out.println("✅ Durum='" + expectedStatus + "' olan satır bulundu");
+                
+                // Click on the row or detail button
+                Locator detailButton = row.locator("a:has-text('Detay'), button:has-text('Detay')").first();
+                if (detailButton.count() > 0) {
+                    detailButton.click();
+                    System.out.println("✅ Detay butonuna tıklandı");
+                } else {
+                    // If no detail button, click the row itself
+                    row.click();
+                    System.out.println("✅ Satıra tıklandı");
+                }
+                
+                found = true;
+                page.waitForTimeout(2000);
+                break;
+            }
+        }
+        
+        if (!found) {
+            throw new AssertionError("Durum='" + expectedStatus + "' olan kondisyon bulunamadı!");
+        }
+    }
+    
     public void openGeneralConditionDetailWithIdAndStatus(String conditionId, String expectedStatus) {
         FrameLocator modalFrame = page.frameLocator("#SeturModalWin iframe");
         

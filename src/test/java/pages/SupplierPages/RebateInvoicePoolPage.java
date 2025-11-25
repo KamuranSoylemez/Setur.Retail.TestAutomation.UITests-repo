@@ -14,11 +14,14 @@ public class RebateInvoicePoolPage extends BasePage {
     private Locator conditionTypeDropdown;
     private Locator calculationTypeDropdown;
     private Locator statusDropdown;
-    private Locator currencyDropdown;
+    private Locator invoiceCurrencyDropdown;
+    private Locator calculationCurrencyDropdown;
     private Locator calculationPeriodDropdown;
     private Locator contractNameInput;
     private Locator categoryDropdown;
     private Locator descriptionInput;
+    private Locator invoiceDateInput;
+    private Locator accountingDateInput;
     
     // Grid elements
     private Locator gridRows;
@@ -39,11 +42,14 @@ public class RebateInvoicePoolPage extends BasePage {
         conditionTypeDropdown = page.locator("#FilterContractRebateTypeId"); // Kondisyon Tipi (sayfada yok)
         calculationTypeDropdown = page.locator("#FilterContractRebateCalculateTypeId"); // Hesaplama Türü (sayfada yok)
         statusDropdown = page.locator("#FilterContractInvoiceStatusId"); // Durum - GERÇEKTİ: FilterContractInvoiceStatusId
-        currencyDropdown = page.locator("#FilterInvoiceCurrencyCode, #FilterCalculationCurrencyCode"); // Para Birimi - 2 tane var
+        invoiceCurrencyDropdown = page.locator("#FilterInvoiceCurrencyCode"); // Fatura Para Birimi
+        calculationCurrencyDropdown = page.locator("#FilterCalculationCurrencyCode"); // Hesaplama Para Birimi
         calculationPeriodDropdown = page.locator("#FilterContractRebatePeriodTypeId"); // Hesaplama Periyodu (sayfada yok)
         contractNameInput = page.locator("#FilterContractInvoiceId"); // Sözleşme Fatura ID
         categoryDropdown = page.locator("#FilterCategoryIds"); // Kategori ✅ ÇALIŞIYOR
         descriptionInput = page.locator("#FilterDescription, input[name='FilterDescription'], textarea[name='FilterDescription']"); // Açıklama
+        invoiceDateInput = page.locator("#FilterInvoiceDate"); // Fatura Tarihi
+        accountingDateInput = page.locator("#FilterFinanceIntegrationDate"); // Muhasebeleşme Tarihi - DOĞRU ID: FilterFinanceIntegrationDate
         
         // Grid
         gridRows = page.locator("table tbody tr, .k-grid tbody tr");
@@ -156,11 +162,19 @@ public class RebateInvoicePoolPage extends BasePage {
     }
     
     /**
-     * Select currency from dropdown
+     * Select invoice currency from dropdown
      */
-    public void selectCurrency(String currency) {
-        System.out.println("🔍 Para birimi seçiliyor: " + currency);
-        selectFromDropdown(currencyDropdown, currency, "Para Birimi");
+    public void selectInvoiceCurrency(String currency) {
+        System.out.println("🔍 Fatura para birimi seçiliyor: " + currency);
+        selectFromDropdown(invoiceCurrencyDropdown, currency, "Fatura Para Birimi");
+    }
+    
+    /**
+     * Select calculation currency from dropdown
+     */
+    public void selectCalculationCurrency(String currency) {
+        System.out.println("🔍 Hesaplama para birimi seçiliyor: " + currency);
+        selectFromDropdown(calculationCurrencyDropdown, currency, "Hesaplama Para Birimi");
     }
     
     /**
@@ -195,6 +209,24 @@ public class RebateInvoicePoolPage extends BasePage {
         System.out.println("🔍 Açıklama dolduruluyor: " + description);
         descriptionInput.first().fill(description);
         System.out.println("✅ Açıklama dolduruldu: " + description);
+    }
+    
+    /**
+     * Fill invoice date field
+     */
+    public void fillInvoiceDate(String date) {
+        System.out.println("🔍 Fatura tarihi dolduruluyor: " + date);
+        invoiceDateInput.first().fill(date);
+        System.out.println("✅ Fatura Tarihi dolduruldu: " + date);
+    }
+    
+    /**
+     * Fill accounting date field
+     */
+    public void fillAccountingDate(String date) {
+        System.out.println("🔍 Muhasebeleşme tarihi dolduruluyor: " + date);
+        accountingDateInput.first().fill(date);
+        System.out.println("✅ Muhasebeleşme Tarihi dolduruldu: " + date);
     }
     
     /**

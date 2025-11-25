@@ -65,3 +65,10 @@ Feature: Alacak Havuzu (Receivable Pool) Arama Testleri
     When user clicks history icon on first row
     Then verify history page is opened
     And verify history description contains condition ids and explanation
+
+  @RECEIVABLE_POOL_SEARCH @TEST10 @CREATE_INVOICE_NEGATIVE
+  Scenario: TEST10 - Fatura Oluşturma olumsuz - Hiçbir kayıt seçilmeden butona basılır
+    When user clicks search button
+    Then verify grid has results
+    When user clicks create rebate invoice button without selection
+    Then verify warning message "Lütfen en az bir kayıt seçiniz." is displayed

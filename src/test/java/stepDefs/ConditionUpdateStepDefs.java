@@ -20,6 +20,12 @@ public class ConditionUpdateStepDefs {
         conditionUpdatePage.verifyGeneralConditionDetailWithStatus(status);
     }
     
+    @Then("open general condition detail with status {string}")
+    public void openGeneralConditionDetailWithStatus(String status) {
+        conditionUpdatePage.openGeneralConditionDetailWithStatus(status);
+        System.out.println("✅ Durum='" + status + "' olan genel kondisyon detayı açıldı");
+    }
+    
     @Then("open general condition detail with id {string} and status {string}")
     public void openGeneralConditionDetailWithIdAndStatus(String conditionId, String status) {
         conditionUpdatePage.openGeneralConditionDetailWithIdAndStatus(conditionId, status);
