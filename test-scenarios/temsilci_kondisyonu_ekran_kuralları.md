@@ -64,60 +64,111 @@ Hedef Miktar: Required
 Hesaplama Oran: Required: Tutar Girilmediyse
 
 T4
-Kondisyon Tipi: Commission
-Hedef Tipi: Satış Cirosu
-Kademe: Girilebilir
-Hedef Adet: Girilemez
-Hedef Ciro: Girilmeli
-Tutar: Girilmeli
-Oran: Girilmeli
-Marka: Girilebilir
-Açıklama: Girilebilir
+Temsilci Kondisyon Tipi: Commission
+Hedef Tipi: Satış adedi
+Başlangıç Tarihi: Required
+Hesaplama Periyodu: Required
+Kademeli mi?: Required: Hayır
+Hesaplama Para Birimi: Required
+Hedefli mi?: Required: Hayır
+Hedef Ciro: Not Shown
+Temel Ölçü Birimi: Optional
+Birim Çarpanı: Required
+Hesaplama Tutar: Required: Oran Girilmediyse
+Marka: Optional
+Açıklama: Optional
+Bitiş Tarihi: Required
+Faturalama Para Birimi: Required
+Kdv Dahil mi?: Required
+Tutar Çarpan Var mı?: Required
+Hedef Miktar: Not Shown
+Hesaplama Oran: Required: Tutar Girilmediyse
 
 
 T5
-Kondisyon Tipi: Commission
-Hedef Tipi: Hesaplamasız
-Kademe: Girilemez
-Hedef Adet: Girilemez
-Hedef Ciro: Girilemez
-Tutar: Girilmeli
-Oran: Girilemez
-Marka: Girilebilir
-Açıklama: Girilebilir
+Temsilci Kondisyon Tipi: Commission
+Hedef Tipi: Satış adedi
+Başlangıç Tarihi: Required
+Hesaplama Periyodu: Required
+Kademeli mi?: Required: Evet
+Hesaplama Para Birimi: Required
+Hedefli mi?: Disabled
+Hedef Ciro: Not Shown
+Temel Ölçü Birimi: Disabled
+Birim Çarpanı: Disabled
+Hesaplama Tutar: Disabled
+Marka: Optional
+Açıklama: Optional
+Bitiş Tarihi: Required
+Faturalama Para Birimi: Required
+Kdv Dahil mi?: Required
+Tutar Çarpan Var mı?: Disabled
+Hedef Miktar: Not Shown
+Hesaplama Oran: Disabled
 
 
 T6
-Kondisyon Tipi: Incentive
-Hedef Tipi: Satış Adedi
-Kademe: Girilebilir
-Hedef Adet: Girilmeli
-Hedef Ciro: Girilemez
-Tutar: Girilmeli
-Oran: Girilmeli
-Marka: Girilebilir
-Açıklama: Girilebilir
+Temsilci Kondisyon Tipi: Commission
+Hedef Tipi: Satış Cirosu
+Başlangıç Tarihi: Required
+Hesaplama Periyodu: Required
+Kademeli mi?: Required: Hayır
+Hesaplama Para Birimi: Required
+Hedefli mi?: Required: Evet
+Hedef Ciro: Required
+Temel Ölçü Birimi: Disabled
+Birim Çarpanı: Disabled
+Hesaplama Tutar: Required: Oran Girilmediyse
+Marka: Optional
+Açıklama: Optional
+Bitiş Tarihi: Required
+Faturalama Para Birimi: Required
+Kdv Dahil mi?: Required
+Tutar Çarpan Var mı?: Disabled
+Hedef Miktar: Disabled
+Hesaplama Oran: Required: Tutar Girilmediyse
 
 
 T7
-Kondisyon Tipi: Incentive
+Temsilci Kondisyon Tipi: Commission
 Hedef Tipi: Satış Cirosu
-Kademe: Girilebilir
-Hedef Adet: Girilemez
-Hedef Ciro: Girilmeli
-Tutar: Girilmeli
-Oran: Girilmeli
-Marka: Girilebilir
-Açıklama: Girilebilir
+Başlangıç Tarihi: Required
+Hesaplama Periyodu: Required
+Kademeli mi?: Required: Hayır
+Hesaplama Para Birimi: Required
+Hedefli mi?: Required: Hayır
+Hedef Ciro: Not Shown
+Temel Ölçü Birimi: Optional
+Birim Çarpanı: Required
+Hesaplama Tutar: Required: Oran Girilmediyse
+Marka: Optional
+Açıklama: Optional
+Bitiş Tarihi: Required
+Faturalama Para Birimi: Required
+Kdv Dahil mi?: Required
+Tutar Çarpan Var mı?: Required
+Hedef Miktar: Not Shown
+Hesaplama Oran: Required: Tutar Girilmediyse
 
 
 T8
-Kondisyon Tipi: Incentive
-Hedef Tipi: Hesaplamasız
-Kademe: Girilemez
-Hedef Adet: Girilemez
-Hedef Ciro: Girilemez
-Tutar: Girilmeli
-Oran: Girilemez
-Marka: Girilebilir
+KTemsilci Kondisyon Tipi: Commission
+Hedef Tipi: Satış Cirosu
+Başlangıç Tarihi: Required
+Hesaplama Periyodu: Required
+Kademeli mi?: Required: Evet
+Hesaplama Para Birimi: Required
+Hedefli mi?: Disabled
+Hedef Ciro: Not Shown
+Temel Ölçü Birimi: Disabled
+Birim Çarpanı: Disabled
+Hesaplama Tutar: Disabled
+Marka: Optional
+Açıklama: Optional
+Bitiş Tarihi: Required
+Faturalama Para Birimi: Required
+Kdv Dahil mi?: Required
+Tutar Çarpan Var mı?: Disabled
+Hedef Miktar: Not Shown
+Hesaplama Oran: Disabled
 Açıklama: Girilebilir

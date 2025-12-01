@@ -106,22 +106,32 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     And verify brand ambassador field "Marka" is optional
     And verify brand ambassador field "Açıklama" is optional
 
-  @TEST4 @BRAND_AMBASSADOR
-  Scenario: TEST4 - Commission + Satış Cirosu
+  @TEST4 @BRAND_AMBASSADOR @BUG
+  Scenario: TEST4 - Commission + Satış Adedi (Hedefsiz) - Detaylı alan kontrolü
     When select brand ambassador condition type "Commission"
-    And select brand ambassador calculation type "Satış Cirosu"
+    And select brand ambassador calculation type "Satış Adedi"
     And wait for 2 seconds
 
-    # Girilemez alanlar
-    Then verify brand ambassador field "Hedef Adet" is disabled
+    # Girilmesi zorunlu alanlar (11 alan)
+    Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
+    And verify brand ambassador field "Hesaplama Periyodu" is mandatory
+    And verify brand ambassador field "Kademeli mi?" is mandatory
+    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    And verify brand ambassador field "Hedefli mi?" is mandatory
+    And verify brand ambassador field "Birim Çarpanı" is mandatory
+    And verify brand ambassador field "Hesaplama Tutar" is mandatory
+    And verify brand ambassador field "Bitiş Tarihi" is mandatory
+    And verify brand ambassador field "Faturalama Para Birimi" is mandatory
+    And verify brand ambassador field "Kdv Dahil mi?" is mandatory
+    And verify brand ambassador field "Tutar Çarpan Var mı?" is mandatory
+    And verify brand ambassador field "Hesaplama Oran" is mandatory
 
-    # Girilmeli alanlar
-    And verify brand ambassador field "Hedef Ciro" is mandatory
-    And verify brand ambassador field "Tutar" is mandatory
-    And verify brand ambassador field "Oran" is mandatory
+    # Görünmeyen alanlar (2 alan)
+    And verify brand ambassador field "Hedef Ciro" is not shown
+    And verify brand ambassador field "Hedef Miktar" is not shown
 
-    # Girilebilir alanlar
-    And verify brand ambassador field "Kademe" is optional
+    # Girilebilir (optional) alanlar (3 alan)
+    And verify brand ambassador field "Temel Ölçü Birimi" is optional
     And verify brand ambassador field "Marka" is optional
     And verify brand ambassador field "Açıklama" is optional
 
