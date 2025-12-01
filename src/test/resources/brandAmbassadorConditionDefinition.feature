@@ -78,9 +78,13 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     And verify brand ambassador field "Hedef Miktar" is not shown
 
   @TEST3 @BRAND_AMBASSADOR @BUG
-  Scenario: TEST3 - Commission + Satış Adedi - Detaylı alan kontrolü
+  Scenario: TEST3 - Commission + Satış Adedi + Hedefli (Evet) - Detaylı alan kontrolü
     When select brand ambassador condition type "Commission"
     And select brand ambassador calculation type "Satış Adedi"
+    And wait for 2 seconds
+
+    # Hedefli mi? seçimi - Bu alan Hedef Miktar ve Hedef Ciro görünürlüğünü kontrol eder
+    When select brand ambassador "Hedefli mi?" option "Evet"
     And wait for 2 seconds
 
     # Girilmesi zorunlu alanlar (12 alan)
@@ -107,9 +111,13 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     And verify brand ambassador field "Açıklama" is optional
 
   @TEST4 @BRAND_AMBASSADOR @BUG
-  Scenario: TEST4 - Commission + Satış Adedi (Hedefsiz) - Detaylı alan kontrolü
+  Scenario: TEST4 - Commission + Satış Adedi + Hedefli (Hayır) - Detaylı alan kontrolü
     When select brand ambassador condition type "Commission"
     And select brand ambassador calculation type "Satış Adedi"
+    And wait for 2 seconds
+
+    # Hedefli mi? seçimi - Bu alan Hedef Miktar ve Hedef Ciro görünürlüğünü kontrol eder
+    When select brand ambassador "Hedefli mi?" option "Hayır"
     And wait for 2 seconds
 
     # Girilmesi zorunlu alanlar (11 alan)

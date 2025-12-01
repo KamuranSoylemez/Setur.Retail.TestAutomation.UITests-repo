@@ -45,11 +45,11 @@ Hesaplama Oran: Disabled
 T3
 Temsilci Kondisyon Tipi: Commission
 Hedef Tipi: Satış adedi
+Hedefli mi?: Required: Evet
 Başlangıç Tarihi: Required
 Hesaplama Periyodu: Required
 Kademeli mi?: Required: Hayır
 Hesaplama Para Birimi: Required
-Hedefli mi?: Required: Evet
 Hedef Ciro: Disabled
 Temel Ölçü Birimi: Optional
 Birim Çarpanı: Required
@@ -66,11 +66,11 @@ Hesaplama Oran: Required: Tutar Girilmediyse
 T4
 Temsilci Kondisyon Tipi: Commission
 Hedef Tipi: Satış adedi
+Hedefli mi?: Required: Hayır
 Başlangıç Tarihi: Required
 Hesaplama Periyodu: Required
 Kademeli mi?: Required: Hayır
 Hesaplama Para Birimi: Required
-Hedefli mi?: Required: Hayır
 Hedef Ciro: Not Shown
 Temel Ölçü Birimi: Optional
 Birim Çarpanı: Required
@@ -172,3 +172,69 @@ Tutar Çarpan Var mı?: Disabled
 Hedef Miktar: Not Shown
 Hesaplama Oran: Disabled
 Açıklama: Girilebilir
+
+
+T9
+Temsilci Kondisyon Tipi: Commission
+Hedef Tipi: Hesaplamasız
+Başlangıç Tarihi: Required
+Hesaplama Periyodu: Required
+Kademeli mi?: Disabled
+Hesaplama Para Birimi: Required
+Hedefli mi?: Disabled
+Hedef Ciro: Not Shown
+Temel Ölçü Birimi: Disabled
+Birim Çarpanı: Disabled
+Hesaplama Tutar: Required
+Marka: Optional
+Açıklama: Optional
+Bitiş Tarihi: Required
+Faturalama Para Birimi: Required
+Kdv Dahil mi?: Required
+Tutar Çarpan Var mı?: Disabled
+Hedef Miktar: Not Shown
+Hesaplama Oran: Disabled
+
+
+T10
+Temsilci Kondisyon Tipi: Promotion Rental Fee
+Hedef Tipi: Hesaplamasız
+Başlangıç Tarihi: Required
+Hesaplama Periyodu: Required
+Kademeli mi?: Disabled
+Hesaplama Para Birimi: Required
+Hedefli mi?: Disabled
+Hedef Ciro: Not Shown
+Temel Ölçü Birimi: Disabled
+Birim Çarpanı: Disabled
+Hesaplama Tutar: Disabled
+Marka: Optional
+Açıklama: Optional
+Bitiş Tarihi: Required
+Faturalama Para Birimi: Required
+Kdv Dahil mi?: Required
+Tutar Çarpan Var mı?: Disabled
+Hedef Miktar: Not Shown
+Hesaplama Oran: Disabled
+
+
+T11
+Temsilci Kondisyon Tipi: Promotion Marketing Activity
+Hedef Tipi: Hesaplamasız
+Başlangıç Tarihi: Required
+Hesaplama Periyodu: Required
+Kademeli mi?: Disabled
+Hesaplama Para Birimi: Required
+Hedefli mi?: Disabled
+Hedef Ciro: Not Shown
+Temel Ölçü Birimi: Disabled
+Birim Çarpanı: Disabled
+Hesaplama Tutar: Disabled
+Marka: Optional
+Açıklama: Optional
+Bitiş Tarihi: Required
+Faturalama Para Birimi: Required
+Kdv Dahil mi?: Required
+Tutar Çarpan Var mı?: Disabled
+Hedef Miktar: Disabled
+Hesaplama Oran: Disabled

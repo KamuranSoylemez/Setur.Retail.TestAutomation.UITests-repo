@@ -36,6 +36,11 @@ public class BrandAmbassadorConditionStepDefs {
         brandAmbassadorConditionPage.selectCalculationType(calculationType);
     }
 
+    @When("select brand ambassador {string} option {string}")
+    public void selectBrandAmbassadorRadioOption(String fieldName, String option) {
+        brandAmbassadorConditionPage.selectRadioButton(fieldName, option);
+    }
+
     @Then("verify brand ambassador field {string} is disabled")
     public void verifyBrandAmbassadorFieldIsDisabled(String fieldName) {
         boolean isDisabled = brandAmbassadorConditionPage.verifyFieldIsDisabled(fieldName);

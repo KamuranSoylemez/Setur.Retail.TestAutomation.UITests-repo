@@ -133,28 +133,39 @@ public class BrandAmbassadorConditionPage extends BasePage {
     }
 
     public void selectRadioButton(String fieldName, String option) {
-        // Radio button seçimi (Kademeli mi?: Evet/Hayır)
+        // Radio button seçimi (Hedefli mi?, Kademeli mi? vb: Evet/Hayır)
         FrameLocator frame = getBrandAmbassadorConditionFrame();
         
         try {
-            // "Kademeli mi?" için radio button'ları bul
-            // ID pattern'i GeneralCondition ile benzer olabilir: yes_IsProgressive / no_IsProgressive
             Locator radioButton;
+            String radioButtonId;
             
-            if (option.equals("Evet")) {
-                // "Evet" radio button'u için muhtemel ID'ler
-                radioButton = frame.locator("#yes_IsProgressive, input[type='radio'][value='true'], input[type='radio'][value='1']").first();
-            } else {
-                // "Hayır" radio button'u için muhtemel ID'ler
-                radioButton = frame.locator("#no_IsProgressive, input[type='radio'][value='false'], input[type='radio'][value='0']").first();
+            // Alan adına göre radio button ID'sini belirle
+            switch (fieldName) {
+                case "Hedefli mi?":
+                    radioButtonId = option.equals("Evet") ? "#yes_HasTarget" : "#no_HasTarget";
+                    break;
+                case "Kademeli mi?":
+                    radioButtonId = option.equals("Evet") ? "#yes_IsGradual" : "#no_IsGradual";
+                    break;
+                case "Kdv Dahil mi?":
+                    radioButtonId = option.equals("Evet") ? "#yes_IsVatInclude" : "#no_IsVatInclude";
+                    break;
+                case "Tutar Çarpan Var mı?":
+                    radioButtonId = option.equals("Evet") ? "#yes_HasMultiplier" : "#no_HasMultiplier";
+                    break;
+                default:
+                    throw new RuntimeException("Desteklenmeyen radio button alanı: " + fieldName);
             }
+            
+            radioButton = frame.locator(radioButtonId);
             
             if (radioButton.count() > 0) {
                 radioButton.click();
-                page.waitForTimeout(500);
+                page.waitForTimeout(1000); // Alan değişikliklerinin yüklenmesi için bekle
                 System.out.println("✅ " + fieldName + " için '" + option + "' seçildi");
             } else {
-                throw new RuntimeException(fieldName + " için radio button bulunamadı");
+                throw new RuntimeException(fieldName + " için radio button bulunamadı: " + radioButtonId);
             }
         } catch (Exception e) {
             System.err.println("❌ Radio button seçilemedi: " + e.getMessage());
