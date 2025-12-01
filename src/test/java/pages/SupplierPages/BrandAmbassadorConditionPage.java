@@ -219,15 +219,38 @@ public class BrandAmbassadorConditionPage extends BasePage {
         String fieldId = getFieldId(fieldName);
         Locator field = frame.locator(fieldId);
         
-        // Radio button groups - check if NOT disabled (required radio buttons are enabled)
-        if (fieldName.equals("Kdv Dahil mi?")) {
+        // Radio button groups - if enabled (not disabled) = mandatory (user must select)
+        if (fieldName.equals("Kademeli mi?")) {
+            Locator yesButton = frame.locator("#yes_IsGradual");
+            Locator noButton = frame.locator("#no_IsGradual");
+            
+            boolean yesDisabled = yesButton.count() > 0 && (yesButton.getAttribute("disabled") != null);
+            boolean noDisabled = noButton.count() > 0 && (noButton.getAttribute("disabled") != null);
+            
+            return yesButton.count() > 0 && noButton.count() > 0 && !yesDisabled && !noDisabled;
+        } else if (fieldName.equals("Hedefli mi?")) {
+            Locator yesButton = frame.locator("#yes_HasTarget");
+            Locator noButton = frame.locator("#no_HasTarget");
+            
+            boolean yesDisabled = yesButton.count() > 0 && (yesButton.getAttribute("disabled") != null);
+            boolean noDisabled = noButton.count() > 0 && (noButton.getAttribute("disabled") != null);
+            
+            return yesButton.count() > 0 && noButton.count() > 0 && !yesDisabled && !noDisabled;
+        } else if (fieldName.equals("Tutar Çarpan Var mı?")) {
+            Locator yesButton = frame.locator("#yes_HasMultiplier");
+            Locator noButton = frame.locator("#no_HasMultiplier");
+            
+            boolean yesDisabled = yesButton.count() > 0 && (yesButton.getAttribute("disabled") != null);
+            boolean noDisabled = noButton.count() > 0 && (noButton.getAttribute("disabled") != null);
+            
+            return yesButton.count() > 0 && noButton.count() > 0 && !yesDisabled && !noDisabled;
+        } else if (fieldName.equals("Kdv Dahil mi?")) {
             Locator yesButton = frame.locator("#yes_IsVatInclude");
             Locator noButton = frame.locator("#no_IsVatInclude");
             
             boolean yesDisabled = yesButton.count() > 0 && (yesButton.getAttribute("disabled") != null);
             boolean noDisabled = noButton.count() > 0 && (noButton.getAttribute("disabled") != null);
             
-            // If both buttons exist and NOT disabled, it's mandatory
             return yesButton.count() > 0 && noButton.count() > 0 && !yesDisabled && !noDisabled;
         }
         
