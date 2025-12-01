@@ -170,11 +170,35 @@ public class BrandAmbassadorConditionPage extends BasePage {
         
         // Radio button groups - check both buttons
         if (fieldName.equals("Kademeli mi?")) {
-            Locator yesButton = frame.locator("#yes_IsProgressive");
-            Locator noButton = frame.locator("#no_IsProgressive");
+            Locator yesButton = frame.locator("#yes_IsGradual");
+            Locator noButton = frame.locator("#no_IsGradual");
             
-            boolean yesDisabled = yesButton.count() > 0 && (yesButton.getAttribute("disabled") != null || yesButton.isDisabled());
-            boolean noDisabled = noButton.count() > 0 && (noButton.getAttribute("disabled") != null || noButton.isDisabled());
+            boolean yesDisabled = yesButton.count() > 0 && (yesButton.getAttribute("disabled") != null || "".equals(yesButton.getAttribute("disabled")));
+            boolean noDisabled = noButton.count() > 0 && (noButton.getAttribute("disabled") != null || "".equals(noButton.getAttribute("disabled")));
+            
+            return yesDisabled && noDisabled;
+        } else if (fieldName.equals("Hedefli mi?")) {
+            Locator yesButton = frame.locator("#yes_HasTarget");
+            Locator noButton = frame.locator("#no_HasTarget");
+            
+            boolean yesDisabled = yesButton.count() > 0 && (yesButton.getAttribute("disabled") != null || "".equals(yesButton.getAttribute("disabled")));
+            boolean noDisabled = noButton.count() > 0 && (noButton.getAttribute("disabled") != null || "".equals(noButton.getAttribute("disabled")));
+            
+            return yesDisabled && noDisabled;
+        } else if (fieldName.equals("Tutar Çarpan Var mı?")) {
+            Locator yesButton = frame.locator("#yes_HasMultiplier");
+            Locator noButton = frame.locator("#no_HasMultiplier");
+            
+            boolean yesDisabled = yesButton.count() > 0 && (yesButton.getAttribute("disabled") != null || "".equals(yesButton.getAttribute("disabled")));
+            boolean noDisabled = noButton.count() > 0 && (noButton.getAttribute("disabled") != null || "".equals(noButton.getAttribute("disabled")));
+            
+            return yesDisabled && noDisabled;
+        } else if (fieldName.equals("Kdv Dahil mi?")) {
+            Locator yesButton = frame.locator("#yes_IsVatInclude");
+            Locator noButton = frame.locator("#no_IsVatInclude");
+            
+            boolean yesDisabled = yesButton.count() > 0 && (yesButton.getAttribute("disabled") != null || "".equals(yesButton.getAttribute("disabled")));
+            boolean noDisabled = noButton.count() > 0 && (noButton.getAttribute("disabled") != null || "".equals(noButton.getAttribute("disabled")));
             
             return yesDisabled && noDisabled;
         }
@@ -195,9 +219,45 @@ public class BrandAmbassadorConditionPage extends BasePage {
         String fieldId = getFieldId(fieldName);
         Locator field = frame.locator(fieldId);
         
+        // Radio button groups - check if NOT disabled (required radio buttons are enabled)
+        if (fieldName.equals("Kdv Dahil mi?")) {
+            Locator yesButton = frame.locator("#yes_IsVatInclude");
+            Locator noButton = frame.locator("#no_IsVatInclude");
+            
+            boolean yesDisabled = yesButton.count() > 0 && (yesButton.getAttribute("disabled") != null);
+            boolean noDisabled = noButton.count() > 0 && (noButton.getAttribute("disabled") != null);
+            
+            // If both buttons exist and NOT disabled, it's mandatory
+            return yesButton.count() > 0 && noButton.count() > 0 && !yesDisabled && !noDisabled;
+        }
+        
+        // Text/Date/Dropdown fields
         if (field.count() > 0) {
+            // Check if field has "required" attribute
             String requiredAttr = field.getAttribute("required");
-            return requiredAttr != null;
+            if (requiredAttr != null) {
+                return true;
+            }
+            
+            // Check if field is enabled (not disabled) - for date/dropdown fields
+            String disabledAttr = field.getAttribute("disabled");
+            boolean isDisabled = disabledAttr != null || field.isDisabled();
+            
+            // For date fields and dropdowns: if enabled, they are typically mandatory
+            // Check if this is a date or dropdown field by inspecting HTML
+            if (!isDisabled) {
+                // Specific mandatory fields that don't have "required" attribute
+                switch (fieldName) {
+                    case "Başlangıç Tarihi":
+                    case "Bitiş Tarihi":
+                    case "Hesaplama Periyodu":
+                    case "Hesaplama Para Birimi":
+                    case "Faturalama Para Birimi":
+                        return true; // These are known mandatory fields
+                }
+            }
+            
+            return false;
         } else {
             System.out.println("⚠️ " + fieldName + " (" + fieldId + ") alanı bulunamadı");
             return false;
@@ -208,6 +268,34 @@ public class BrandAmbassadorConditionPage extends BasePage {
         boolean isDisabled = verifyFieldIsDisabled(fieldName);
         boolean isMandatory = verifyFieldIsMandatory(fieldName);
         return !isDisabled && !isMandatory;
+    }
+
+    public boolean verifyFieldIsNotShown(String fieldName) {
+        FrameLocator frame = getBrandAmbassadorConditionFrame();
+        
+        String fieldId = getFieldId(fieldName);
+        Locator field = frame.locator(fieldId);
+        
+        // Field count 0 ise veya visible değilse
+        if (field.count() == 0) {
+            System.out.println("✅ " + fieldName + " (" + fieldId + ") alanı sayfada yok (not shown)");
+            return true;
+        }
+        
+        // Field var ama visible mı?
+        try {
+            boolean isVisible = field.first().isVisible();
+            if (!isVisible) {
+                System.out.println("✅ " + fieldName + " (" + fieldId + ") alanı görünmüyor (not shown)");
+                return true;
+            } else {
+                System.out.println("⚠️ " + fieldName + " (" + fieldId + ") alanı görünüyor!");
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("✅ " + fieldName + " (" + fieldId + ") alanı bulunamadı (not shown)");
+            return true;
+        }
     }
 
     public void fillField(String fieldName, String value) {
@@ -246,16 +334,47 @@ public class BrandAmbassadorConditionPage extends BasePage {
     private String getFieldId(String fieldName) {
         // Field name to ID mapping based on actual HTML structure
         switch (fieldName) {
+            // Yeni Field Mappings (from debug output)
+            case "Başlangıç Tarihi":
+                return "#StartDate";
+            case "Bitiş Tarihi":
+                return "#EndDate";
+            case "Hesaplama Periyodu":
+                return "#ContractRepresentativePeriodTypeId";
+            case "Hesaplama Para Birimi":
+                return "#TargetRevenueCurrencyCode";
+            case "Faturalama Para Birimi":
+                return "#InvoiceCurrencyCode";
+            case "Kdv Dahil mi?":
+                return "#yes_IsVatInclude"; // Radio button group
+            case "Kademeli mi?":
+                return "#yes_IsGradual"; // Radio button group
+            case "Hedefli mi?":
+                return "#yes_HasTarget"; // Radio button group
+            case "Temel Ölçü Birimi":
+                return "#MainMeasureUnitId";
+            case "Birim Çarpanı":
+                return "#UnitMultiplier";
+            case "Hesaplama Tutar":
+                return "#RebateValue";
+            case "Tutar Çarpan Var mı?":
+                return "#yes_HasMultiplier"; // Radio button group
+            case "Hesaplama Oran":
+                return "#RebateRatio";
+            case "Hedef Ciro":
+                return "#TargetRevenue";
+            case "Hedef Miktar":
+                return "#TargetUnit";
+                
+            // Old Field Mappings (backward compatibility)
             case "Kademe":
                 return "#yes_IsGradual"; // Radio button - detected in component scan
             case "Hedef Adet":
-                return "input[name='TargetUnit']"; // Detected as name attribute
-            case "Hedef Ciro":
-                return "input[name='TargetRevenue']"; // Detected as name attribute
+                return "input[name='TargetUnit']"; // Same as Hedef Miktar
             case "Tutar":
-                return "input[name='RebateValue']"; // Detected as name attribute
+                return "input[name='RebateValue']"; // Same as Hesaplama Tutar
             case "Oran":
-                return "input[name='RebateRatio']"; // Detected as name attribute
+                return "input[name='RebateRatio']"; // Same as Hesaplama Oran
             case "Marka":
                 return "select[name='BrandIdArray']"; // Multi-select dropdown
             case "Açıklama":

@@ -62,4 +62,13 @@ public class BrandAmbassadorConditionStepDefs {
         }
         System.out.println("✅ Field '" + fieldName + "' optional (isteğe bağlı)");
     }
+
+    @Then("verify brand ambassador field {string} is not shown")
+    public void verifyBrandAmbassadorFieldIsNotShown(String fieldName) {
+        boolean isNotShown = brandAmbassadorConditionPage.verifyFieldIsNotShown(fieldName);
+        if (!isNotShown) {
+            throw new AssertionError("❌ Field '" + fieldName + "' görünmemeli ama görünüyor!");
+        }
+        System.out.println("✅ Field '" + fieldName + "' görünmüyor (not shown)");
+    }
 }
