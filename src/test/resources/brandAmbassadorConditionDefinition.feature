@@ -46,24 +46,36 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     And verify brand ambassador field "Hedef Ciro" is not shown
     And verify brand ambassador field "Hedef Miktar" is not shown
 
-  @TEST2 @BRAND_AMBASSADOR
-  Scenario: TEST2 - Bonus + Hesaplamasız
+  @TEST2 @BRAND_AMBASSADOR @BUG
+  Scenario: TEST2 - Bonus + Hesaplamasız - Detaylı alan kontrolü
     When select brand ambassador condition type "Bonus"
     And select brand ambassador calculation type "Hesaplamasız"
     And wait for 2 seconds
 
-    # Girilemez alanlar
-    Then verify brand ambassador field "Kademe" is disabled
-    And verify brand ambassador field "Hedef Adet" is disabled
-    And verify brand ambassador field "Hedef Ciro" is disabled
-    And verify brand ambassador field "Oran" is disabled
+    # Girilmesi zorunlu alanlar (8 alan)
+    Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
+    And verify brand ambassador field "Bitiş Tarihi" is mandatory
+    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    And verify brand ambassador field "Faturalama Para Birimi" is mandatory
+    And verify brand ambassador field "Kdv Dahil mi?" is mandatory
+    And verify brand ambassador field "Birim Çarpanı" is mandatory
+    And verify brand ambassador field "Tutar Çarpan Var mı?" is mandatory
 
-    # Girilmeli alanlar
-    And verify brand ambassador field "Tutar" is mandatory
+    # Girilemez (disabled) alanlar (3 alan)
+    And verify brand ambassador field "Kademeli mi?" is disabled
+    And verify brand ambassador field "Hedefli mi?" is disabled
+    And verify brand ambassador field "Hesaplama Tutar" is disabled
+    And verify brand ambassador field "Hesaplama Oran" is disabled
 
-    # Girilebilir alanlar
+    # Girilebilir (optional) alanlar (3 alan)
+    And verify brand ambassador field "Hesaplama Periyodu" is optional
+    And verify brand ambassador field "Temel Ölçü Birimi" is optional
     And verify brand ambassador field "Marka" is optional
     And verify brand ambassador field "Açıklama" is optional
+
+    # Görünmeyen alanlar (2 alan)
+    And verify brand ambassador field "Hedef Ciro" is not shown
+    And verify brand ambassador field "Hedef Miktar" is not shown
 
   @TEST3 @BRAND_AMBASSADOR
   Scenario: TEST3 - Commission + Satış Adedi
