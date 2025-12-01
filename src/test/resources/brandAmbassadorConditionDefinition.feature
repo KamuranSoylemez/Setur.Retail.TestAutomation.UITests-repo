@@ -341,8 +341,33 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     And verify brand ambassador field "Hedef Ciro" is not shown
     And verify brand ambassador field "Hedef Miktar" is not shown
 
-  @TEST11 @BRAND_AMBASSADOR
-  Scenario: TEST11 - Promotion Rental Fee + Hesaplamasız (T10 duplicate check)
-    When select brand ambassador condition type "Promotion Rental Fee"
+  @TEST11 @BRAND_AMBASSADOR @BUG
+  Scenario: TEST11 - Promotion Marketing Activity + Hesaplamasız - Detaylı alan kontrolü
+    When select brand ambassador condition type "Promotion Marketing Activity"
     And select brand ambassador calculation type "Hesaplamasız"
     And wait for 2 seconds
+
+    # Girilmesi zorunlu alanlar (6 alan)
+    Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
+    And verify brand ambassador field "Hesaplama Periyodu" is mandatory
+    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    And verify brand ambassador field "Bitiş Tarihi" is mandatory
+    And verify brand ambassador field "Faturalama Para Birimi" is mandatory
+    And verify brand ambassador field "Kdv Dahil mi?" is mandatory
+
+    # Girilemez (disabled) alanlar (8 alan) - T10'dan farklı: Hedef Miktar da disabled
+    And verify brand ambassador field "Kademeli mi?" is disabled
+    And verify brand ambassador field "Hedefli mi?" is disabled
+    And verify brand ambassador field "Temel Ölçü Birimi" is disabled
+    And verify brand ambassador field "Birim Çarpanı" is disabled
+    And verify brand ambassador field "Hesaplama Tutar" is disabled
+    And verify brand ambassador field "Tutar Çarpan Var mı?" is disabled
+    And verify brand ambassador field "Hedef Miktar" is disabled
+    And verify brand ambassador field "Hesaplama Oran" is disabled
+
+    # Girilebilir (optional) alanlar (2 alan)
+    And verify brand ambassador field "Marka" is optional
+    And verify brand ambassador field "Açıklama" is optional
+
+    # Görünmeyen alanlar (1 alan)
+    And verify brand ambassador field "Hedef Ciro" is not shown
