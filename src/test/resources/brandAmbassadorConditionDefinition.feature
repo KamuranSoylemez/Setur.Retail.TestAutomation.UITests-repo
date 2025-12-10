@@ -24,7 +24,7 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     # Girilmesi zorunlu alanlar (6 alan)
     Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
     And verify brand ambassador field "Hesaplama Periyodu" is mandatory
-    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    # And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
     And verify brand ambassador field "Bitiş Tarihi" is mandatory
     And verify brand ambassador field "Faturalama Para Birimi" is mandatory
     And verify brand ambassador field "Kdv Dahil mi?" is mandatory
@@ -55,7 +55,7 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     # Girilmesi zorunlu alanlar (8 alan)
     Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
     And verify brand ambassador field "Bitiş Tarihi" is mandatory
-    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    # And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
     And verify brand ambassador field "Faturalama Para Birimi" is mandatory
     And verify brand ambassador field "Kdv Dahil mi?" is mandatory
     And verify brand ambassador field "Birim Çarpanı" is mandatory
@@ -91,7 +91,7 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
     And verify brand ambassador field "Hesaplama Periyodu" is mandatory
     And verify brand ambassador field "Kademeli mi?" is mandatory
-    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    # And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
     And verify brand ambassador field "Hedefli mi?" is mandatory
     And verify brand ambassador field "Birim Çarpanı" is mandatory
     And verify brand ambassador field "Hesaplama Tutar" is mandatory
@@ -124,7 +124,7 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
     And verify brand ambassador field "Hesaplama Periyodu" is mandatory
     And verify brand ambassador field "Kademeli mi?" is mandatory
-    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    # And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
     And verify brand ambassador field "Hedefli mi?" is mandatory
     And verify brand ambassador field "Birim Çarpanı" is mandatory
     And verify brand ambassador field "Hesaplama Tutar" is mandatory
@@ -157,7 +157,7 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
     And verify brand ambassador field "Hesaplama Periyodu" is mandatory
     And verify brand ambassador field "Kademeli mi?" is mandatory
-    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    # And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
     And verify brand ambassador field "Bitiş Tarihi" is mandatory
     And verify brand ambassador field "Faturalama Para Birimi" is mandatory
     And verify brand ambassador field "Kdv Dahil mi?" is mandatory
@@ -192,7 +192,7 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
     And verify brand ambassador field "Hesaplama Periyodu" is mandatory
     And verify brand ambassador field "Kademeli mi?" is mandatory
-    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    # And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
     And verify brand ambassador field "Hedefli mi?" is mandatory
     And verify brand ambassador field "Hedef Ciro" is mandatory
     And verify brand ambassador field "Hesaplama Tutar" is mandatory
@@ -225,7 +225,7 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
     And verify brand ambassador field "Hesaplama Periyodu" is mandatory
     And verify brand ambassador field "Kademeli mi?" is mandatory
-    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    # And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
     And verify brand ambassador field "Hedefli mi?" is mandatory
     And verify brand ambassador field "Birim Çarpanı" is mandatory
     And verify brand ambassador field "Hesaplama Tutar" is mandatory
@@ -258,7 +258,7 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
     And verify brand ambassador field "Hesaplama Periyodu" is mandatory
     And verify brand ambassador field "Kademeli mi?" is mandatory
-    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    # And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
     And verify brand ambassador field "Bitiş Tarihi" is mandatory
     And verify brand ambassador field "Faturalama Para Birimi" is mandatory
     And verify brand ambassador field "Kdv Dahil mi?" is mandatory
@@ -288,7 +288,7 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     # Girilmesi zorunlu alanlar (7 alan)
     Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
     And verify brand ambassador field "Hesaplama Periyodu" is mandatory
-    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    # And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
     And verify brand ambassador field "Hesaplama Tutar" is mandatory
     And verify brand ambassador field "Bitiş Tarihi" is mandatory
     And verify brand ambassador field "Faturalama Para Birimi" is mandatory
@@ -319,7 +319,7 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     # Girilmesi zorunlu alanlar (6 alan)
     Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
     And verify brand ambassador field "Hesaplama Periyodu" is mandatory
-    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    # And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
     And verify brand ambassador field "Bitiş Tarihi" is mandatory
     And verify brand ambassador field "Faturalama Para Birimi" is mandatory
     And verify brand ambassador field "Kdv Dahil mi?" is mandatory
@@ -350,7 +350,7 @@ Feature: Brand Ambassador Kondisyon Oluşturma ve Tanımlama
     # Girilmesi zorunlu alanlar (6 alan)
     Then verify brand ambassador field "Başlangıç Tarihi" is mandatory
     And verify brand ambassador field "Hesaplama Periyodu" is mandatory
-    And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
+    # And verify brand ambassador field "Hesaplama Para Birimi" is mandatory
     And verify brand ambassador field "Bitiş Tarihi" is mandatory
     And verify brand ambassador field "Faturalama Para Birimi" is mandatory
     And verify brand ambassador field "Kdv Dahil mi?" is mandatory

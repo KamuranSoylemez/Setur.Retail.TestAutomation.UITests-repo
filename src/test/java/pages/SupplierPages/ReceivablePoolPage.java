@@ -139,6 +139,33 @@ public class ReceivablePoolPage extends BasePage {
     }
     
     /**
+     * Fill calculation date field (alternative for Receivable Pool page)
+     * Kondisyon Hesaplama Tarihi alanını doldurur
+     */
+    public void fillCalculationDate(String date) {
+        initializeLocators();
+        System.out.println("🔍 Kondisyon Hesaplama Tarihi dolduruluyor: " + date);
+        page.waitForTimeout(1500);
+        
+        // FilterContractConditionDate alanını kullan
+        Locator calculationDateInput = page.locator("#FilterContractConditionDate");
+        
+        if (calculationDateInput.count() > 0) {
+            calculationDateInput.first().fill(date);
+            System.out.println("✅ Kondisyon Hesaplama Tarihi dolduruldu: " + date);
+        } else {
+            // Alternative selector: Date içeren ilk filter input
+            Locator altInput = page.locator("input[id*='Date'][id*='Filter']").first();
+            if (altInput.count() > 0) {
+                altInput.fill(date);
+                System.out.println("✅ Tarih dolduruldu (alternative): " + date);
+            } else {
+                System.out.println("❌ Tarih alanı bulunamadı!");
+            }
+        }
+    }
+    
+    /**
      * Select condition type from dropdown
      */
     public void selectConditionType(String conditionType) {
@@ -707,5 +734,373 @@ public class ReceivablePoolPage extends BasePage {
         }
         
         return false;
+    }
+    
+    /**
+     * Click checkbox on first grid row
+     * Grid'deki ilk satırdaki checkbox'ı seçer
+     */
+    public void clickFirstRowCheckbox() {
+        System.out.println("\n🔍 İlk satırdaki checkbox'a tıklanıyor...");
+        page.waitForTimeout(2000); // Grid'in yüklenmesini bekle
+        
+        // Checkbox selector - name pattern: ContractReceivableInvoiceGridId...
+        Locator firstCheckbox = page.locator("input[type='checkbox'][name*='ContractReceivableInvoiceGridId']").first();
+        
+        if (firstCheckbox.count() > 0) {
+            System.out.println("✅ Checkbox bulundu, scroll ve visibility kontrolü yapılıyor...");
+            
+            // Checkbox'ı görünür yap - scroll into view
+            firstCheckbox.scrollIntoViewIfNeeded();
+            page.waitForTimeout(500);
+            
+            // Force click kullan - normal click çalışmazsa
+            try {
+                firstCheckbox.click(new Locator.ClickOptions().setTimeout(5000));
+                System.out.println("✅ İlk satırdaki checkbox seçildi (normal click)");
+            } catch (Exception e) {
+                System.out.println("⚠️ Normal click başarısız, force click deneniyor...");
+                firstCheckbox.click(new Locator.ClickOptions().setForce(true));
+                System.out.println("✅ İlk satırdaki checkbox seçildi (force click)");
+            }
+            
+            page.waitForTimeout(500);
+        } else {
+            System.out.println("❌ Checkbox bulunamadı!");
+        }
+    }
+    
+    /**
+     * Verify "Rebate Faturası Oluştur" frame is opened
+     * Rebate Faturası Oluştur modal/frame'inin açıldığını doğrular
+     */
+    public boolean verifyCreateRebateInvoiceFrameOpened() {
+        System.out.println("\n🔍 'Rebate Faturası Oluştur' frame'i kontrol ediliyor...");
+        page.waitForTimeout(1500);
+        
+        // Frame/modal için olası selector'ler
+        Locator frame = page.locator(
+            "iframe[src*='CreateRebateInvoicePopup'], " +
+            ".k-window:has-text('Rebate Faturası Oluştur'), " +
+            ".modal-dialog:has-text('Rebate Faturası Oluştur'), " +
+            "div:has-text('Rebate Faturası Oluştur'):visible"
+        );
+        
+        boolean isOpened = frame.count() > 0;
+        
+        if (isOpened) {
+            System.out.println("✅ 'Rebate Faturası Oluştur' frame'i açıldı");
+        } else {
+            System.out.println("❌ 'Rebate Faturası Oluştur' frame'i bulunamadı!");
+        }
+        
+        return isOpened;
+    }
+    
+    /**
+     * Fill description field in "Rebate Faturası Oluştur" frame
+     * Frame içindeki Açıklama alanına yazı yazar
+     */
+    public void fillDescriptionInFrame(String description) {
+        System.out.println("\n🔍 Frame içindeki Açıklama alanı dolduruluyor: " + description);
+        
+        // İframe içine gir
+        FrameLocator frameLocator = page.frameLocator("iframe[src*='CreateRebateInvoicePopup']");
+        
+        // Açıklama alanını bul - input class="ajs-input" olarak belirtilmiş
+        Locator descriptionField = frameLocator.locator("input.ajs-input, textarea[name='Description'], input[name='Description']");
+        
+        if (descriptionField.count() > 0) {
+            descriptionField.first().fill(description);
+            page.waitForTimeout(500);
+            System.out.println("✅ Açıklama dolduruldu: " + description);
+        } else {
+            System.out.println("❌ Açıklama alanı bulunamadı!");
+        }
+    }
+    
+    /**
+     * Click save button in "Rebate Faturası Oluştur" frame
+     * Frame içindeki Kaydet butonuna tıklar
+     */
+    public void clickSaveButtonInFrame() {
+        System.out.println("\n🔍 Frame içindeki Kaydet butonuna tıklanıyor...");
+        
+        // İframe içine gir
+        FrameLocator frameLocator = page.frameLocator("iframe[src*='CreateRebateInvoicePopup']");
+        
+        // Kaydet butonunu bul
+        Locator saveButton = frameLocator.locator(
+            "button:has-text('Kaydet'), " +
+            "input[type='button'][value='Kaydet'], " +
+            "input[type='submit'][value='Kaydet'], " +
+            ".k-button:has-text('Kaydet')"
+        );
+        
+        if (saveButton.count() > 0) {
+            saveButton.first().click();
+            page.waitForTimeout(2000); // Kaydetme işlemi ve sayfanın yenilenmesi için bekle
+            System.out.println("✅ Kaydet butonuna tıklandı");
+        } else {
+            System.out.println("❌ Kaydet butonu bulunamadı!");
+        }
+    }
+    
+    /**
+     * Click invoice number link in grid
+     * Grid'deki Fatura No linkine tıklar
+     * Kaydet sonrası ekrana gelen fatura numarasına tıklar (sayısal değer olan linke tıklar, Tarihçe gibi text linklere değil)
+     */
+    public void clickInvoiceNumberLink() {
+        System.out.println("\n🔍 Fatura No linkine tıklanıyor...");
+        page.waitForTimeout(3000); // Grid'in yenilenmesi için bekle
+        
+        // Grid'deki tüm linkleri bul
+        Locator allLinks = page.locator("table tbody tr td a, .k-grid tbody tr td a");
+        
+        System.out.println("🔍 Grid'de " + allLinks.count() + " adet link bulundu");
+        
+        // Her link'in textini kontrol et ve sayısal olanı bul
+        for (int i = 0; i < allLinks.count(); i++) {
+            String linkText = allLinks.nth(i).textContent().trim();
+            System.out.println("🔍 Link " + (i+1) + ": '" + linkText + "'");
+            
+            // Sadece sayısal değer içeren linke tıkla (Fatura No)
+            if (linkText.matches("\\d+")) {
+                System.out.println("✅ Fatura No linki bulundu: " + linkText);
+                allLinks.nth(i).scrollIntoViewIfNeeded();
+                page.waitForTimeout(500);
+                allLinks.nth(i).click();
+                page.waitForTimeout(2000); // Frame'in açılması için bekle
+                System.out.println("✅ Fatura No linkine tıklandı");
+                return;
+            }
+        }
+        
+        System.out.println("❌ Sayısal fatura numarası linki bulunamadı!");
+    }
+    
+    /**
+     * Verify "Rebate Fatura Güncelleme" frame is opened
+     * Rebate Fatura Güncelleme frame'inin açıldığını doğrular
+     */
+    public boolean verifyUpdateRebateInvoiceFrameOpened() {
+        System.out.println("\n🔍 'Rebate Fatura Güncelleme' frame'i kontrol ediliyor...");
+        page.waitForTimeout(1500);
+        
+        // Frame/modal için olası selector'ler
+        Locator frame = page.locator(
+            "iframe[src*='RebateInvoice/Update'], " +
+            "iframe[src*='RebateInvoice/Edit'], " +
+            ".k-window:has-text('Rebate Fatura'), " +
+            ".modal-dialog:has-text('Rebate Fatura'), " +
+            "div:has-text('Rebate Fatura Güncelleme'):visible"
+        );
+        
+        boolean isOpened = frame.count() > 0;
+        
+        if (isOpened) {
+            System.out.println("✅ 'Rebate Fatura Güncelleme' frame'i açıldı");
+        } else {
+            System.out.println("❌ 'Rebate Fatura Güncelleme' frame'i bulunamadı!");
+        }
+        
+        return isOpened;
+    }
+    
+    /**
+     * Click "Geri Çek" button in update frame
+     * Güncelleme frame'i içindeki Geri Çek butonuna tıklar
+     */
+    public void clickReverseButton() {
+        System.out.println("\n🔍 'Geri Çek' butonuna tıklanıyor...");
+        page.waitForTimeout(1500);
+        
+        // Önce ana sayfada buton var mı kontrol et
+        Locator mainPageButton = page.locator("button:has-text('Geri Çek'), input[type='button'][value='Geri Çek'], a:has-text('Geri Çek')");
+        
+        if (mainPageButton.count() > 0 && mainPageButton.first().isVisible()) {
+            System.out.println("✅ Ana sayfada 'Geri Çek' butonu bulundu");
+            mainPageButton.first().click();
+            page.waitForTimeout(1500);
+            System.out.println("✅ 'Geri Çek' butonuna tıklandı");
+            return;
+        }
+        
+        // Ana sayfada yoksa iframe'leri kontrol et
+        Locator iframes = page.locator("iframe");
+        int iframeCount = iframes.count();
+        System.out.println("🔍 Toplam " + iframeCount + " iframe bulundu");
+        
+        for (int i = 0; i < iframeCount; i++) {
+            try {
+                FrameLocator frameLocator = page.frameLocator("iframe").nth(i);
+                Locator reverseButton = frameLocator.locator("button:has-text('Geri Çek'), input[type='button'][value='Geri Çek'], a:has-text('Geri Çek')");
+                
+                if (reverseButton.count() > 0) {
+                    System.out.println("✅ İframe " + i + " içinde 'Geri Çek' butonu bulundu");
+                    reverseButton.first().click();
+                    page.waitForTimeout(1500);
+                    System.out.println("✅ 'Geri Çek' butonuna tıklandı");
+                    return;
+                }
+            } catch (Exception e) {
+                // Bu iframe'de buton yok, devam et
+            }
+        }
+        
+        System.out.println("❌ 'Geri Çek' butonu hiçbir yerde bulunamadı!");
+    }
+    
+    /**
+     * Verify reverse reason popup is displayed
+     * "Rebate Faturasını geri çekme nedeninizi belirtiniz" pop-up'ının açıldığını doğrular
+     */
+    public boolean verifyReverseReasonPopupDisplayed() {
+        System.out.println("\n🔍 Geri çekme nedeni pop-up'ı kontrol ediliyor...");
+        
+        // Pop-up'ın açılması için daha fazla bekle
+        page.waitForTimeout(5000);
+        System.out.println("🔍 5 saniye bekledikten sonra kontrol ediliyor...");
+        
+        // Tüm p elementlerini listele
+        Locator allParagraphs = page.locator("p");
+        System.out.println("🔍 Sayfada toplam <p> sayısı: " + allParagraphs.count());
+        
+        for (int i = 0; i < Math.min(allParagraphs.count(), 10); i++) {
+            try {
+                String text = allParagraphs.nth(i).textContent();
+                boolean isVisible = allParagraphs.nth(i).isVisible();
+                System.out.println("🔍 P " + i + ": '" + text + "' (visible=" + isVisible + ")");
+            } catch (Exception e) {
+                System.out.println("🔍 P " + i + ": Okunamadı");
+            }
+        }
+        
+        // Pop-up'taki "Rebate Faturasını geri çekme nedeninizi belirtiniz:" text'ini ara
+        Locator popupText = page.locator("p:has-text('Rebate Faturasını geri çekme nedeninizi belirtiniz')");
+        
+        boolean isDisplayed = popupText.count() > 0;
+        
+        if (isDisplayed) {
+            System.out.println("✅ Geri çekme nedeni pop-up'ı açıldı");
+        } else {
+            System.out.println("❌ Geri çekme nedeni pop-up'ı bulunamadı!");
+        }
+        
+        return isDisplayed;
+    }
+    
+    /**
+     * Fill reverse reason in popup
+     * Pop-up'taki geri çekme nedeni alanına yazı yazar
+     */
+    public void fillReverseReasonInPopup(String reason) {
+        System.out.println("\n🔍 Pop-up'taki geri çekme nedeni dolduruluyor: " + reason);
+        page.waitForTimeout(2000);
+        
+        // Önce main page'de kontrol et
+        System.out.println("🔍 Main page'de ajs-input arıyorum...");
+        Locator mainInput = page.locator("input.ajs-input[type='text']");
+        System.out.println("🔍 Main page'de bulunan ajs-input: " + mainInput.count());
+        
+        if (mainInput.count() > 0) {
+            mainInput.first().fill(reason);
+            page.waitForTimeout(500);
+            System.out.println("✅ Main page'de geri çekme nedeni dolduruldu: " + reason);
+            return;
+        }
+        
+        // iframe'lerde kontrol et
+        System.out.println("🔍 iframe'lerde ajs-input arıyorum...");
+        int iframeCount = page.locator("iframe").count();
+        System.out.println("🔍 Toplam " + iframeCount + " iframe bulundu");
+        
+        for (int i = 0; i < iframeCount; i++) {
+            FrameLocator frameLocator = page.frameLocator("iframe").nth(i);
+            Locator frameInput = frameLocator.locator("input.ajs-input[type='text']");
+            int inputCount = frameInput.count();
+            System.out.println("🔍 İframe " + i + " içinde ajs-input: " + inputCount);
+            
+            if (inputCount > 0) {
+                frameInput.first().fill(reason);
+                page.waitForTimeout(500);
+                System.out.println("✅ İframe " + i + " içinde geri çekme nedeni dolduruldu: " + reason);
+                return;
+            }
+        }
+        
+        System.out.println("❌ Hiçbir yerde ajs-input bulunamadı!");
+    }
+    
+    /**
+     * Click confirm button in reverse reason popup
+     * Pop-up'taki Onay butonuna tıklar
+     */
+    public void clickConfirmButtonInPopup() {
+        System.out.println("\n🔍 Pop-up'taki 'ONAY' butonuna tıklanıyor...");
+        page.waitForTimeout(2000);
+        
+        // Önce main page'de kontrol et
+        System.out.println("🔍 Main page'de ONAY butonu arıyorum...");
+        Locator mainButton = page.locator("button:has-text('ONAY')");
+        System.out.println("🔍 Main page'de bulunan ONAY button: " + mainButton.count());
+        
+        if (mainButton.count() > 0) {
+            mainButton.first().click();
+            page.waitForTimeout(2000);
+            System.out.println("✅ Main page'de 'ONAY' butonuna tıklandı");
+            return;
+        }
+        
+        // iframe'lerde kontrol et
+        System.out.println("🔍 iframe'lerde ONAY butonu arıyorum...");
+        int iframeCount = page.locator("iframe").count();
+        System.out.println("🔍 Toplam " + iframeCount + " iframe bulundu");
+        
+        for (int i = 0; i < iframeCount; i++) {
+            FrameLocator frameLocator = page.frameLocator("iframe").nth(i);
+            Locator frameButton = frameLocator.locator("button:has-text('ONAY')");
+            int buttonCount = frameButton.count();
+            System.out.println("🔍 İframe " + i + " içinde ONAY button: " + buttonCount);
+            
+            if (buttonCount > 0) {
+                frameButton.first().click();
+                page.waitForTimeout(2000);
+                System.out.println("✅ İframe " + i + " içinde 'ONAY' butonuna tıklandı");
+                return;
+            }
+        }
+        
+        System.out.println("❌ Hiçbir yerde 'ONAY' butonu bulunamadı!");
+    }
+    
+    /**
+     * Verify success message is displayed
+     * "İşleminiz başarıyla gerçekleştirildi" mesajının görüntülendiğini doğrular
+     */
+    public boolean verifySuccessMessage() {
+        System.out.println("\n🔍 Başarı mesajı kontrol ediliyor...");
+        page.waitForTimeout(1500);
+        
+        // Başarı mesajı için olası selector'ler
+        Locator successMessage = page.locator(
+            "*:has-text('İşleminiz başarıyla gerçekleştirildi'), " +
+            ".alert-success, " +
+            ".toast-success, " +
+            ".k-notification-success, " +
+            ".success-message"
+        );
+        
+        boolean isDisplayed = successMessage.count() > 0;
+        
+        if (isDisplayed) {
+            String messageText = successMessage.first().textContent().trim();
+            System.out.println("✅ Başarı mesajı görüntülendi: " + messageText);
+        } else {
+            System.out.println("❌ Başarı mesajı bulunamadı!");
+        }
+        
+        return isDisplayed;
     }
 }
