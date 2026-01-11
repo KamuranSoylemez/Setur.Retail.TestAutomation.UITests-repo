@@ -42,3 +42,39 @@ Feature: Rebate Faturası Oluşturma ve Geri Çekme
     
     # Başarı mesajını doğrula
     Then verify success message is displayed
+
+  @REBATE_INVOICE_CREATE @TEST2
+  Scenario: Farklı Firmaya Ait Kondisyonları Birleştirme Hatası
+    # Alacak Havuzu ekranında TEST ile arama
+    When fill receivable pool description "TEST"
+    And click receivable pool search button
+    And wait for 2 seconds
+    
+    # Alacak No 219 ve 207 olan kayıtları seç
+    When select checkbox for receivable number "219"
+    And select checkbox for receivable number "207"
+    
+    # Rebate Faturası Oluştur butonuna tıkla
+    And click create rebate invoice button
+    And wait for 2 seconds
+    
+    # Hata mesajını doğrula
+    Then verify error message contains "Kondisyonlarin ait olduğu sözleşmeler aynı firmaya ait olmadığı için birleştiremezsiniz."
+
+  @REBATE_INVOICE_CREATE @TEST3
+  Scenario: Aynı Firmaya Ait Kondisyonlarla Rebate Faturası Oluşturma Modal Açılışı
+    # Alacak Havuzu ekranında TEST ile arama
+    When fill receivable pool description "TEST"
+    And click receivable pool search button
+    And wait for 2 seconds
+    
+    # Alacak No 222 ve 223 olan kayıtları seç
+    When select checkbox for receivable number "222"
+    And select checkbox for receivable number "223"
+    
+    # Rebate Faturası Oluştur butonuna tıkla
+    And click create rebate invoice button
+    And wait for 2 seconds
+    
+    # Rebate Faturası Oluştur modal'ının açıldığını doğrula
+    Then verify rebate invoice create modal is opened

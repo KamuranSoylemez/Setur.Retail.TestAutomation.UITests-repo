@@ -103,4 +103,32 @@ public class RebateInvoiceCreateStepDefs {
     public void clickConfirmButtonInReversePopup() {
         receivablePoolPage.clickConfirmButtonInPopup();
     }
+    
+    // ============ SEARCH AND CHECKBOX STEPS FOR TEST2 ============
+    
+    @When("fill receivable pool description {string}")
+    public void fillReceivablePoolDescription(String description) {
+        receivablePoolPage.fillDescription(description);
+    }
+    
+    @When("select checkbox for receivable number {string}")
+    public void selectCheckboxForReceivableNumber(String receivableNumber) {
+        receivablePoolPage.selectCheckboxForReceivableNumber(receivableNumber);
+    }
+    
+    @Then("verify error message contains {string}")
+    public void verifyErrorMessageContains(String expectedText) {
+        boolean isDisplayed = receivablePoolPage.verifyErrorMessageContains(expectedText);
+        Assertions.assertTrue(isDisplayed, "Beklenen hata mesajı görüntülenmeli: " + expectedText);
+        System.out.println("✅ Hata mesajı doğrulandı");
+    }
+    
+    // ============ MODAL VERIFICATION STEP FOR TEST3 ============
+    
+    @Then("verify rebate invoice create modal is opened")
+    public void verifyRebateInvoiceCreateModalIsOpened() {
+        boolean isOpened = receivablePoolPage.verifyRebateInvoiceCreateModalOpened();
+        Assertions.assertTrue(isOpened, "Rebate Faturası Oluştur modal'ı açılmalı");
+        System.out.println("✅ Rebate Faturası Oluştur modal'ı doğrulandı");
+    }
 }

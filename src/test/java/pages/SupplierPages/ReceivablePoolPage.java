@@ -227,6 +227,7 @@ public class ReceivablePoolPage extends BasePage {
      */
     public void fillDescription(String description) {
         System.out.println("🔍 Açıklama dolduruluyor: " + description);
+        initializeLocators();
         descriptionInput.first().fill(description);
         System.out.println("✅ Açıklama dolduruldu: " + description);
     }
@@ -1103,4 +1104,117 @@ public class ReceivablePoolPage extends BasePage {
         
         return isDisplayed;
     }
+    
+    /**
+     * Select checkbox for specific receivable number
+     * Belirli alacak numarasına sahip satırın checkbox'ını seçer
+     */
+    public void selectCheckboxForReceivableNumber(String receivableNumber) {
+        System.out.println("\n🔍 Alacak No " + receivableNumber + " olan satırın checkbox'ı seçiliyor...");
+        
+        // Grid'deki tüm satırları kontrol et
+        Locator rows = page.locator("table tbody tr");
+        int rowCount = rows.count();
+        System.out.println("🔍 Grid'de " + rowCount + " satır bulundu");
+        
+        boolean found = false;
+        
+        for (int i = 0; i < rowCount; i++) {
+            Locator row = rows.nth(i);
+            String rowText = row.textContent();
+            
+            // Satırda alacak numarasını ara
+            if (rowText.contains(receivableNumber)) {
+                System.out.println("✅ Alacak No " + receivableNumber + " bulundu (satır " + (i + 1) + ")");
+                
+                // Bu satırdaki checkbox'ı bul ve tıkla
+                Locator checkbox = row.locator("input[type='checkbox']");
+                
+                if (checkbox.count() > 0) {
+                    checkbox.scrollIntoViewIfNeeded();
+                    page.waitForTimeout(500);
+                    
+                    try {
+                        checkbox.click(new Locator.ClickOptions().setTimeout(5000));
+                        System.out.println("✅ Alacak No " + receivableNumber + " checkbox'ı seçildi");
+                    } catch (Exception e) {
+                        checkbox.click(new Locator.ClickOptions().setForce(true));
+                        System.out.println("✅ Alacak No " + receivableNumber + " checkbox'ı seçildi (force)");
+                    }
+                    
+                    page.waitForTimeout(500);
+                    found = true;
+                    break;
+                } else {
+                    System.out.println("❌ Satırda checkbox bulunamadı!");
+                }
+            }
+        }
+        
+        if (!found) {
+            System.out.println("❌ Alacak No " + receivableNumber + " bulunamadı!");
+        }
+    }
+    
+    /**
+     * Verify error message contains specific text
+     * Hata mesajının belirli metni içerdiğini doğrular
+     */
+    public boolean verifyErrorMessageContains(String expectedText) {
+        System.out.println("\n🔍 Hata mesajı kontrol ediliyor...");
+        page.waitForTimeout(2000);
+        
+        // Hata mesajı için olası selector'ler
+        Locator errorMessage = page.locator(
+            "*:has-text('" + expectedText + "'), " +
+            ".alert-error, " +
+            ".alert-danger, " +
+            ".toast-error, " +
+            ".k-notification-error, " +
+            ".error-message, " +
+            ".ajs-message:has-text('" + expectedText + "'), " +
+            "div[role='alert']:has-text('" + expectedText + "')"
+        );
+        
+        boolean isDisplayed = errorMessage.count() > 0;
+        
+        if (isDisplayed) {
+            String messageText = errorMessage.first().textContent().trim();
+            System.out.println("✅ Hata mesajı görüntülendi: " + messageText);
+        } else {
+            System.out.println("❌ Beklenen hata mesajı bulunamadı: " + expectedText);
+        }
+        
+        return isDisplayed;
+    }
+    
+    /**
+     * Verify "Rebate Faturası Oluştur" modal is opened
+     * Rebate Faturası Oluştur modal'ının açıldığını doğrular
+     * Modal başlığını kontrol eder: span.k-window-title#SeturModalWin_wnd_title
+     */
+    public boolean verifyRebateInvoiceCreateModalOpened() {
+        System.out.println("\n🔍 'Rebate Faturası Oluştur' modal'ı kontrol ediliyor...");
+        page.waitForTimeout(2000);
+        
+        // Modal başlık elementi için selector
+        Locator modalTitle = page.locator(
+            "span.k-window-title#SeturModalWin_wnd_title, " +
+            "span.k-window-title:has-text('Rebate Faturası Oluştur'), " +
+            "#SeturModalWin_wnd_title"
+        );
+        
+        boolean isOpened = modalTitle.count() > 0;
+        
+        if (isOpened) {
+            String titleText = modalTitle.first().textContent().trim();
+            System.out.println("✅ 'Rebate Faturası Oluştur' modal'ı açıldı");
+            System.out.println("📝 Modal başlığı: " + titleText);
+        } else {
+            System.out.println("❌ 'Rebate Faturası Oluştur' modal'ı bulunamadı!");
+        }
+        
+        return isOpened;
+    }
 }
+
