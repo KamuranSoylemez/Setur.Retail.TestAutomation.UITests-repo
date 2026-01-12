@@ -117,6 +117,9 @@ public class ContractDefinitionPage : BasePage
 
     private async Task<IFrame> GetContractEditFrameAsync()
     {
+        // Wait for the contract edit frame to load
+        await Task.Delay(2000);
+        
         var frames = Page.Frames;
         foreach (var frame in frames)
         {

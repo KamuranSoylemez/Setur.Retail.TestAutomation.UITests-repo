@@ -10,6 +10,7 @@ public class GlobalPage : BasePage
     private ILocator CreateDistributionLink => Page.Locator("a[href*='CreateDistribution']");
     private ILocator PurchasingDropdownToggle => Page.Locator("#purchasing-dropdown");
     private ILocator PurchaseOrderSearchLink => Page.Locator("a[href*='PurchaseOrderSearch']");
+    private ILocator CreditNoteLink => Page.Locator("a[href='/ApplicationManagement/CreditNote/Index']");
     private ILocator RetailDefinitionDropdownToggle => Page.Locator("#retail-definition-dropdown");
     private ILocator ProductDefinitionLink => Page.Locator("a[href*='ProductDefinition']");
 
@@ -37,6 +38,11 @@ public class GlobalPage : BasePage
     public async Task ClickPurchaseOrderSearchAsync()
     {
         await PurchaseOrderSearchLink.ClickAsync();
+    }
+
+    public async Task ClickCreditNoteLinkAsync()
+    {
+        await CreditNoteLink.ClickAsync();
     }
 
     public async Task ClickCreateOrderLinkAsync()
