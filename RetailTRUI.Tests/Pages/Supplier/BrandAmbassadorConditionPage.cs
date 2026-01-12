@@ -150,6 +150,34 @@ public class BrandAmbassadorConditionPage : BasePage
         Console.WriteLine($"✅ {fieldName} set to: {optionValue}");
     }
 
+    public async Task SelectIsGradientAsync(string value)
+    {
+        await Task.Delay(1000);
+        var frame = await GetBrandAmbassadorConditionFrameAsync();
+        
+        // Select "Kademeli mi?" radio button (yes_IsGradual or no_IsGradual)
+        var radioId = value == "Evet" ? "#yes_IsGradual" : "#no_IsGradual";
+        var radioButton = frame.Locator(radioId);
+        
+        await radioButton.CheckAsync();
+        await Task.Delay(500);
+        Console.WriteLine($"✅ Kademeli mi? set to: {value}");
+    }
+
+    public async Task SelectIsTargetedAsync(string value)
+    {
+        await Task.Delay(1000);
+        var frame = await GetBrandAmbassadorConditionFrameAsync();
+        
+        // Select "Hedefli mi?" radio button (yes_HasTarget or no_HasTarget)
+        var radioId = value == "Evet" ? "#yes_HasTarget" : "#no_HasTarget";
+        var radioButton = frame.Locator(radioId);
+        
+        await radioButton.CheckAsync();
+        await Task.Delay(500);
+        Console.WriteLine($"✅ Hedefli mi? set to: {value}");
+    }
+
     public async Task<string> VerifyFieldStatusAsync(string fieldLabel)
     {
         var frame = await GetBrandAmbassadorConditionFrameAsync();
@@ -318,7 +346,9 @@ public class BrandAmbassadorConditionPage : BasePage
             "Bitiş Tarihi" => "#EndDate",
             // Periyot is a Kendo dropdown, need to find by aria-owns
             "Periyot" => "span[aria-owns='ContractRepresentativePeriodTypeId_listbox']",
-            "Hesaplama Para Birimi" => "#TargetRevenueCurrencyCode",
+            "Hesaplama Tutar Para Birimi" => "span[aria-owns='TargetRevenueCurrencyCode_listbox']",
+            "İşlem Para Birimi" => "span[aria-owns='TargetRevenueCurrencyCode_listbox']", // Backward compatibility
+            "Hesaplama Para Birimi" => "span[aria-owns='TargetRevenueCurrencyCode_listbox']", // Backward compatibility
             // Faturalama Para Birimi is a Kendo dropdown
             "Faturalama Para Birimi" => "span[aria-owns='InvoiceCurrencyCode_listbox']",
             "Kdv Dahil mi?" => "#yes_IsVatInclude", // Radio button group

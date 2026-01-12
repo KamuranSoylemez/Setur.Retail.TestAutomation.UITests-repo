@@ -91,6 +91,30 @@ public class ContractDefinitionPage : BasePage
         Console.WriteLine("✅ Clicked New Brand Ambassador button");
     }
 
+    public async Task ClickGeneralConditionTabAsync()
+    {
+        var frame = await GetContractEditFrameAsync();
+        
+        // Click on "Genel Kondisyon" tab - use the first exact match
+        var generalConditionTab = frame.Locator("a.k-link").Filter(new() { HasText = "Genel Kondisyon" }).First;
+        await generalConditionTab.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
+        await generalConditionTab.ClickAsync();
+        await Task.Delay(2000);
+        Console.WriteLine("✅ Clicked General Condition tab");
+    }
+
+    public async Task ClickNewGeneralConditionButtonAsync()
+    {
+        var frame = await GetContractEditFrameAsync();
+        
+        // Find and click "Yeni Kayıt" button for GeneralCondition
+        var newButton = frame.Locator("a.k-grid-ContractRebateGridIdAddNew");
+        await newButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
+        await newButton.ClickAsync();
+        await Task.Delay(2000);
+        Console.WriteLine("✅ Clicked New General Condition button");
+    }
+
     private async Task<IFrame> GetContractEditFrameAsync()
     {
         var frames = Page.Frames;
