@@ -49,9 +49,10 @@ Her test otomatik olarak:
 ✅ RebateInvoicePoolSearchTests.cs         - 8 test (Rebate fatura havuzu arama)
 ✅ ReceivablePoolSearchTests.cs            - 8 test (Alacak havuzu arama)
 ✅ RebateInvoiceCreateTests.cs             - 3 test (Rebate faturası oluşturma ve geri çekme)
+✅ ContractDefinitionTests.cs              - 2 test (1 + 10 data-driven) (Sözleşme tanımlama)
 ```
 
-**Toplam Migrate Edilen Test Sayısı: ~90 test**
+**Toplam Migrate Edilen Test Sayısı: ~102 test (11 data-driven dahil)**
 
 ### 6. ✅ Configuration Dosyaları Taşındı
 ```

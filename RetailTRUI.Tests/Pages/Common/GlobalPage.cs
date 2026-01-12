@@ -68,4 +68,11 @@ public class GlobalPage : BasePage
         await receivablePoolLink.ClickAsync();
         await Page.WaitForTimeoutAsync(1000);
     }
+
+    public async Task ClickContractDefinitionLinkAsync()
+    {
+        var contractDefinitionLink = Page.Locator("a:has-text('Sözleşme Tanımlama'), a[href*='ContractDefinition']");
+        await contractDefinitionLink.ClickAsync();
+        await Page.WaitForTimeoutAsync(1000);
+    }
 }
