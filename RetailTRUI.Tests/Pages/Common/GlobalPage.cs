@@ -54,4 +54,18 @@ public class GlobalPage : BasePage
     {
         await CreateDistributionLink.ClickAsync();
     }
+
+    public async Task ClickSupplierDropdownToggleAsync()
+    {
+        var supplierDropdown = Page.Locator("a:has-text('Tedarikçi'), a[href*='Supplier']");
+        await supplierDropdown.ClickAsync();
+        await Page.WaitForTimeoutAsync(500);
+    }
+
+    public async Task ClickReceivablePoolLinkAsync()
+    {
+        var receivablePoolLink = Page.Locator("a:has-text('Alacak Havuzu'), a[href*='ReceivablePool']");
+        await receivablePoolLink.ClickAsync();
+        await Page.WaitForTimeoutAsync(1000);
+    }
 }

@@ -31,6 +31,12 @@ public class LoginPage : BasePage
         await PasswordInput.FillAsync(password);
     }
 
+    public async Task LoginAsSpecialUserAsync(string username, string password)
+    {
+        await UsernameInput.FillAsync(username);
+        await PasswordInput.FillAsync(password);
+    }
+
     public async Task ClickLoginButtonAsync()
     {
         await LoginButton.ClickAsync();
@@ -51,6 +57,12 @@ public class LoginPage : BasePage
     }
 
     public async Task VerifyLoginSuccessAsync()
+    {
+        var isSuccess = await IsLoginSuccessfulAsync();
+        isSuccess.Should().BeTrue("Login should be successful");
+    }
+
+    public async Task VerifySuccessfulLoginAsync()
     {
         var isSuccess = await IsLoginSuccessfulAsync();
         isSuccess.Should().BeTrue("Login should be successful");

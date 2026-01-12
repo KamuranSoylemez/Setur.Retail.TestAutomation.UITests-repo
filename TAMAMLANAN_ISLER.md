@@ -38,11 +38,20 @@ Her test otomatik olarak:
 
 ### 5. ✅ Test Class'ları Migrate Edildi
 ```
-✅ LoginTests.cs                           - Login testleri
+✅ LoginTests.cs                           - 3 test (Login testleri)
 ✅ ProductDefinitionTests.cs               - Ürün tanımlama testleri
 ✅ ContractConfirmationDirectorTests.cs    - Director onay testleri
 ✅ ContractConfirmationManagerTests.cs     - Manager onay testleri
+✅ GeneralConditionTests.cs                - 21 test (Genel kondisyon testleri)
+✅ BrandAmbassadorConditionTests.cs        - 21 test (Marka elçisi kondisyon testleri)
+✅ CreditNoteTests.cs                      - 6 test (Kredi notu testleri, 2 deferred)
+✅ ConditionUpdateTests.cs                 - 20 test (Kondisyon güncelleme testleri)
+✅ RebateInvoicePoolSearchTests.cs         - 8 test (Rebate fatura havuzu arama)
+✅ ReceivablePoolSearchTests.cs            - 8 test (Alacak havuzu arama)
+✅ RebateInvoiceCreateTests.cs             - 3 test (Rebate faturası oluşturma ve geri çekme)
 ```
+
+**Toplam Migrate Edilen Test Sayısı: ~90 test**
 
 ### 6. ✅ Configuration Dosyaları Taşındı
 ```
