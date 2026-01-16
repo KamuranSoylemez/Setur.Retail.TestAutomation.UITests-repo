@@ -75,4 +75,39 @@ public class GlobalPage : BasePage
         await contractDefinitionLink.ClickAsync();
         await Page.WaitForTimeoutAsync(1000);
     }
+
+    public async Task ClickDistributionAndTransportationDropdownToggleAsync()
+    {
+        var distributionDropdown = Page.Locator(".glyphicon.glyphicon-transfer");
+        await distributionDropdown.ClickAsync();
+        await Page.WaitForTimeoutAsync(500);
+    }
+
+    public async Task ClickCreateDistributionAndTransportationLinkAsync()
+    {
+        var createDistributionLink = Page.Locator("//a[@href='/ApplicationManagement/Distribution/Index']");
+        await createDistributionLink.ClickAsync();
+        await Page.WaitForTimeoutAsync(1000);
+    }
+
+    public async Task ClickEYKWaitingPageLinkAsync()
+    {
+        var eykWaitingLink = Page.Locator("//a[@href='/ApplicationManagement/EYKWaiting/Index']");
+        await eykWaitingLink.ClickAsync();
+        await Page.WaitForTimeoutAsync(1000);
+    }
+
+    public async Task ClickCreatingEYKLinkAsync()
+    {
+        var creatingEykLink = Page.Locator("//a[@href='/ApplicationManagement/StockTransferPreparing/Index']");
+        await creatingEykLink.ClickAsync();
+        await Page.WaitForTimeoutAsync(1000);
+    }
+
+    public async Task ClickEYKListingPageLinkAsync()
+    {
+        var eykListingLink = Page.Locator("//a[@href='/ApplicationManagement/EYKListing/Index']");
+        await eykListingLink.ClickAsync();
+        await Page.WaitForTimeoutAsync(1000);
+    }
 }
