@@ -57,23 +57,29 @@ public class ProductDefinitionPage : BasePage
         await ProductDefinitionFrame.Locator("#MaterialTypeId_listbox li").Nth(1).ClickAsync();
     }
 
-    public async Task SelectDistributorCompanyAsync(string firmCode)
+    public async Task SelectDistributorCompanyAsync(string category)
     {
         await ProductDefinitionFrame.Locator("#DistributorFirmIdButtonId").ClickAsync();
-        await FillCompanyFieldsAsync(firmCode);
+        await FillCompanyFieldsAsync(category);
     }
 
-    public async Task SelectManufacturerCompanyAsync(string firmCode)
+    public async Task SelectManufacturerCompanyAsync(string category)
     {
         await ProductDefinitionFrame.Locator("#ProducerFirmIdButtonId").ClickAsync();
-        await FillCompanyFieldsAsync(firmCode);
+        await FillCompanyFieldsAsync(category);
     }
 
-    private async Task FillCompanyFieldsAsync(string firmCode)
+    private async Task FillCompanyFieldsAsync(string category)
     {
-        await CompanyIdentificationFrame.Locator("#FilterFirmCode").FillAsync(firmCode);
-        await CompanyIdentificationFrame.Locator("#FilterButtonId").ClickAsync();
-        await CompanyIdentificationFrame.Locator("input[name^='FirmGridId']").Nth(0).ClickAsync();
+        var categoryEnum = CategoriesExtensions.FromLabel(category);
+        if (categoryEnum.HasValue)
+        {
+            var distributorInfo = categoryEnum.Value.GetDistributorInfo();
+            var firmCode = distributorInfo.GetFirmCode();
+            await CompanyIdentificationFrame.Locator("#FilterFirmCode").FillAsync(firmCode);
+            await CompanyIdentificationFrame.Locator("#FilterButtonId").ClickAsync();
+            await CompanyIdentificationFrame.Locator("input[name^='FirmGridId']").Nth(0).ClickAsync();
+        }
     }
 
     public async Task EnterBrandNameAsync(string brandName)
@@ -269,5 +275,98 @@ public class ProductDefinitionPage : BasePage
         await Page.WaitForTimeoutAsync(30000);
         var isVisible = await Page.Locator(".ajs-message.ajs-success").IsVisibleAsync();
         isVisible.Should().BeTrue();
+    }
+
+    // Excel Download/Upload Methods
+    private IFrameLocator ExcelUploadFrame => Page.FrameLocator("iframe.k-content-frame");
+    private IDownload? _downloadedFile;
+
+    public async Task DownloadExcelFormatAsync(ProductExcelType type)
+    {
+        await OpenExcelFrameAsync();
+        await SelectCheckboxAsync(type);
+        
+        var downloadTask = Page.WaitForDownloadAsync();
+        await ExcelUploadFrame.Locator("#fileLink").ClickAsync();
+        _downloadedFile = await downloadTask;
+    }
+
+    public async Task VerifyExcelFileIsDownloadedAsync()
+    {
+        _downloadedFile.Should().NotBeNull("Downloaded file should not be null");
+        
+        var filePath = await _downloadedFile!.PathAsync();
+        filePath.Should().NotBeNull("File path should not be null");
+        
+        var fileInfo = new FileInfo(filePath!);
+        fileInfo.Exists.Should().BeTrue("Excel file should exist");
+        fileInfo.Length.Should().BeGreaterThan(0, "Excel file should not be empty");
+    }
+
+    public async Task UploadExcelFileAsync(ProductExcelType type)
+    {
+        await OpenExcelFrameAsync();
+        await SelectCheckboxAsync(type);
+        
+        var uploadFile = await GetLatestDownloadedFileAsync(GetPrefixByType(type));
+        await ExcelUploadFrame.Locator("#File").SetInputFilesAsync(uploadFile);
+        await SaveFileUploadAsync();
+    }
+
+    public async Task VerifyExcelFileIsUploadedAsync()
+    {
+        var successMessage = Page.Locator(".ajs-message.ajs-success");
+        await successMessage.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible });
+        var isVisible = await successMessage.IsVisibleAsync();
+        isVisible.Should().BeTrue("Success message should be visible after upload");
+    }
+
+    private async Task OpenExcelFrameAsync()
+    {
+        await Page.Locator("#ProductUploadId").ClickAsync();
+    }
+
+    private async Task SelectCheckboxAsync(ProductExcelType type)
+    {
+        if (type == ProductExcelType.ProductDefinition)
+        {
+            await ExcelUploadFrame.Locator("#yes_IsUpload").CheckAsync();
+        }
+        else
+        {
+            await ExcelUploadFrame.Locator("#no_IsUpload").CheckAsync();
+        }
+    }
+
+    private async Task SaveFileUploadAsync()
+    {
+        await ExcelUploadFrame.Locator("button.k-button.k-info").ClickAsync();
+    }
+
+    private string GetPrefixByType(ProductExcelType type)
+    {
+        return type == ProductExcelType.ProductDefinition
+            ? "ProductUploadTemplate"
+            : "ProductUpdateTemplate";
+    }
+
+    private async Task<string> GetLatestDownloadedFileAsync(string filePrefix)
+    {
+        var downloadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+        var directory = new DirectoryInfo(downloadPath);
+        
+        var latestFile = directory.GetFiles($"{filePrefix}*")
+            .OrderByDescending(f => f.LastWriteTime)
+            .FirstOrDefault();
+
+        if (latestFile == null)
+        {
+            throw new FileNotFoundException($"No file found with prefix '{filePrefix}' in {downloadPath}");
+        }
+
+        // Wait a bit to ensure file is fully downloaded
+        await Task.Delay(1000);
+        
+        return latestFile.FullName;
     }
 }

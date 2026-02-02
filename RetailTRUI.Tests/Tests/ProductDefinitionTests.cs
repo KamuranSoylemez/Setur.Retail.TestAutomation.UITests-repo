@@ -1,4 +1,6 @@
+using RetailTRUI.Tests.Enums;
 using RetailTRUI.Tests.Infrastructure;
+using RetailTRUI.Tests.Pages.Common;
 using RetailTRUI.Tests.Pages.RetailDefinition;
 
 namespace RetailTRUI.Tests.Tests;
@@ -10,37 +12,43 @@ namespace RetailTRUI.Tests.Tests;
 public class ProductDefinitionTests : TestBase
 {
     private ProductDefinitionPage _productPage = null!;
+    private GlobalPage _globalPage = null!;
 
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
+        
+        // Re-set the page in current async context (needed due to AsyncLocal behavior)
+        Driver.SetPage(Page);
+        
         _productPage = new ProductDefinitionPage();
+        _globalPage = new GlobalPage();
         
         // Navigate to product definition page
-        await GlobalPage.ClickRetailDefinitionDropdownAsync();
-        await GlobalPage.ClickProductDefinitionLinkAsync();
+        await _globalPage.ClickRetailDefinitionDropdownAsync();
+        await _globalPage.ClickProductDefinitionLinkAsync();
         await _productPage.VerifyProductDefinitionPageIsDisplayedAsync();
     }
 
     [Fact]
-    public async Task CreateProduct_WithAllRequiredFields_ShouldSucceed()
+    public async Task ProductDefinition_WithAllRequiredFields_ShouldCompleteSuccessfully()
     {
         // Arrange & Act - Create new product
         await _productPage.ClickNewRecordButtonAsync();
         await _productPage.VerifyProductDefinitionFormIsDisplayedAsync();
         
         // Fill product features
-        await _productPage.FillProductNameAsync("PRADA");
+        const string productName = "PRADA";
+        const string category = "PARFÜM-KOZMETİK";
+        const string brandName = "PRADA";
+        
+        await _productPage.FillProductNameAsync(productName);
         await _productPage.FillProductReceiptNameAsync();
         await _productPage.SelectMaterialTypeAsync();
         
-        // Fill company features
-        const string category = "PARFÜM-KOZMETİK";
-        const string brandName = "PRADA";
-        const string firmCode = "FIRM001"; // This should come from enum/config
-        
-        await _productPage.SelectDistributorCompanyAsync(firmCode);
-        await _productPage.SelectManufacturerCompanyAsync(firmCode);
+        // Fill company features  
+        await _productPage.SelectDistributorCompanyAsync(category);
+        await _productPage.SelectManufacturerCompanyAsync(category);
         await _productPage.EnterBrandNameAsync(brandName);
         await _productPage.VerifyBrandNameAsync(brandName);
         await _productPage.SelectCategoryAsync(category);
@@ -70,43 +78,46 @@ public class ProductDefinitionTests : TestBase
         // Add limit
         await _productPage.AddLimitAsync("L - Limitsiz");
         
-        // Assert - Update and verify
+        // Update and verify
         await _productPage.SearchAndVerifyProductAsync();
         await _productPage.UpdateProductReceiptNameAsync();
-    }
-
-    [Fact]
-    public async Task ActivateProduct_AfterCreation_ShouldShowAsActive()
-    {
-        // First create a product (simplified version)
-        await CreateSimpleProductAsync();
         
-        // Act
+        // Activate product
         await _productPage.ActivateProductAsync();
-        
-        // Assert
         await _productPage.VerifyProductIsActivatedAsync();
-    }
-
-    [Fact]
-    public async Task CopyProduct_FromExistingProduct_ShouldCreateDuplicate()
-    {
-        // First create a product
-        await CreateSimpleProductAsync();
         
-        // Act
+        // Copy product
         await _productPage.CopyProductAsync();
         
         // Assert
         await _productPage.VerifyProductIsCopiedAsync();
     }
 
-    private async Task CreateSimpleProductAsync()
+    [Theory]
+    [InlineData(ProductExcelType.ProductDefinition)]
+    [InlineData(ProductExcelType.ProductUpdate)]
+    public async Task DownloadExcel_ForProductType_ShouldDownloadSuccessfully(ProductExcelType type)
     {
-        await _productPage.ClickNewRecordButtonAsync();
-        await _productPage.FillProductNameAsync("TEST");
-        await _productPage.FillProductReceiptNameAsync();
-        await _productPage.SelectMaterialTypeAsync();
-        await _productPage.SaveProductDefinitionAsync();
+        // Act
+        await _productPage.DownloadExcelFormatAsync(type);
+
+        // Assert
+        await _productPage.VerifyExcelFileIsDownloadedAsync();
+    }
+
+    [Theory]
+    [InlineData(ProductExcelType.ProductDefinition)]
+    [InlineData(ProductExcelType.ProductUpdate)]
+    public async Task UploadExcel_ForProductType_ShouldUploadSuccessfully(ProductExcelType type)
+    {
+        // Arrange - First download to ensure file exists
+        await _productPage.DownloadExcelFormatAsync(type);
+        await _productPage.VerifyExcelFileIsDownloadedAsync();
+
+        // Act - Upload the downloaded file
+        await _productPage.UploadExcelFileAsync(type);
+
+        // Assert
+        await _productPage.VerifyExcelFileIsUploadedAsync();
     }
 }

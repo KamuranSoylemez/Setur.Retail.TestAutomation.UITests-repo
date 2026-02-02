@@ -10,6 +10,9 @@ public class GlobalPage : BasePage
     private ILocator CreateDistributionLink => Page.Locator("a[href*='CreateDistribution']");
     private ILocator PurchasingDropdownToggle => Page.Locator("#purchasing-dropdown");
     private ILocator PurchaseOrderSearchLink => Page.Locator("a[href*='PurchaseOrderSearch']");
+    private ILocator PurchaseOrderCreationLink => Page.Locator("a[href*='PurchaseOrder/CreateOrder']");
+    private ILocator PurchasePriceLink => Page.Locator("a[href*='PurchasePrice']");
+    private ILocator InvoiceTransactionsLink => Page.Locator("a[href*='InvoiceTransactions']");
     private ILocator CreditNoteLink => Page.Locator("a[href='/ApplicationManagement/CreditNote/Index']");
     private ILocator RetailDefinitionDropdownToggle => Page.Locator("#retail-definition-dropdown");
     private ILocator ProductDefinitionLink => Page.Locator("a[href*='ProductDefinition']");
@@ -35,9 +38,39 @@ public class GlobalPage : BasePage
         await PurchasingDropdownToggle.ClickAsync();
     }
 
+    public async Task ClickPurchasingDropdownToggleAsync()
+    {
+        await PurchasingDropdownToggle.ClickAsync();
+        await Page.WaitForTimeoutAsync(500);
+    }
+
+    public async Task ClickPurchaseOrderCreationLinkAsync()
+    {
+        await PurchaseOrderCreationLink.ClickAsync();
+        await Page.WaitForTimeoutAsync(1000);
+    }
+
     public async Task ClickPurchaseOrderSearchAsync()
     {
         await PurchaseOrderSearchLink.ClickAsync();
+    }
+
+    public async Task ClickPurchaseOrderSearchLinkAsync()
+    {
+        await PurchaseOrderSearchLink.ClickAsync();
+        await Page.WaitForTimeoutAsync(1000);
+    }
+
+    public async Task ClickPurchasePriceLinkAsync()
+    {
+        await PurchasePriceLink.ClickAsync();
+        await Page.WaitForTimeoutAsync(1000);
+    }
+
+    public async Task ClickInvoiceTransactionsLinkAsync()
+    {
+        await InvoiceTransactionsLink.ClickAsync();
+        await Page.WaitForTimeoutAsync(1000);
     }
 
     public async Task ClickCreditNoteLinkAsync()

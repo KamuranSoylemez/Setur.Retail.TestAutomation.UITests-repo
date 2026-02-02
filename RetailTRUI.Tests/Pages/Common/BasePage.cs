@@ -140,6 +140,16 @@ public abstract class BasePage
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Generates a customs house number in format: 8digits+AN+8digits
+    /// </summary>
+    protected string GenerateCustomHouseNo()
+    {
+        var part1 = Random.Shared.Next(0, 100_000_000).ToString("D8");
+        var part2 = Random.Shared.Next(0, 100_000_000).ToString("D8");
+        return $"{part1}AN{part2}";
+    }
+
     protected async Task WaitForLoadingAsync(int timeoutMs = 5000)
     {
         try
@@ -153,5 +163,26 @@ public abstract class BasePage
         {
             // Ignore timeout - page may already be loaded
         }
+    }
+
+    /// <summary>
+    /// Confirms popup dialogs by clicking OK button
+    /// </summary>
+    protected async Task PopUpConfirmationProcessAsync()
+    {
+        var okButton = Page.Locator(".ajs-button.ajs-ok");
+        await okButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
+        await okButton.ClickAsync();
+        await Page.WaitForTimeoutAsync(500);
+    }
+
+    /// <summary>
+    /// Confirms alert popup dialogs
+    /// </summary>
+    protected async Task ConfirmPopupAsync()
+    {
+        var okButton = Page.Locator(".ajs-button.ajs-ok");
+        await okButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 3000 });
+        await okButton.ClickAsync();
     }
 }
