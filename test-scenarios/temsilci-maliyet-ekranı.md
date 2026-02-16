@@ -98,16 +98,6 @@
 
 ---
 
-### T5: Temsilci Maliyet İşlemleri Ekranı Açılması
-**Ön Koşul:** -
-**Adımlar:**
-1. Tedarikçi tabına tıkla
-2. "Temsilci Maliyet İşlemleri" seç
-
-**Beklenen Sonuç:**
-- Ekran başarıyla açılmalı
-
----
 
 ### T6: Firma ile Sorgulama
 **Ön Koşul:** -
