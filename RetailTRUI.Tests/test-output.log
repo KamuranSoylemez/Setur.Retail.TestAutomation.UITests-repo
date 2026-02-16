@@ -1,0 +1,36 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  RetailTRUI.Tests -> /Users/gini/VSCodeProjects/RetailTRUI_Modernize_2/RetailTRUI.Tests/bin/Debug/net8.0/RetailTRUI.Tests.dll
+Test run for /Users/gini/VSCodeProjects/RetailTRUI_Modernize_2/RetailTRUI.Tests/bin/Debug/net8.0/RetailTRUI.Tests.dll (.NETCoreApp,Version=v8.0)
+VSTest version 17.14.0 (arm64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+/Users/gini/VSCodeProjects/RetailTRUI_Modernize_2/RetailTRUI.Tests/bin/Debug/net8.0/RetailTRUI.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.22)
+[xUnit.net 00:00:00.05]   Discovering: RetailTRUI.Tests
+[xUnit.net 00:00:00.10]   Discovered:  RetailTRUI.Tests
+[xUnit.net 00:00:00.10]   Starting:    RetailTRUI.Tests
+[xUnit.net 00:00:33.78]     TEST14 ApproveConditionLossWithPendingApprovalStatus [FAIL]
+[xUnit.net 00:00:33.78]       System.TimeoutException : Timeout 30000ms exceeded.
+[xUnit.net 00:00:33.78]       Call log:
+[xUnit.net 00:00:33.78]         -   - waiting for Locator("#PageTitle")
+[xUnit.net 00:00:33.78]       Stack Trace:
+[xUnit.net 00:00:33.78]         /_/src/Playwright/Transport/Connection.cs(206,0): at Microsoft.Playwright.Transport.Connection.InnerSendMessageToServerAsync[T](ChannelOwner object, String method, Dictionary`2 dictionary, Boolean keepNulls)
+[xUnit.net 00:00:33.78]         /_/src/Playwright/Transport/Connection.cs(535,0): at Microsoft.Playwright.Transport.Connection.WrapApiCallAsync[T](Func`1 action, Boolean isInternal)
+[xUnit.net 00:00:33.78]         /_/src/Playwright/Core/Frame.cs(419,0): at Microsoft.Playwright.Core.Frame.TextContentAsync(String selector, FrameTextContentOptions options)
+[xUnit.net 00:00:33.78]         /Users/gini/VSCodeProjects/RetailTRUI_Modernize_2/RetailTRUI.Tests/Pages/Supplier/ContractDefinitionPage.cs(31,0): at RetailTRUI.Tests.Pages.Supplier.ContractDefinitionPage.VerifyContractDefinitionPageIsDisplayedAsync()
+[xUnit.net 00:00:33.78]         /Users/gini/VSCodeProjects/RetailTRUI_Modernize_2/RetailTRUI.Tests/Tests/ConditionUpdateTests.cs(395,0): at RetailTRUI.Tests.Tests.ConditionUpdateTests.TEST14_ApproveConditionLossWithPendingApprovalStatus()
+[xUnit.net 00:00:33.78]         --- End of stack trace from previous location ---
+  Failed TEST14 ApproveConditionLossWithPendingApprovalStatus [30 s]
+  Error Message:
+   System.TimeoutException : Timeout 30000ms exceeded.
+Call log:
+  -   - waiting for Locator("#PageTitle")
+  Stack Trace:
+     at Microsoft.Playwright.Transport.Connection.InnerSendMessageToServerAsync[T](ChannelOwner object, String method, Dictionary`2 dictionary, Boolean keepNulls) in /_/src/Playwright/Transport/Connection.cs:line 206
+   at Microsoft.Playwright.Transport.Connection.WrapApiCallAsync[T](Func`1 action, Boolean isInternal) in /_/src/Playwright/Transport/Connection.cs:line 535
+   at Microsoft.Playwright.Core.Frame.TextContentAsync(String selector, FrameTextContentOptions options) in /_/src/Playwright/Core/Frame.cs:line 419
+   at RetailTRUI.Tests.Pages.Supplier.ContractDefinitionPage.VerifyContractDefinitionPageIsDisplayedAsync() in /Users/gini/VSCodeProjects/RetailTRUI_Modernize_2/RetailTRUI.Tests/Pages/Supplier/ContractDefinitionPage.cs:line 31
+   at RetailTRUI.Tests.Tests.ConditionUpdateTests.TEST14_ApproveConditionLossWithPendingApprovalStatus() in /Users/gini/VSCodeProjects/RetailTRUI_Modernize_2/RetailTRUI.Tests/Tests/ConditionUpdateTests.cs:line 395
+--- End of stack trace from previous location ---

@@ -366,7 +366,12 @@ public class ReceivablePoolSearchPage : BasePage
         
         if (iframeCount > 0)
         {
-            var frame = Page.FrameLocator("iframe").First;
+            // Use first non-main frame instead of obsolete IFrameLocator.First
+            var frame = Page.Frames.FirstOrDefault(f => f != Page.MainFrame);
+            if (frame == null)
+            {
+                return false;
+            }
             
             var frameTables = frame.Locator("table");
             int tableCount = await frameTables.CountAsync();
@@ -635,8 +640,13 @@ public class ReceivablePoolSearchPage : BasePage
         {
             try
             {
-                var frameLocator = Page.FrameLocator("iframe").Nth(i);
-                var reverseButton = frameLocator.Locator("button:has-text('Geri Çek'), input[type='button'][value='Geri Çek'], a:has-text('Geri Çek')");
+                var frame = Page.Frames.ElementAtOrDefault(i + 1); // skip main frame at index 0
+                if (frame == null)
+                {
+                    continue;
+                }
+
+                var reverseButton = frame.Locator("button:has-text('Geri Çek'), input[type='button'][value='Geri Çek'], a:has-text('Geri Çek')");
                 
                 if (await reverseButton.CountAsync() > 0)
                 {
@@ -674,8 +684,13 @@ public class ReceivablePoolSearchPage : BasePage
         
         for (int i = 0; i < iframeCount; i++)
         {
-            var frameLocator = Page.FrameLocator("iframe").Nth(i);
-            var frameInput = frameLocator.Locator("input.ajs-input[type='text']");
+            var frame = Page.Frames.ElementAtOrDefault(i + 1); // skip main frame
+            if (frame == null)
+            {
+                continue;
+            }
+
+            var frameInput = frame.Locator("input.ajs-input[type='text']");
             
             if (await frameInput.CountAsync() > 0)
             {
@@ -708,8 +723,13 @@ public class ReceivablePoolSearchPage : BasePage
         
         for (int i = 0; i < iframeCount; i++)
         {
-            var frameLocator = Page.FrameLocator("iframe").Nth(i);
-            var frameButton = frameLocator.Locator("button:has-text('ONAY')");
+            var frame = Page.Frames.ElementAtOrDefault(i + 1); // skip main frame
+            if (frame == null)
+            {
+                continue;
+            }
+
+            var frameButton = frame.Locator("button:has-text('ONAY')");
             
             if (await frameButton.CountAsync() > 0)
             {

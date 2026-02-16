@@ -22,12 +22,41 @@ public class ConditionUpdatePage : BasePage
     
     private ILocator FinalUpdatePopupTitle => Page.Locator("span.k-window-title:has-text('Kondisyon Güncelleme')").Last;
     
-    // Frame locators for nested iframes in popups
-    private IFrameLocator FirstPopupFrame => Page.FrameLocator("#SeturModalWin iframe.k-content-frame, iframe[title='Setur']").Nth(0);
-    
-    private IFrameLocator SecondPopupFrame => Page.FrameLocator("iframe.k-content-frame, iframe[title='Setur']").Nth(1);
-    
-    private IFrameLocator LastPopupFrame => Page.FrameLocator("iframe.k-content-frame, iframe[title='Setur']").Last;
+    // Frame helpers for nested iframes in popups (avoid obsolete IFrameLocator.Nth/Last)
+    private async Task<IFrame> GetPopupFrameByIndexAsync(int index)
+    {
+        var iframeElements = await Page.Locator("iframe.k-content-frame[title='Setur'], iframe[title='Setur']").ElementHandlesAsync();
+        if (iframeElements.Count <= index)
+        {
+            throw new Exception($"Popup iframe with index {index} not found");
+        }
+
+        var frame = await iframeElements[index].ContentFrameAsync();
+        if (frame == null)
+        {
+            throw new Exception($"Content frame for popup iframe index {index} is null");
+        }
+
+        return frame;
+    }
+
+    private async Task<IFrame> GetLastPopupFrameAsync()
+    {
+        var iframeElements = await Page.Locator("iframe.k-content-frame[title='Setur'], iframe[title='Setur']").ElementHandlesAsync();
+        if (iframeElements.Count == 0)
+        {
+            throw new Exception("No popup iframes found for last popup frame");
+        }
+
+        var frameHandle = iframeElements[iframeElements.Count - 1];
+        var frame = await frameHandle.ContentFrameAsync();
+        if (frame == null)
+        {
+            throw new Exception("Content frame for last popup iframe is null");
+        }
+
+        return frame;
+    }
     
     /// <summary>
     /// Clicks the green edit (update) button for a condition with specific status
@@ -77,7 +106,8 @@ public class ConditionUpdatePage : BasePage
     {
         await Task.Delay(2000);
         
-        var updateButton = FirstPopupFrame.Locator("button:has-text('Güncelle'), a:has-text('Güncelle')");
+        var firstPopupFrame = await GetPopupFrameByIndexAsync(0);
+        var updateButton = firstPopupFrame.Locator("button:has-text('Güncelle'), a:has-text('Güncelle')");
         await updateButton.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
         await updateButton.First.ClickAsync();
         await Task.Delay(2000);
@@ -106,7 +136,8 @@ public class ConditionUpdatePage : BasePage
         await Task.Delay(2000);
         
         // Try to find update button in the second popup's iframe
-        var updateButton = SecondPopupFrame.Locator("button:has-text('Güncelle'), a:has-text('Güncelle')");
+        var secondPopupFrame = await GetPopupFrameByIndexAsync(1);
+        var updateButton = secondPopupFrame.Locator("button:has-text('Güncelle'), a:has-text('Güncelle')");
         var buttonCount = await updateButton.CountAsync();
         
         if (buttonCount > 0)
@@ -151,7 +182,8 @@ public class ConditionUpdatePage : BasePage
     {
         await Task.Delay(2000);
         
-        var saveButton = LastPopupFrame.Locator("button:has-text('Kaydet'), #btnSave");
+        var lastPopupFrame = await GetLastPopupFrameAsync();
+        var saveButton = lastPopupFrame.Locator("button:has-text('Kaydet'), #btnSave");
         await saveButton.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
         await saveButton.First.ClickAsync();
         await Task.Delay(1500);
@@ -164,7 +196,8 @@ public class ConditionUpdatePage : BasePage
     /// </summary>
     public async Task VerifyUpdateTypeFieldIsMandatoryAsync()
     {
-        var updateTypeField = LastPopupFrame.Locator("#UpdateType_validationMessage, span.field-validation-error:has-text('Güncelleme Tipi')");
+        var lastPopupFrame = await GetLastPopupFrameAsync();
+        var updateTypeField = lastPopupFrame.Locator("#UpdateType_validationMessage, span.field-validation-error:has-text('Güncelleme Tipi')");
         var fieldExists = await updateTypeField.CountAsync() > 0;
         
         if (fieldExists)
@@ -182,7 +215,8 @@ public class ConditionUpdatePage : BasePage
     /// </summary>
     public async Task VerifyDescriptionFieldIsMandatoryAsync()
     {
-        var descriptionField = LastPopupFrame.Locator("#Description_validationMessage, span.field-validation-error:has-text('Açıklama')");
+        var lastPopupFrame = await GetLastPopupFrameAsync();
+        var descriptionField = lastPopupFrame.Locator("#Description_validationMessage, span.field-validation-error:has-text('Açıklama')");
         var fieldExists = await descriptionField.CountAsync() > 0;
         
         if (fieldExists)
@@ -220,7 +254,8 @@ public class ConditionUpdatePage : BasePage
     {
         await Task.Delay(1000);
         
-        var updateTypeDropdown = LastPopupFrame.Locator("#UpdateType");
+            var lastPopupFrame = await GetLastPopupFrameAsync();
+            var updateTypeDropdown = lastPopupFrame.Locator("#UpdateType");
         await updateTypeDropdown.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
         await updateTypeDropdown.SelectOptionAsync(new SelectOptionValue { Label = updateType });
         await Task.Delay(500);
@@ -235,7 +270,8 @@ public class ConditionUpdatePage : BasePage
     {
         await Task.Delay(500);
         
-        var descriptionField = LastPopupFrame.Locator("#Description");
+            var lastPopupFrame = await GetLastPopupFrameAsync();
+            var descriptionField = lastPopupFrame.Locator("#Description");
         await descriptionField.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
         await descriptionField.FillAsync(description);
         await Task.Delay(500);
@@ -250,12 +286,20 @@ public class ConditionUpdatePage : BasePage
     {
         await Task.Delay(1000);
         
-        var saveButton = LastPopupFrame.Locator("button:has-text('Kaydet'), #btnSave");
+            var lastPopupFrame = await GetLastPopupFrameAsync();
+            var saveButton = lastPopupFrame.Locator("button:has-text('Kaydet'), #btnSave");
         await saveButton.First.ClickAsync();
         await Task.Delay(2000);
         
         Console.WriteLine("✅ Clicked save button on final update popup");
     }
+
+    private async Task<IFrame> GetFirstPopupFrameAsync()
+    {
+        return await GetPopupFrameByIndexAsync(0);
+    }
+
+    // Wrapper is no longer needed; calls use GetLastPopupFrameAsync directly
     
     /// <summary>
     /// Verifies that condition definition page is displayed (back at grid after save)
@@ -300,7 +344,8 @@ public class ConditionUpdatePage : BasePage
     {
         await Task.Delay(2000);
         
-        var approveButton = FirstPopupFrame.Locator("button:has-text('Onayla'), #btnApprove, a:has-text('Onayla')");
+        var firstPopupFrame = await GetPopupFrameByIndexAsync(0);
+        var approveButton = firstPopupFrame.Locator("button:has-text('Onayla'), #btnApprove, a:has-text('Onayla')");
         await approveButton.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
         await approveButton.First.ClickAsync();
         await Task.Delay(1500);
@@ -315,7 +360,8 @@ public class ConditionUpdatePage : BasePage
     {
         await Task.Delay(2000);
         
-        var rejectButton = FirstPopupFrame.Locator("button:has-text('Reddet'), #btnReject, a:has-text('Reddet')");
+        var firstPopupFrame = await GetPopupFrameByIndexAsync(0);
+        var rejectButton = firstPopupFrame.Locator("button:has-text('Reddet'), #btnReject, a:has-text('Reddet')");
         await rejectButton.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
         await rejectButton.First.ClickAsync();
         await Task.Delay(1500);
@@ -400,7 +446,8 @@ public class ConditionUpdatePage : BasePage
         await Task.Delay(1000);
         
         // History content is usually in the last iframe
-        var historyContent = LastPopupFrame.Locator($"body:has-text('{expectedDescription}'), td:has-text('{expectedDescription}'), div:has-text('{expectedDescription}')");
+        var lastPopupFrame = await GetLastPopupFrameAsync();
+        var historyContent = lastPopupFrame.Locator($"body:has-text('{expectedDescription}'), td:has-text('{expectedDescription}'), div:has-text('{expectedDescription}')");
         var contentExists = await historyContent.CountAsync() > 0;
         
         if (contentExists)
@@ -421,7 +468,8 @@ public class ConditionUpdatePage : BasePage
         await Task.Delay(1000);
         
         // Look for condition ID pattern in history (usually numeric)
-        var historyIdPattern = LastPopupFrame.Locator("td:regex('^[0-9]+$'), span:regex('[0-9]+')");
+        var lastPopupFrame = await GetLastPopupFrameAsync();
+        var historyIdPattern = lastPopupFrame.Locator("td:regex('^[0-9]+$'), span:regex('[0-9]+')");
         var idExists = await historyIdPattern.CountAsync() > 0;
         
         if (idExists)
@@ -463,7 +511,8 @@ public class ConditionUpdatePage : BasePage
         await Task.Delay(1000);
         
         // Unit multiplier field is in the newly opened condition form
-        var unitMultiplierField = LastPopupFrame.Locator("#UnitMultiplier, input[name='UnitMultiplier']");
+        var lastPopupFrame = await GetLastPopupFrameAsync();
+        var unitMultiplierField = lastPopupFrame.Locator("#UnitMultiplier, input[name='UnitMultiplier']");
         await unitMultiplierField.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
         
         var currentValue = await unitMultiplierField.InputValueAsync();
@@ -484,7 +533,8 @@ public class ConditionUpdatePage : BasePage
         await Task.Delay(1000);
         
         // Look for validation error message about downward change
-        var errorMessage = LastPopupFrame.Locator("span.field-validation-error, div.error-message, span:has-text('aşağı')");
+        var lastPopupFrame = await GetLastPopupFrameAsync();
+        var errorMessage = lastPopupFrame.Locator("span.field-validation-error, div.error-message, span:has-text('aşağı')");
         var messageExists = await errorMessage.CountAsync() > 0;
         
         if (messageExists)
@@ -505,7 +555,8 @@ public class ConditionUpdatePage : BasePage
     {
         await Task.Delay(500);
         
-        var unitMultiplierField = LastPopupFrame.Locator("#UnitMultiplier, input[name='UnitMultiplier']");
+        var lastPopupFrame = await GetLastPopupFrameAsync();
+        var unitMultiplierField = lastPopupFrame.Locator("#UnitMultiplier, input[name='UnitMultiplier']");
         var currentValue = await unitMultiplierField.InputValueAsync();
         var currentNumber = double.Parse(currentValue);
         var newValue = currentNumber + 1;
@@ -523,7 +574,8 @@ public class ConditionUpdatePage : BasePage
     {
         await Task.Delay(1000);
         
-        var saveButton = LastPopupFrame.Locator("button:has-text('Kaydet'), #btnSave, a:has-text('Kaydet')");
+        var lastPopupFrame = await GetLastPopupFrameAsync();
+        var saveButton = lastPopupFrame.Locator("button:has-text('Kaydet'), #btnSave, a:has-text('Kaydet')");
         await saveButton.First.ClickAsync();
         await Task.Delay(2000);
         

@@ -630,10 +630,15 @@ public class ConditionUpdateTests : TestBase
     
     private async Task VerifyUpdateButtonIsVisibleAsync()
     {
-        // Look for update button in iframe
-        var iframe = Page.FrameLocator("iframe").Nth(0);
-        var updateButton = iframe.Locator("button:has-text('Güncelle'), a:has-text('Güncelle')");
-        
+        // Look for update button in first iframe using IFrame API to avoid obsolete IFrameLocator methods
+        var frames = Page.Frames;
+        var targetFrame = frames.FirstOrDefault(f => f != Page.MainFrame);
+        if (targetFrame == null)
+        {
+            throw new Exception("No iframe found for update button verification");
+        }
+
+        var updateButton = targetFrame.Locator("button:has-text('Güncelle'), a:has-text('Güncelle')");
         await updateButton.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
         Console.WriteLine("✅ Update button is visible");
     }

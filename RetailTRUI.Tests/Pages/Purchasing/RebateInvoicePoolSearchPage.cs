@@ -355,7 +355,12 @@ public class RebateInvoicePoolSearchPage : BasePage
         // Search in iframe if exists, otherwise search in main page
         if (iframeCount > 0)
         {
-            var frame = Page.FrameLocator("iframe").First;
+            // Use first non-main frame instead of obsolete IFrameLocator.First
+            var frame = Page.Frames.FirstOrDefault(f => f != Page.MainFrame);
+            if (frame == null)
+            {
+                throw new Exception("No iframe found for rebate invoice history verification");
+            }
             
             foreach (var columnName in expectedColumns)
             {

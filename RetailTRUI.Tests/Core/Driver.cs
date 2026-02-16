@@ -21,9 +21,11 @@ public sealed class Driver
         _playwright ??= await Playwright.CreateAsync();
         
         var config = ConfigurationManager.Instance;
+        Console.WriteLine($"[DRIVER] Browser: {config.Browser}, Headless: {config.Headless}, SlowMo: {config.SlowMo}ms");
+        
         var launchOptions = new BrowserTypeLaunchOptions
         {
-            Headless = false,
+            Headless = config.Headless,
             SlowMo = config.SlowMo
         };
 

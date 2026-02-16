@@ -60,11 +60,23 @@ public class ContractDefinitionPage : BasePage
     }
     
     /// <summary>
-    /// Get contract update frame
+    /// Get contract update frame (avoid obsolete IFrameLocator.First)
     /// </summary>
-    private IFrameLocator GetContractUpdateFrame()
+    private async Task<IFrame> GetContractUpdateFrameAsync()
     {
-        return Page.FrameLocator("iframe[src*='Contract/Update'], iframe[src*='Contract/Edit']").First;
+        var iframeElements = await Page.Locator("iframe[src*='Contract/Update'], iframe[src*='Contract/Edit']").ElementHandlesAsync();
+        if (iframeElements.Count == 0)
+        {
+            throw new Exception("Contract update iframe not found");
+        }
+
+        var frame = await iframeElements[0].ContentFrameAsync();
+        if (frame == null)
+        {
+            throw new Exception("Content frame for contract update iframe is null");
+        }
+
+        return frame;
     }
     
     /// <summary>
@@ -324,7 +336,7 @@ public class ContractDefinitionPage : BasePage
     public async Task VerifyContractStatusAsync(string expectedStatus)
     {
         await Page.WaitForTimeoutAsync(2000);
-        var frame = GetContractUpdateFrame();
+        var frame = await GetContractUpdateFrameAsync();
         
         string? actualStatus = await frame.Locator("#ContractStatus").InputValueAsync();
         actualStatus.Should().Be(expectedStatus, $"Contract status should be {expectedStatus}");
@@ -337,7 +349,7 @@ public class ContractDefinitionPage : BasePage
     public async Task CloseContractUpdateFrameAsync()
     {
         await Page.WaitForTimeoutAsync(2000);
-        var frame = GetContractUpdateFrame();
+        var frame = await GetContractUpdateFrameAsync();
         await frame.Locator("#ClosePopupBtn").ClickAsync();
         await Page.WaitForTimeoutAsync(1000);
         Console.WriteLine("✅ Closed contract update frame");

@@ -42,19 +42,88 @@ public class CreditNotePage : BasePage
     private ILocator PopupYesBrokenRadio => PopupFrame.Locator("#yes_IsBroken");
     private ILocator PopupNoBrokenRadio => PopupFrame.Locator("#no_IsBroken");
     
-    // Detail page iframe locators
-    private IFrameLocator DetailFrame => Page.FrameLocator("iframe.k-content-frame[title='Setur']").Nth(0);
-    private ILocator DetailSaveButton => DetailFrame.Locator("#btnSave, button:has-text('Kaydet')");
-    private ILocator AddProductButton => DetailFrame.Locator(".k-grid-CreditNoteProductGridIdAddNew");
-    
+    // Detail page iframe locators (avoid obsolete IFrameLocator.Nth)
+    private async Task<IFrame> GetDetailFrameAsync()
+    {
+        var iframeElements = await Page.Locator("iframe.k-content-frame[title='Setur']").ElementHandlesAsync();
+        if (iframeElements.Count == 0)
+        {
+            throw new Exception("Detail iframe not found for credit note page");
+        }
+
+        var frame = await iframeElements[0].ContentFrameAsync();
+        if (frame == null)
+        {
+            throw new Exception("Content frame for detail iframe is null");
+        }
+
+        return frame;
+    }
+
+    private async Task<IFrame> GetProductDialogFrameAsync()
+    {
+        var iframeElements = await Page.Locator("iframe.k-content-frame[title='Setur']").ElementHandlesAsync();
+        if (iframeElements.Count < 2)
+        {
+            throw new Exception("Product dialog iframe not found for credit note page");
+        }
+
+        var frame = await iframeElements[1].ContentFrameAsync();
+        if (frame == null)
+        {
+            throw new Exception("Content frame for product dialog iframe is null");
+        }
+
+        return frame;
+    }
+
+    private async Task<ILocator> GetDetailSaveButtonAsync()
+    {
+        var frame = await GetDetailFrameAsync();
+        return frame.Locator("#btnSave, button:has-text('Kaydet')");
+    }
+
+    private async Task<ILocator> GetAddProductButtonAsync()
+    {
+        var frame = await GetDetailFrameAsync();
+        return frame.Locator(".k-grid-CreditNoteProductGridIdAddNew");
+    }
     // Product dialog - get the second iframe (product create dialog)
-    private IFrameLocator ProductDialogFrame => Page.FrameLocator("iframe.k-content-frame[title='Setur']").Nth(1);
-    private ILocator ProductInvoiceNoInput => ProductDialogFrame.Locator("#InvoiceNo, input[name*='Invoice']");
-    private ILocator ProductCodeInput => ProductDialogFrame.Locator("#ProductCode, input[name*='Product']");
-    private ILocator ProductQuantityInput => ProductDialogFrame.Locator("#Quantity, input[name*='Quantity']");
-    private ILocator ProductProfitCenterInput => ProductDialogFrame.Locator("input[aria-owns*='Profit']");
-    private ILocator ProductCreditNoteTypeInput => ProductDialogFrame.Locator("input[aria-owns*='Type']");
-    private ILocator ProductSaveButton => ProductDialogFrame.Locator("#btnSave, button:has-text('Kaydet')");
+    private async Task<ILocator> GetProductInvoiceNoInputAsync()
+    {
+        var frame = await GetProductDialogFrameAsync();
+        return frame.Locator("#InvoiceNo, input[name*='Invoice']");
+    }
+
+    private async Task<ILocator> GetProductCodeInputAsync()
+    {
+        var frame = await GetProductDialogFrameAsync();
+        return frame.Locator("#ProductCode, input[name*='Product']");
+    }
+
+    private async Task<ILocator> GetProductQuantityInputAsync()
+    {
+        var frame = await GetProductDialogFrameAsync();
+        return frame.Locator("#Quantity, input[name*='Quantity']");
+    }
+
+    private async Task<ILocator> GetProductProfitCenterInputAsync()
+    {
+        var frame = await GetProductDialogFrameAsync();
+        return frame.Locator("input[aria-owns*='Profit']");
+    }
+
+    private async Task<ILocator> GetProductCreditNoteTypeInputAsync()
+    {
+        var frame = await GetProductDialogFrameAsync();
+        return frame.Locator("input[aria-owns*='Type']");
+    }
+
+    private async Task<ILocator> GetProductSaveButtonAsync()
+    {
+        var frame = await GetProductDialogFrameAsync();
+        return frame.Locator("#btnSave, button:has-text('Kaydet')");
+    }
     
     public async Task VerifyCreditNotePageIsDisplayedAsync(string expectedTitle)
     {
@@ -268,24 +337,29 @@ public class CreditNotePage : BasePage
         await Task.Delay(1000);
         
         // Click add product button
-        await AddProductButton.ClickAsync();
+        var addProductButton = await GetAddProductButtonAsync();
+        await addProductButton.ClickAsync();
         await Task.Delay(1500);
         
         // Fill product details
-        await ProductInvoiceNoInput.FillAsync(invoiceNo);
+        var productInvoiceNoInput = await GetProductInvoiceNoInputAsync();
+        await productInvoiceNoInput.FillAsync(invoiceNo);
         Console.WriteLine($"✅ Filled invoice no: {invoiceNo}");
         
-        await ProductCodeInput.FillAsync(productCode);
+        var productCodeInput = await GetProductCodeInputAsync();
+        await productCodeInput.FillAsync(productCode);
         await Task.Delay(500);
         await Page.Keyboard.PressAsync("Enter");
         await Task.Delay(1500);
         Console.WriteLine($"✅ Selected product code: {productCode}");
         
-        await ProductQuantityInput.FillAsync(quantity);
+        var productQuantityInput = await GetProductQuantityInputAsync();
+        await productQuantityInput.FillAsync(quantity);
         Console.WriteLine($"✅ Filled quantity: {quantity}");
         
         // Select profit center using Kendo input
-        await ProductProfitCenterInput.ClickAsync();
+        var productProfitCenterInput = await GetProductProfitCenterInputAsync();
+        await productProfitCenterInput.ClickAsync();
         await Task.Delay(500);
         await Page.Keyboard.TypeAsync(profitCenter);
         await Task.Delay(1000);
@@ -293,7 +367,8 @@ public class CreditNotePage : BasePage
         Console.WriteLine($"✅ Selected profit center: {profitCenter}");
         
         // Select credit note type using Kendo input
-        await ProductCreditNoteTypeInput.ClickAsync();
+        var productCreditNoteTypeInput = await GetProductCreditNoteTypeInputAsync();
+        await productCreditNoteTypeInput.ClickAsync();
         await Task.Delay(500);
         await Page.Keyboard.TypeAsync(creditNoteType);
         await Task.Delay(1000);
@@ -301,14 +376,16 @@ public class CreditNotePage : BasePage
         Console.WriteLine($"✅ Selected credit note type: {creditNoteType}");
         
         // Save product
-        await ProductSaveButton.ClickAsync();
+        var productSaveButton = await GetProductSaveButtonAsync();
+        await productSaveButton.ClickAsync();
         await Task.Delay(2000);
         Console.WriteLine("✅ Saved product");
     }
 
     public async Task ClickSaveButtonInDetailPageAsync()
     {
-        await DetailSaveButton.ClickAsync();
+        var detailSaveButton = await GetDetailSaveButtonAsync();
+        await detailSaveButton.ClickAsync();
         await Task.Delay(2000);
         Console.WriteLine("✅ Clicked save button in detail page");
     }
@@ -316,7 +393,8 @@ public class CreditNotePage : BasePage
     public async Task ClickDeleteIconOnFirstProductRowAsync()
     {
         // Find first product row and hover
-        var firstRow = DetailFrame.Locator("tbody tr").First;
+        var detailFrame = await GetDetailFrameAsync();
+        var firstRow = detailFrame.Locator("tbody tr").First;
         await firstRow.HoverAsync();
         await Task.Delay(500);
         
@@ -347,13 +425,20 @@ public class CreditNotePage : BasePage
         ILocator confirmButton;
         if (iframeCount > 0)
         {
-            // Look in iframe
-            var detailFrame = Page.FrameLocator("iframe").First;
-            confirmButton = detailFrame.Locator("button.ajs-button.ajs-ok, button:has-text('Onay'), button:has-text('Evet')");
-            
-            if (await confirmButton.CountAsync() == 0)
+            // Look in first non-main iframe instead of obsolete IFrameLocator.First
+            var frame = Page.Frames.FirstOrDefault(f => f != Page.MainFrame);
+            if (frame != null)
             {
-                // Fallback to main page
+                confirmButton = frame.Locator("button.ajs-button.ajs-ok, button:has-text('Onay'), button:has-text('Evet')");
+
+                if (await confirmButton.CountAsync() == 0)
+                {
+                    // Fallback to main page
+                    confirmButton = Page.Locator("button.ajs-button.ajs-ok, button:has-text('Onay'), button:has-text('Evet'), button:has-text('OK')");
+                }
+            }
+            else
+            {
                 confirmButton = Page.Locator("button.ajs-button.ajs-ok, button:has-text('Onay'), button:has-text('Evet'), button:has-text('OK')");
             }
         }

@@ -21,17 +21,20 @@ public sealed class ConfigurationManager
     public string Environment => GetValue("env", "staging");
     public int DefaultTimeout => int.Parse(GetValue("default_timeout", "30"));
     public int DefaultAssertionTimeout => int.Parse(GetValue("default_assertion_timeout", "30"));
-    public int SlowMo => int.Parse(GetValue("slow_mo", "1000"));
+    public int SlowMo => int.Parse(GetValue("slow_mo", "0"));
+    public bool Headless => bool.Parse(GetValue("headless", "true"));
 
     private void LoadConfiguration()
     {
         var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "Env", "staging.properties");
+        Console.WriteLine($"[CONFIG] Loading from: {configPath}");
         
         if (!File.Exists(configPath))
         {
-            Console.WriteLine($"Configuration file not found: {configPath}");
+            Console.WriteLine($"[CONFIG] ❌ File not found: {configPath}");
             return;
         }
+        Console.WriteLine($"[CONFIG] ✅ File exists");
 
         var lines = File.ReadAllLines(configPath);
         foreach (var line in lines)
