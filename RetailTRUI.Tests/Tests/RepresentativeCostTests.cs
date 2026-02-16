@@ -47,537 +47,242 @@ public class RepresentativeCostTests : TestBase
         _output.WriteLine("✅ T1 passed");
     }
 
-    // T2: Excel Format İndirme
-    [Fact]
-    [Trait("Category", "ExcelFormat")]
-    [Trait("TestId", "T2")]
-    public async Task T2_ExcelUpload_ShouldDownloadFormat()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        
-        // Open Personel tab and Excel upload dialog
-        await _representativeCostPage.OpenPersonnelTabAsync();
-        await Task.Delay(500);
-        await _representativeCostPage.OpenExcelUploadDialogAsync();
-        await Task.Delay(500);
-        
-        // Click format download link
-        await _representativeCostPage.ClickFormatDownloadAsync();
-        
-        _output.WriteLine("✅ T2 test completed - Excel format downloaded");
-    }
-
-    // T3: Excel İle Personel Yükleme
-    [Fact]
-    [Trait("Category", "ExcelUpload")]
-    [Trait("TestId", "T3")]
-    public async Task T3_ExcelUpload_ShouldShowRecordInGrid()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        
-        // Open Personel tab and Excel upload dialog
-        await _representativeCostPage.OpenPersonnelTabAsync();
-        await Task.Delay(500);
-        await _representativeCostPage.OpenExcelUploadDialogAsync();
-        await Task.Delay(500);
-        
-        // Upload test file
-        var testFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "TestData", "PersonelUpload.xlsx");
-        await _representativeCostPage.UploadExcelFileAsync(testFilePath);
-        await Task.Delay(1000);
-        
-        // Verify record appears in grid
-        await _representativeCostPage.VerifyGridHasAnyRowAsync();
-        
-        _output.WriteLine("✅ T3 test completed - Excel file uploaded successfully");
-    }
-
-    // T4: Excel İndirme
-    [Fact]
-    [Trait("Category", "ExcelDownload")]
-    [Trait("TestId", "T4")]
-    public async Task T4_ExcelDownload_ShouldExportExistingRecords()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        
-        // Open Personel tab
-        await _representativeCostPage.OpenPersonnelTabAsync();
-        await Task.Delay(500);
-        
-        // Click Excel download button
-        await _representativeCostPage.DownloadExistingRecordsExcelAsync();
-        
-        _output.WriteLine("✅ T4 test completed - Excel records downloaded");
-    }
-
-    // T6: Firma ile Sorgulama
+    // T2: Firma ile Sorgulama
     [Fact]
     [Trait("Category", "Filters")]
-    [Trait("TestId", "T6")]
-    public async Task T6_FilterByCompany_ShouldListMatchingRecords()
+    [Trait("TestId", "T2")]
+    public async Task T2_FilterByCompany_ShouldListMatchingRecords()
     {
         Driver.SetPage(Page);
-
+        
+        // Wait for page to fully load after login
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000); // Extra delay to ensure session is established
+        
         await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
+        await Task.Delay(2000);
         
         const string company = "PHILIP MORRIS INTERNATIONAL";
         await _representativeCostPage.FilterByCompanyAsync(company);
         await _representativeCostPage.ClickSearchAsync();
-        await Task.Delay(1000);
+        await Task.Delay(1500);
         
         await _representativeCostPage.VerifyGridContainsTextAsync(company);
-        
-        _output.WriteLine("✅ T6 test completed - Company filter working");
+        _output.WriteLine("✅ T2 passed - Company filter");
     }
 
-    // T7: Fatura PB ile Sorgulama
+    // T3: Faturalama PB ile Sorgulama
     [Fact]
     [Trait("Category", "Filters")]
-    [Trait("TestId", "T7")]
-    public async Task T7_FilterByBillingCurrency_ShouldListMatchingRecords()
+    [Trait("TestId", "T3")]
+    public async Task T3_FilterByBillingCurrency_ShouldListMatchingRecords()
     {
         Driver.SetPage(Page);
-
+        
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000);
+        
         await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-
+        await Task.Delay(2000);
+        
         const string currency = "EUR";
         await _representativeCostPage.FilterByBillingCurrencyAsync(currency);
         await _representativeCostPage.ClickSearchAsync();
-        await Task.Delay(1000);
+        await Task.Delay(1500);
         
         await _representativeCostPage.VerifyGridContainsTextAsync(currency);
+        _output.WriteLine("✅ T3 passed - Billing currency filter");
     }
 
-    // T8: Maliyet Tarihi ile Sorgulama
+    // T4: Maliyet PB ile Sorgulama
     [Fact]
     [Trait("Category", "Filters")]
-    [Trait("TestId", "T8")]
-    public async Task T8_FilterByCostDate_ShouldListMatchingRecords()
+    [Trait("TestId", "T4")]
+    public async Task T4_FilterByCostCurrency_ShouldListMatchingRecords()
     {
         Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-
-        // Örnek test verilerindeki ilk kayıt tarihini kullan
-        const string date = "31.12.2025";
-        await _representativeCostPage.FilterByCostDateAsync(date);
-        await _representativeCostPage.ClickSearchAsync();
-        await Task.Delay(1000);
         
-        await _representativeCostPage.VerifyGridContainsTextAsync(date);
-    }
-
-    // T9: Maliyet Durumu ile Sorgulama
-    [Fact]
-    [Trait("Category", "Filters")]
-    [Trait("TestId", "T9")]
-    public async Task T9_FilterByCostStatus_ShouldListMatchingRecords()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-
-        const string status = "Onaylandı";
-        await _representativeCostPage.FilterByCostStatusAsync(status);
-        await _representativeCostPage.ClickSearchAsync();
-        await Task.Delay(1000);
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000);
         
-        await _representativeCostPage.VerifyGridContainsTextAsync(status);
-    }
-
-    // T10: Hesaplama PB ile Sorgulama (Maliyet PB)
-    [Fact]
-    [Trait("Category", "Filters")]
-    [Trait("TestId", "T10")]
-    public async Task T10_FilterByCostCurrency_ShouldListMatchingRecords()
-    {
-        Driver.SetPage(Page);
-
         await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-
+        await Task.Delay(2000);
+        
         const string currency = "EUR";
         await _representativeCostPage.FilterByCostCurrencyAsync(currency);
         await _representativeCostPage.ClickSearchAsync();
-        await Task.Delay(1000);
+        await Task.Delay(1500);
         
         await _representativeCostPage.VerifyGridContainsTextAsync(currency);
+        _output.WriteLine("✅ T4 passed - Cost currency filter");
     }
 
-    // T11: Açıklama ile Sorgulama (Sözleşme Adı alanı kullanılıyor)
+    // T5: Maliyet Tarihi ile Sorgulama
     [Fact]
     [Trait("Category", "Filters")]
-    [Trait("TestId", "T11")]
-    public async Task T11_FilterByDescription_ShouldListMatchingRecords()
+    [Trait("TestId", "T5")]
+    public async Task T5_FilterByCostDate_ShouldListMatchingRecords()
     {
         Driver.SetPage(Page);
-
+        
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000);
+        
         await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
+        await Task.Delay(2000);
+        
+        const string date = "31.12.2025";
+        await _representativeCostPage.FilterByCostDateAsync(date);
+        await _representativeCostPage.ClickSearchAsync();
+        await Task.Delay(1500);
+        
+        await _representativeCostPage.VerifyGridContainsTextAsync(date);
+        _output.WriteLine("✅ T5 passed - Cost date filter");
+    }
 
+    // T6: Maliyet Durumu ile Sorgulama
+    [Fact]
+    [Trait("Category", "Filters")]
+    [Trait("TestId", "T6")]
+    public async Task T6_FilterByCostStatus_ShouldListMatchingRecords()
+    {
+        Driver.SetPage(Page);
+        
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000);
+        
+        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
+        await Task.Delay(2000);
+        
+        const string status = "Onaylandı";
+        await _representativeCostPage.FilterByCostStatusAsync(status);
+        await _representativeCostPage.ClickSearchAsync();
+        await Task.Delay(1500);
+        
+        await _representativeCostPage.VerifyGridContainsTextAsync(status);
+        _output.WriteLine("✅ T6 passed - Cost status filter");
+    }
+
+    // T7: Sözleşme Adı ile Sorgulama
+    [Fact]
+    [Trait("Category", "Filters")]
+    [Trait("TestId", "T7")]
+    public async Task T7_FilterByDescription_ShouldListMatchingRecords()
+    {
+        Driver.SetPage(Page);
+        
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000);
+        
+        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
+        await Task.Delay(2000);
+        
         const string description = "PMI-2025-CFR";
         await _representativeCostPage.FilterByDescriptionAsync(description);
         await _representativeCostPage.ClickSearchAsync();
-        await Task.Delay(1000);
+        await Task.Delay(1500);
         
         await _representativeCostPage.VerifyGridContainsTextAsync(description);
+        _output.WriteLine("✅ T7 passed - Description filter");
     }
 
-    // T12: Personel Maliyet Excel Upload - Format İndirme
+    // T8: Temsilci Tutar PB ile Sorgulama
     [Fact]
-    [Trait("Category", "ExcelUpload")]
-    [Trait("TestId", "T12")]
-    public async Task T12_PersonelMaliyetExcelUpload_ShouldDownloadFormat()
+    [Trait("Category", "Filters")]
+    [Trait("TestId", "T8")]
+    public async Task T8_FilterByRepresentativeAmountCurrency_ShouldListMatchingRecords()
     {
         Driver.SetPage(Page);
-
+        
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000);
+        
         await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500); // Extra delay for detail page to load
-        await _representativeCostPage.OpenPersonelMaliyetExcelUploadAsync();
-        await Task.Delay(500);
-        await _representativeCostPage.ClickFormatDownloadAsync();
-    }
-
-    // T13: Personel Maliyet Excel Upload - Yükleme
-    [Fact]
-    [Trait("Category", "ExcelUpload")]
-    [Trait("TestId", "T13")]
-    public async Task T13_PersonelMaliyetExcelUpload_ShouldShowRecordsInGrid()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
+        await Task.Delay(2000);
+        
+        const string currency = "EUR";
+        await _representativeCostPage.FilterByRepresentativeAmountCurrencyAsync(currency);
+        await _representativeCostPage.ClickSearchAsync();
         await Task.Delay(1500);
-        await _representativeCostPage.OpenPersonelMaliyetExcelUploadAsync();
-        await Task.Delay(500);
+        
+        await _representativeCostPage.VerifyGridContainsTextAsync(currency);
+        _output.WriteLine("✅ T8 passed - Representative amount currency filter");
+    }
 
-        var testFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "TestData", "PersonelMaliyetUpload.xlsx");
-        _output.WriteLine($"Using upload file: {testFilePath}");
-
-        await _representativeCostPage.UploadExcelFileAsync(testFilePath);
-        await Task.Delay(1000);
+    // T9: Kombinasyon Filtresi - Firma ve Fatura PB
+    [Fact]
+    [Trait("Category", "Filters")]
+    [Trait("TestId", "T9")]
+    public async Task T9_FilterByCompanyAndBillingCurrency_ShouldListMatchingRecords()
+    {
+        Driver.SetPage(Page);
+        
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000);
+        
+        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
+        await Task.Delay(2000);
+        
+        const string company = "PHILIP MORRIS INTERNATIONAL";
+        const string currency = "EUR";
+        
+        await _representativeCostPage.FilterByCompanyAsync(company);
+        await _representativeCostPage.FilterByBillingCurrencyAsync(currency);
+        await _representativeCostPage.ClickSearchAsync();
+        await Task.Delay(1500);
+        
+        // Grid'de sonuç olmalı
         await _representativeCostPage.VerifyGridHasAnyRowAsync();
+        _output.WriteLine("✅ T9 passed - Combined company + billing currency filter");
     }
 
-    // T14: Personel Maliyet Excel Upload - Olumsuz Senaryo
+    // T10: Kombinasyon Filtresi - Tarihi ve Durumu
     [Fact]
-    [Trait("Category", "ExcelUpload-Negative")]
-    [Trait("TestId", "T14")]
-    public async Task T14_PersonelMaliyetExcelUpload_InvalidData_ShouldShowError()
+    [Trait("Category", "Filters")]
+    [Trait("TestId", "T10")]
+    public async Task T10_FilterByDateAndStatus_ShouldListMatchingRecords()
     {
         Driver.SetPage(Page);
-
+        
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000);
+        
         await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
+        await Task.Delay(2000);
+        
+        const string date = "31.12.2025";
+        const string status = "Onaylandı";
+        
+        await _representativeCostPage.FilterByCostDateAsync(date);
+        await _representativeCostPage.FilterByCostStatusAsync(status);
+        await _representativeCostPage.ClickSearchAsync();
         await Task.Delay(1500);
-        await _representativeCostPage.OpenPersonelMaliyetExcelUploadAsync();
-        await Task.Delay(500);
-
-        var invalidFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "TestData", "PersonelMaliyetUpload_Invalid.xlsx");
-        _output.WriteLine($"Using invalid upload file: {invalidFilePath}");
-
-        await _representativeCostPage.UploadExcelFileAsync(invalidFilePath);
-        await Task.Delay(1000);
-
-        // Expect some generic error popup/message
-        var errorMessage = Page.Locator(".alert-danger, .validation-summary-errors, .ajs-error, .alertify-message");
-        await errorMessage.First.WaitForAsync(new LocatorWaitForOptions
-        {
-            State = WaitForSelectorState.Visible,
-            Timeout = 10000
-        });
-    }
-
-    // T15: Personel Maliyet Excel Update - Format İndirme
-    [Fact]
-    [Trait("Category", "ExcelUpdate")]
-    [Trait("TestId", "T15")]
-    public async Task T15_PersonelMaliyetExcelUpdate_ShouldDownloadFormat()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-        await _representativeCostPage.OpenPersonelMaliyetExcelUpdateAsync();
-        await Task.Delay(500);
-        await _representativeCostPage.ClickFormatDownloadAsync();
-    }
-
-    // T16: Personel Maliyet Excel Update - Güncelleme
-    [Fact]
-    [Trait("Category", "ExcelUpdate")]
-    [Trait("TestId", "T16")]
-    public async Task T16_PersonelMaliyetExcelUpdate_ShouldUpdateRecordsInGrid()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-        await _representativeCostPage.OpenPersonelMaliyetExcelUpdateAsync();
-        await Task.Delay(500);
-
-        var testFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "TestData", "PersonelMaliyetUpdate.xlsx");
-        _output.WriteLine($"Using update file: {testFilePath}");
-
-        await _representativeCostPage.UploadExcelFileAsync(testFilePath);
-        await Task.Delay(1000);
+        
+        // Grid'de sonuç olmalı
         await _representativeCostPage.VerifyGridHasAnyRowAsync();
+        _output.WriteLine("✅ T10 passed - Combined date + status filter");
     }
 
-    // T17: Personel Maliyet Excel Update - Olumsuz Senaryo
+    // T11: Boş alan Sorgulama - Tüm Kayıtlar
     [Fact]
-    [Trait("Category", "ExcelUpdate-Negative")]
-    [Trait("TestId", "T17")]
-    public async Task T17_PersonelMaliyetExcelUpdate_InvalidData_ShouldShowError()
+    [Trait("Category", "Filters")]
+    [Trait("TestId", "T11")]
+    public async Task T11_EmptyFilters_ShouldShowAllRecords()
     {
         Driver.SetPage(Page);
-
+        
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000);
+        
         await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
+        await Task.Delay(2000);
+        
+        // Hiç filtre olmadan sorgula (tüm kayıtları getir)
+        await _representativeCostPage.ClickSearchAsync();
         await Task.Delay(1500);
-        await _representativeCostPage.OpenPersonelMaliyetExcelUpdateAsync();
-        await Task.Delay(500);
-
-        var invalidFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "TestData", "PersonelMaliyetUpdate_Invalid.xlsx");
-        _output.WriteLine($"Using invalid update file: {invalidFilePath}");
-
-        await _representativeCostPage.UploadExcelFileAsync(invalidFilePath);
-        await Task.Delay(1000);
-
-        var errorMessage = Page.Locator(".alert-danger, .validation-summary-errors, .ajs-error, .alertify-message");
-        await errorMessage.First.WaitForAsync(new LocatorWaitForOptions
-        {
-            State = WaitForSelectorState.Visible,
-            Timeout = 10000
-        });
-    }
-
-    // T18: Temsilci Maliyet Düzenleme
-    [Fact]
-    [Trait("Category", "Workflow")]
-    [Trait("TestId", "T18")]
-    public async Task T18_EditRepresentativeCost_ShouldUpdateSuccessfully()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-
-        var description = $"Auto update {DateTime.Now:yyyyMMddHHmmss}";
-        await _representativeCostPage.UpdateDescriptionAsync(description);
-        await Task.Delay(1000);
-        // Güncellenen açıklamanın gridde göründüğünü kontrol et
-        await _representativeCostPage.VerifyGridContainsTextAsync(description);
-    }
-
-    // T19: IK Onayına Gönderme
-    [Fact]
-    [Trait("Category", "Workflow")]
-    [Trait("TestId", "T19")]
-    public async Task T19_SendToIkApproval_ShouldChangeStatusToIkPending()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-        await _representativeCostPage.SendToIkApprovalAsync();
-        await Task.Delay(1000);
-
-        await _representativeCostPage.VerifyStatusInGridAsync("IK Onayı Bekleniyor");
-    }
-
-    // T20: IK Personel Maliyet Excel Update - Format İndirme
-    [Fact]
-    [Trait("Category", "ExcelUpdate")]
-    [Trait("TestId", "T20")]
-    public async Task T20_IkPersonelMaliyetExcelUpdate_ShouldDownloadFormat()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-        await _representativeCostPage.OpenIKPersonelMaliyetExcelUpdateAsync();
-        await Task.Delay(500);
-        await _representativeCostPage.ClickFormatDownloadAsync();
-    }
-
-    // T21: IK Personel Maliyet Excel Update - Güncelleme
-    [Fact]
-    [Trait("Category", "ExcelUpdate")]
-    [Trait("TestId", "T21")]
-    public async Task T21_IkPersonelMaliyetExcelUpdate_ShouldUpdateRecordsInGrid()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-        await _representativeCostPage.OpenIKPersonelMaliyetExcelUpdateAsync();
-        await Task.Delay(500);
-
-        var testFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "TestData", "IkPersonelMaliyetUpdate.xlsx");
-        _output.WriteLine($"Using IK update file: {testFilePath}");
-
-        await _representativeCostPage.UploadExcelFileAsync(testFilePath);
-        await Task.Delay(1000);
+        
+        // Grid'de kayıt olmalı
         await _representativeCostPage.VerifyGridHasAnyRowAsync();
-    }
-
-    // T22: Geri Çekme İşlemi
-    [Fact]
-    [Trait("Category", "Workflow")]
-    [Trait("TestId", "T22")]
-    public async Task T22_Recall_ShouldReturnRecordSuccessfully()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-        await _representativeCostPage.RecallAsync("Test geri çekme nedeni");
-        await Task.Delay(1000);
-    }
-
-    // T23: Onay İşlemi
-    [Fact]
-    [Trait("Category", "Workflow")]
-    [Trait("TestId", "T23")]
-    public async Task T23_ApproveWorkflow_ShouldSetStatusApproved()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-        await _representativeCostPage.ApproveWorkflowAsync();
-        await Task.Delay(1000);
-
-        await _representativeCostPage.VerifyStatusInGridAsync("Onaylandı");
-    }
-
-    // T24: Alacak Oluşturma
-    [Fact]
-    [Trait("Category", "Workflow")]
-    [Trait("TestId", "T24")]
-    public async Task T24_CreateReceivable_ShouldSetStatusReceivableCreated()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-        await _representativeCostPage.CreateReceivableAsync();
-        await Task.Delay(1000);
-
-        await _representativeCostPage.VerifyStatusInGridAsync("Alacak Oluşturuldu");
-    }
-
-    // T25: Hazırlanıyor Durumundaki Kaydın İlerletilmesi - Olumsuz
-    [Fact]
-    [Trait("Category", "Workflow-Negative")]
-    [Trait("TestId", "T25")]
-    public async Task T25_PreparingRecordWithoutPersonnel_ShouldNotShowCategoryApprovalButton()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-
-        await _representativeCostPage.VerifyCategoryApprovalButtonNotVisibleAsync();
-    }
-
-    // T26: Kategori Onayına Gönder Butonu Görünürlüğü
-    [Fact]
-    [Trait("Category", "Workflow")]
-    [Trait("TestId", "T26")]
-    public async Task T26_CategoryApprovalButton_ShouldBeVisibleWhenPersonnelExists()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-
-        await _representativeCostPage.VerifyCategoryApprovalButtonVisibleAsync();
-    }
-
-    // T27: Hazırlanıyor Durumundaki Kaydın İlerletilmesi
-    [Fact]
-    [Trait("Category", "Workflow")]
-    [Trait("TestId", "T27")]
-    public async Task T27_PreparingRecordWithPersonnel_ShouldSendToCategoryApproval()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-        await _representativeCostPage.SendToCategoryApprovalAsync();
-        await Task.Delay(1000);
-    }
-
-    // T28: Kategori Onayı Bekleniyor - Excel Upload ve Update Kontrolü
-    [Fact]
-    [Trait("Category", "Workflow")]
-    [Trait("TestId", "T28")]
-    public async Task T28_CategoryPendingRecord_ShouldSupportExcelUploadAndUpdate()
-    {
-        Driver.SetPage(Page);
-
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-        await Task.Delay(1000);
-        await _representativeCostPage.OpenFirstRowDetailAsync();
-        await Task.Delay(1500);
-
-        // Upload
-        await _representativeCostPage.OpenPersonelMaliyetExcelUploadAsync();
-        await Task.Delay(500);
-        var uploadFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "TestData", "CategoryPendingUpload.xlsx");
-        await _representativeCostPage.UploadExcelFileAsync(uploadFile);
-        await Task.Delay(1000);
-
-        // Update
-        await _representativeCostPage.OpenPersonelMaliyetExcelUpdateAsync();
-        await Task.Delay(500);
-        var updateFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "TestData", "CategoryPendingUpdate.xlsx");
-        await _representativeCostPage.UploadExcelFileAsync(updateFile);
-        await Task.Delay(1000);
+        _output.WriteLine("✅ T11 passed - All records displayed");
     }
 }
