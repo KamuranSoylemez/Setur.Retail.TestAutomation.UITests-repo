@@ -31,12 +31,22 @@ public class RepresentativeCostTests : TestBase
     public async Task T1_PersonelTab_ShouldShowExcelButtons()
     {
         Driver.SetPage(Page);
-        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
-
-        // Verify page loaded successfully
-        Page.Url.Should().Contain("ContractRepresentativePayroll");
         
-        _output.WriteLine("✅ T1 test completed - page loaded successfully");
+        _output.WriteLine($"T1: After login, current URL - {Page.Url}");
+        
+        // Wait for page to fully load after login
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(500); // Additional delay to ensure session is established
+        
+        _output.WriteLine($"T1: After wait, current URL - {Page.Url}");
+        
+        // Navigate to Representative Cost page
+        await _representativeCostPage!.NavigateToRepresentativeCostPageAsync();
+        
+        _output.WriteLine($"T1: After navigation, URL - {Page.Url}");
+        Page.Url.Should().Contain("/ContractRepresentativePayroll/Index");
+        
+        _output.WriteLine("✅ T1 test passed - navigated to Representative Cost page");
     }
 
     // T2: Excel Format İndirme
