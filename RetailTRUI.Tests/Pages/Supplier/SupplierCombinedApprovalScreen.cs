@@ -37,8 +37,8 @@ public class SupplierCombinedApprovalScreen : BasePage
     // Approval action buttons
     private ILocator ApproveButton => Page.Locator("#BtnApprove, button:has-text('Onayla')");
     private ILocator RejectButton => Page.Locator("#BtnReject, button:has-text('Reddet')");
-    private ILocator CancellationApproveButton => Page.Locator("#BtnApproveCancellation, button:has-text('İptali Onayla')");
-    private ILocator CancellationRejectButton => Page.Locator("#BtnRejectCancellation, button:has-text('İptali Reddet')");
+    private ILocator CancellationApproveButton => Page.Locator("#BtnApproveCancellation, button:has-text('İptal Talebini Onayla'), button:has-text('İptali Onayla')");
+    private ILocator CancellationRejectButton => Page.Locator("#BtnRejectCancellation, button:has-text('İptal Talebini Reddet'), button:has-text('İptali Reddet')");
     private ILocator DirectorApproveButton => Page.Locator("#BtnDirectorApprove, button:has-text('Direktör Onayı')");
     private ILocator DirectorRejectButton => Page.Locator("#BtnDirectorReject, button:has-text('Direktör Reddi')");
     private ILocator ManagerApproveButton => Page.Locator("#BtnManagerApprove, button:has-text('Müdür Onayı')");
@@ -521,6 +521,76 @@ public class SupplierCombinedApprovalScreen : BasePage
         {
             Console.WriteLine($"❌ Error checking approval action buttons: {ex.Message}");
             return (false, false);
+        }
+    }
+
+    // Check if cancellation action buttons (İptal Talebini Onayla, İptal Talebini Reddet, Güncelle, Kapat) are visible on detail screen (inside iframe)
+    public async Task<(bool UpdateVisible, bool CloseVisible, bool CancellationApproveVisible, bool CancellationRejectVisible)> CheckCancellationButtonsAsync()
+    {
+        try
+        {
+            bool updateVisible = false;
+            bool closeVisible = false;
+            bool cancellationApproveVisible = false;
+            bool cancellationRejectVisible = false;
+            
+            // Wait for detail screen modal to fully load
+            await Page.WaitForTimeoutAsync(2000);
+            
+            // Check all frames
+            var frames = Page.Frames;
+            Console.WriteLine($"DEBUG: Checking cancellation buttons in {frames.Count} frames");
+            
+            // First try main page
+            updateVisible = await Page.Locator("#btnSave").IsVisibleAsync();
+            closeVisible = await Page.Locator("#ClosePopupBtn").IsVisibleAsync();
+            cancellationApproveVisible = await CancellationApproveButton.IsVisibleAsync();
+            cancellationRejectVisible = await CancellationRejectButton.IsVisibleAsync();
+            
+            Console.WriteLine($"DEBUG: Main page - Güncelle: {updateVisible}, Kapat: {closeVisible}, İptal Onayla: {cancellationApproveVisible}, İptal Reddet: {cancellationRejectVisible}");
+            
+            // If not found on main page, check frames
+            if (!updateVisible || !closeVisible || !cancellationApproveVisible || !cancellationRejectVisible)
+            {
+                foreach (var frame in frames)
+                {
+                    var frameUpdateBtn = frame.Locator("#btnSave");
+                    var frameCloseBtn = frame.Locator("#ClosePopupBtn");
+                    var frameCancelApproveBtn = frame.Locator("#BtnApproveCancellation, button:has-text('İptal Talebini Onayla'), button:has-text('İptali Onayla')");
+                    var frameCancelRejectBtn = frame.Locator("#BtnRejectCancellation, button:has-text('İptal Talebini Reddet'), button:has-text('İptali Reddet')");
+                    
+                    int updateCount = await frameUpdateBtn.CountAsync();
+                    int closeCount = await frameCloseBtn.CountAsync();
+                    int cancelApproveCount = await frameCancelApproveBtn.CountAsync();
+                    int cancelRejectCount = await frameCancelRejectBtn.CountAsync();
+                    
+                    Console.WriteLine($"DEBUG: Frame '{frame.Name}' - Güncelle: {updateCount}, Kapat: {closeCount}, İptal Onayla: {cancelApproveCount}, İptal Reddet: {cancelRejectCount}");
+                    
+                    if (updateCount > 0)
+                        updateVisible = await frameUpdateBtn.IsVisibleAsync();
+                    
+                    if (closeCount > 0)
+                        closeVisible = await frameCloseBtn.IsVisibleAsync();
+                    
+                    if (cancelApproveCount > 0)
+                        cancellationApproveVisible = await frameCancelApproveBtn.IsVisibleAsync();
+                    
+                    if (cancelRejectCount > 0)
+                        cancellationRejectVisible = await frameCancelRejectBtn.IsVisibleAsync();
+                    
+                    if (updateVisible && closeVisible && cancellationApproveVisible && cancellationRejectVisible)
+                        break;
+                }
+            }
+            
+            Console.WriteLine($"DEBUG: Final result - Güncelle: {updateVisible}, Kapat: {closeVisible}, İptal Onayla: {cancellationApproveVisible}, İptal Reddet: {cancellationRejectVisible}");
+            
+            return (updateVisible, closeVisible, cancellationApproveVisible, cancellationRejectVisible);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error checking cancellation buttons: {ex.Message}");
+            return (false, false, false, false);
         }
     }
 }

@@ -96,10 +96,14 @@ public class SupplierCombinedApprovalScreenDirectorTests : DirectorTestBase
             await _approvalScreen.ClickFirstEditButtonAsync();
             await Task.Delay(2000);
             
-            var (updateVisible, closeVisible) = await _approvalScreen.CheckDetailScreenButtonsAsync();
-            (updateVisible || closeVisible).Should().BeTrue("Director should see action buttons for cancellation approval status");
+            var (updateVisible, closeVisible, cancelApproveVisible, cancelRejectVisible) = await _approvalScreen.CheckCancellationButtonsAsync();
             
-            _output.WriteLine($"✅ PASSED: Director sees action buttons for cancellation approval status");
+            updateVisible.Should().BeTrue("Director should see Güncelle (Update) button on detail screen");
+            closeVisible.Should().BeTrue("Director should see Kapat (Close) button on detail screen");
+            cancelApproveVisible.Should().BeTrue("Director should see İptal Talebini Onayla (Approve cancellation) button");
+            cancelRejectVisible.Should().BeTrue("Director should see İptal Talebini Reddet (Reject cancellation) button");
+            
+            _output.WriteLine($"✅ PASSED: Director sees all cancellation buttons (Güncelle, Kapat, İptal Talebini Onayla, İptal Talebini Reddet)");
         }
         else
         {
