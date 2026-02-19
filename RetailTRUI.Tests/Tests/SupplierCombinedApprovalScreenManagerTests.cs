@@ -211,22 +211,47 @@ public class SupplierCombinedApprovalScreenManagerTests : ManagerTestBase
             return;
         }
 
-        // Assert - Check all button visibility (utility + action buttons)
+        // Assert - Check all button visibility (utility + action + withdraw buttons)
         Console.WriteLine("\n🔍 Detecting visible buttons (iframe-aware)...");
         var (updateVisible, closeVisible) = await _approvalScreen.CheckDetailScreenButtonsAsync();
         var (approveVisible, rejectVisible) = await _approvalScreen.CheckApprovalActionButtonsAsync();
+        
+        // Check Geri Çek (Withdraw) button - try main page first
+        var withdrawBtn = Page.Locator("#ContractWithdraw");
+        bool withdrawVisible = await withdrawBtn.IsVisibleAsync();
+        
+        // If not found on main page, try in frames
+        if (!withdrawVisible)
+        {
+            var frames = Page.Frames;
+            foreach (var frame in frames)
+            {
+                var frameWithdrawBtn = frame.Locator("#ContractWithdraw");
+                try
+                {
+                    if (await frameWithdrawBtn.IsVisibleAsync())
+                    {
+                        withdrawVisible = true;
+                        break;
+                    }
+                }
+                catch { }
+            }
+        }
 
         Console.WriteLine($"\n📌 Button Visibility for Manager Approval Status:");
         Console.WriteLine($"  • Güncelle (Update): {(updateVisible ? "✅ VISIBLE" : "❌ NOT VISIBLE")}");
         Console.WriteLine($"  • Kapat (Close): {(closeVisible ? "✅ VISIBLE" : "❌ NOT VISIBLE")}");
         Console.WriteLine($"  • Onayla (Approve): {(approveVisible ? "✅ VISIBLE" : "❌ NOT VISIBLE")}");
         Console.WriteLine($"  • Reddet (Reject): {(rejectVisible ? "✅ VISIBLE" : "❌ NOT VISIBLE")}");
+        Console.WriteLine($"  • Geri Çek (Withdraw): {(withdrawVisible ? "✅ VISIBLE" : "❌ NOT VISIBLE")}");
 
-        // For manager approval status, manager should see action buttons to make approval decision
+        // For manager approval status, manager should see all action buttons
         approveVisible.Should().BeTrue("Onayla button must be visible for manager approval");
         rejectVisible.Should().BeTrue("Reddet button must be visible for manager approval");
+        withdrawVisible.Should().BeTrue("Geri Çek button must be visible for manager to withdraw contract");
 
-        _output.WriteLine("✅ Test passed: Manager approval status buttons verified (Onayla + Reddet visible)");
+        _output.WriteLine("✅ Test passed: Manager approval status buttons verified (Onayla + Reddet + Geri Çek visible)");
         Console.WriteLine("\n=== TEST END ===\n");
     }
 
