@@ -203,6 +203,7 @@ For each filter:
 3. Need to modify TestBase, BasePage, Driver, ConfigurationManager
 4. Need to modify GlobalPage beyond simple link additions
 5. Framework dependencies need to change (Playwright version, xUnit version)
+6. Need to change a file undder test-scenarios
 
 ## 🎯 DEFAULT VALUES
 - Headless: false (browser visible)
