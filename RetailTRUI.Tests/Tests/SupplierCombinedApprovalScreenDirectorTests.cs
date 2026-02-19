@@ -133,9 +133,26 @@ public class SupplierCombinedApprovalScreenDirectorTests : DirectorTestBase
         
         // Assert - Manager approval status is read-only for director (limited view)
         var recordCount = await _approvalScreen.GetGridRecordCountAsync();
-        recordCount.Should().BeGreaterThanOrEqualTo(0, "Director should see manager approval contracts (read-only)");
-        
-        _output.WriteLine($"✅ PASSED: Director sees {recordCount} manager approval contracts (read-only view)");
+        if (recordCount > 0)
+        {
+            await _approvalScreen.ClickFirstEditButtonAsync();
+            await Task.Delay(2000);
+            
+            // Director should only see Güncelle (Update) and Kapat (Close) buttons, no action buttons
+            var (updateVisible, closeVisible) = await _approvalScreen.CheckDetailScreenButtonsAsync();
+            var (approveVisible, rejectVisible) = await _approvalScreen.CheckApprovalActionButtonsAsync();
+            
+            updateVisible.Should().BeTrue("Director should see Güncelle (Update) button for read-only view");
+            closeVisible.Should().BeTrue("Director should see Kapat (Close) button for read-only view");
+            approveVisible.Should().BeFalse("Director should NOT see Onayla (Approve) button for manager approval status");
+            rejectVisible.Should().BeFalse("Director should NOT see Reddet (Reject) button for manager approval status");
+            
+            _output.WriteLine($"✅ PASSED: Director has limited access to manager approval contracts (Güncelle, Kapat only - no action buttons)");
+        }
+        else
+        {
+            _output.WriteLine("⚠️ SKIPPED: No contracts with manager approval status found");
+        }
     }
 
     // ========== DIRECTOR ROLE - CONTRACT CANCELLATION WITH SPECIFIC FILTERS ==========
