@@ -464,4 +464,63 @@ public class SupplierCombinedApprovalScreen : BasePage
             return (false, false);
         }
     }
+
+    // Check if approval action buttons (Onayla, Reddet) are visible on detail screen (inside iframe)
+    public async Task<(bool ApproveVisible, bool RejectVisible)> CheckApprovalActionButtonsAsync()
+    {
+        try
+        {
+            bool approveVisible = false;
+            bool rejectVisible = false;
+            
+            // Check all frames
+            var frames = Page.Frames;
+            Console.WriteLine($"DEBUG: Checking approval buttons in {frames.Count} frames");
+            
+            // First try main page
+            approveVisible = await ApproveButton.IsVisibleAsync();
+            rejectVisible = await RejectButton.IsVisibleAsync();
+            
+            Console.WriteLine($"DEBUG: Main page - Onayla: {approveVisible}, Reddet: {rejectVisible}");
+            
+            // If not found on main page, check frames
+            if (!approveVisible || !rejectVisible)
+            {
+                foreach (var frame in frames)
+                {
+                    var frameApproveBtn = frame.Locator("#BtnApprove, button:has-text('Onayla')");
+                    var frameRejectBtn = frame.Locator("#BtnReject, button:has-text('Reddet')");
+                    
+                    int approveCount = await frameApproveBtn.CountAsync();
+                    int rejectCount = await frameRejectBtn.CountAsync();
+                    
+                    Console.WriteLine($"DEBUG: Frame '{frame.Name}' - Onayla: {approveCount}, Reddet: {rejectCount}");
+                    
+                    if (approveCount > 0)
+                    {
+                        approveVisible = await frameApproveBtn.IsVisibleAsync();
+                        Console.WriteLine($"DEBUG:   Onayla visible in frame: {approveVisible}");
+                    }
+                    
+                    if (rejectCount > 0)
+                    {
+                        rejectVisible = await frameRejectBtn.IsVisibleAsync();
+                        Console.WriteLine($"DEBUG:   Reddet visible in frame: {rejectVisible}");
+                    }
+                    
+                    if (approveVisible && rejectVisible)
+                        break;
+                }
+            }
+            
+            Console.WriteLine($"DEBUG: Final result - Onayla: {approveVisible}, Reddet: {rejectVisible}");
+            
+            return (approveVisible, rejectVisible);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error checking approval action buttons: {ex.Message}");
+            return (false, false);
+        }
+    }
 }

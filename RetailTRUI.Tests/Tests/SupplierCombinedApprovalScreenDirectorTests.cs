@@ -56,9 +56,12 @@ public class SupplierCombinedApprovalScreenDirectorTests : DirectorTestBase
             await Task.Delay(2000);
             
             var (updateVisible, closeVisible) = await _approvalScreen.CheckDetailScreenButtonsAsync();
-            (updateVisible || closeVisible).Should().BeTrue("Director should see action buttons for director approval status");
+            var (approveVisible, rejectVisible) = await _approvalScreen.CheckApprovalActionButtonsAsync();
             
-            _output.WriteLine($"✅ PASSED: Director sees action buttons for director approval status");
+            (updateVisible || closeVisible).Should().BeTrue("Director should see save/close buttons on detail screen");
+            (approveVisible && rejectVisible).Should().BeTrue("Director should see Onayla (Approve) and Reddet (Reject) buttons for director approval");
+            
+            _output.WriteLine($"✅ PASSED: Director sees detail screen buttons and approval action buttons (Onayla, Reddet)");
         }
         else
         {
