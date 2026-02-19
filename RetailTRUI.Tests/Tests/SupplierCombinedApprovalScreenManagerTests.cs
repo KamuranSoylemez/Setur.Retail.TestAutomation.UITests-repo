@@ -391,6 +391,7 @@ public class SupplierCombinedApprovalScreenManagerTests : ManagerTestBase
         // Assert - Check button visibility (read-only view for director-level approvals)
         Console.WriteLine("\n🔍 Detecting visible buttons (iframe-aware)...");
         var (updateVisible, closeVisible) = await _approvalScreen.CheckDetailScreenButtonsAsync();
+        var (approveVisible, rejectVisible) = await _approvalScreen.CheckApprovalActionButtonsAsync();
         
         // Check Geri Çek (Withdraw) button - try main page first
         var withdrawBtn = Page.Locator("#ContractWithdraw");
@@ -419,13 +420,19 @@ public class SupplierCombinedApprovalScreenManagerTests : ManagerTestBase
         Console.WriteLine($"  • Güncelle (Update): {(updateVisible ? "✅ VISIBLE" : "❌ NOT VISIBLE")}");
         Console.WriteLine($"  • Kapat (Close): {(closeVisible ? "✅ VISIBLE" : "❌ NOT VISIBLE")}");
         Console.WriteLine($"  • Geri Çek (Withdraw): {(withdrawVisible ? "✅ VISIBLE" : "❌ NOT VISIBLE")}");
+        Console.WriteLine($"  • Onayla (Approve): {(approveVisible ? "❌ SHOULD NOT BE VISIBLE" : "✅ NOT VISIBLE")}");
+        Console.WriteLine($"  • Reddet (Reject): {(rejectVisible ? "❌ SHOULD NOT BE VISIBLE" : "✅ NOT VISIBLE")}");
 
-        // Manager can view director approval contracts but should see utility buttons
+        // Manager can view director approval contracts but should see utility buttons only
         updateVisible.Should().BeTrue("Manager should see Güncelle button for view access");
         closeVisible.Should().BeTrue("Manager should see Kapat button for view access");
         withdrawVisible.Should().BeTrue("Manager should see Geri Çek button");
+        
+        // Manager should NOT see approval action buttons for director-level approvals
+        approveVisible.Should().BeFalse("Onayla button must NOT be visible (director-level approval)");
+        rejectVisible.Should().BeFalse("Reddet button must NOT be visible (director-level approval)");
 
-        _output.WriteLine("✅ Test passed: Director approval view shows all utility buttons for manager");
+        _output.WriteLine("✅ Test passed: Director approval view shows only utility buttons (no action buttons) for manager");
         Console.WriteLine("\n=== TEST END ===\n");
     }
 
