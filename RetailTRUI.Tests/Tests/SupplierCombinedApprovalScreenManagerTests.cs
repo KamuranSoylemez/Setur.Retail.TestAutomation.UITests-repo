@@ -388,11 +388,44 @@ public class SupplierCombinedApprovalScreenManagerTests : ManagerTestBase
             return;
         }
 
-        // Assert - Verify the screen is opened (manager can view but not approve director-level items)
-        Console.WriteLine("\n✅ Detail screen opened for manager (read-only view)");
-        Console.WriteLine("📌 Manager role restriction: Cannot approve director-level decisions");
+        // Assert - Check button visibility (read-only view for director-level approvals)
+        Console.WriteLine("\n🔍 Detecting visible buttons (iframe-aware)...");
+        var (updateVisible, closeVisible) = await _approvalScreen.CheckDetailScreenButtonsAsync();
+        
+        // Check Geri Çek (Withdraw) button - try main page first
+        var withdrawBtn = Page.Locator("#ContractWithdraw");
+        bool withdrawVisible = await withdrawBtn.IsVisibleAsync();
+        
+        // If not found on main page, try in frames
+        if (!withdrawVisible)
+        {
+            var frames = Page.Frames;
+            foreach (var frame in frames)
+            {
+                var frameWithdrawBtn = frame.Locator("#ContractWithdraw");
+                try
+                {
+                    if (await frameWithdrawBtn.IsVisibleAsync())
+                    {
+                        withdrawVisible = true;
+                        break;
+                    }
+                }
+                catch { /* Continue searching */ }
+            }
+        }
 
-        _output.WriteLine("✅ Test passed: Director approval view is read-only for manager");
+        Console.WriteLine($"\n📌 Button Visibility for Director Approval Status (Manager role):");
+        Console.WriteLine($"  • Güncelle (Update): {(updateVisible ? "✅ VISIBLE" : "❌ NOT VISIBLE")}");
+        Console.WriteLine($"  • Kapat (Close): {(closeVisible ? "✅ VISIBLE" : "❌ NOT VISIBLE")}");
+        Console.WriteLine($"  • Geri Çek (Withdraw): {(withdrawVisible ? "✅ VISIBLE" : "❌ NOT VISIBLE")}");
+
+        // Manager can view director approval contracts but should see utility buttons
+        updateVisible.Should().BeTrue("Manager should see Güncelle button for view access");
+        closeVisible.Should().BeTrue("Manager should see Kapat button for view access");
+        withdrawVisible.Should().BeTrue("Manager should see Geri Çek button");
+
+        _output.WriteLine("✅ Test passed: Director approval view shows all utility buttons for manager");
         Console.WriteLine("\n=== TEST END ===\n");
     }
 
