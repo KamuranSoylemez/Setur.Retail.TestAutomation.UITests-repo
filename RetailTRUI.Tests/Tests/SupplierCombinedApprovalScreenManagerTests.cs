@@ -5,16 +5,16 @@ using Xunit.Abstractions;
 namespace RetailTRUI.Tests.Tests;
 
 /// <summary>
-/// Supplier Combined Approval Screen tests
+/// Supplier Combined Approval Screen tests for Manager role
 /// Tests unified approval workflows for different document types and roles
-/// Requires user with approval permissions (Manager or Director role)
+/// Requires user with approval permissions (Manager role)
 /// </summary>
-public class SupplierCombinedApprovalScreenTests : ManagerTestBase
+public class SupplierCombinedApprovalScreenManagerTests : ManagerTestBase
 {
     private readonly ITestOutputHelper _output;
     private SupplierCombinedApprovalScreen? _approvalScreen;
 
-    public SupplierCombinedApprovalScreenTests(ITestOutputHelper output)
+    public SupplierCombinedApprovalScreenManagerTests(ITestOutputHelper output)
     {
         _output = output;
     }
