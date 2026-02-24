@@ -1,0 +1,22 @@
+@modernize
+We are migrating a Java test automation project written in IntelliJ IDEA
+to .NET 8 using C#.
+
+The existing project uses Cucumber (BDD), but we want to completely remove
+BDD concepts (feature files, step definitions, Given/When/Then).
+
+Please:
+- Propose a modern .NET 8 test automation architecture
+- Use xUnit (preferred) or NUnit
+- Convert Cucumber-based tests into clean, code-first test classes
+- Avoid BDD terminology
+- Follow SOLID and clean test design principles
+- Assume long-term maintainability is a priority
+- Keep page object model
+
+
+Additional Notes; All tests should use the same login method with normal user,
+Except these two feature's tests ; contractConfirmationByDirector.feature and contractConfirmationByManager.feature
+tests created from contractConfirmationByDirector.feature will use "RETAIL_DIRECTOR"
+tests created from contractConfirmationByManager.feature will use "RETAIL_MANAGEER" 
+passwords are in env/staging.users.yml
