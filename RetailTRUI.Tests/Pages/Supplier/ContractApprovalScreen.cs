@@ -4,11 +4,11 @@ using RetailTRUI.Tests.Pages.Common;
 namespace RetailTRUI.Tests.Pages.Supplier;
 
 /// <summary>
-/// Supplier Combined Approval Screen page object
+/// Contract Approval Screen page object
 /// Handles approval operations for various supplier-related documents
 /// Consolidated approval workflow for different roles
 /// </summary>
-public class SupplierCombinedApprovalScreen : BasePage
+public class ContractApprovalScreen : BasePage
 {
     // Page locators
     private ILocator PageTitle => Page.Locator("#PageTitle");

@@ -1,6 +1,6 @@
 using RetailTRUI.Tests.Infrastructure;
 using RetailTRUI.Tests.Pages.Common;
-using RetailTRUI.Tests.Pages.Purchasing;
+using RetailTRUI.Tests.Pages.Supplier;
 
 namespace RetailTRUI.Tests.Tests;
 
@@ -15,26 +15,114 @@ public class RebateInvoiceCreateTests : TestBase
         
         _receivablePoolPage = new ReceivablePoolSearchPage();
         
+        // Verify we're authenticated and on dashboard
+        Console.WriteLine($"[RebateInvoiceCreateTests] Current URL after login: {Page.Url}");
+        
+        // Wait for page to be fully ready
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(1000); // Give page time to settle
+        
         // Navigate directly to receivable pool search page
         var config = ConfigurationManager.Instance;
         var receivablePoolUrl = config.BaseUrl.TrimEnd('/') + "/ApplicationManagement/ContractReceivableInvoice/Index";
         
-        try
+        Console.WriteLine($"[RebateInvoiceCreateTests] Navigating to: {receivablePoolUrl}");
+        
+        int retryCount = 0;
+        const int maxRetries = 3;
+        
+        while (retryCount < maxRetries)
         {
-            await Page.GotoAsync(receivablePoolUrl, new PageGotoOptions 
-            { 
-                WaitUntil = WaitUntilState.DOMContentLoaded,
-                Timeout = 30000
-            });
-        }
-        catch (PlaywrightException ex) when (ex.Message.Contains("ERR_ABORTED") || ex.Message.Contains("interrupted"))
-        {
-            await Task.Delay(2000);
-            if (!Page.Url.Contains("ContractReceivableInvoice/Index"))
+            try
             {
-                await Page.GotoAsync(receivablePoolUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
+                Console.WriteLine($"[RebateInvoiceCreateTests] Navigation attempt {retryCount + 1}/{maxRetries}");
+                
+                await Page.GotoAsync(receivablePoolUrl, new PageGotoOptions 
+                { 
+                    WaitUntil = WaitUntilState.NetworkIdle,
+                    Timeout = 30000
+                });
+                
+                Console.WriteLine($"[RebateInvoiceCreateTests] Navigation completed. Current URL: {Page.Url}");
+                
+                // Verify page is still active
+                if (Page.IsClosed)
+                {
+                    throw new Exception("Page closed after navigation");
+                }
+                
+                // Wait for page load to complete
+                await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+                
+                // Check if we got redirected to login (session might have expired)
+                if (Page.Url.Contains("/Login/Index"))
+                {
+                    Console.WriteLine($"[RebateInvoiceCreateTests] Redirected to login. Session might have expired.");
+                    retryCount++;
+                    
+                    if (retryCount < maxRetries)
+                    {
+                        Console.WriteLine($"[RebateInvoiceCreateTests] Re-authenticating...");
+                        await AuthenticateAndWaitAsync();
+                        await Task.Delay(2000);
+                        continue;
+                    }
+                    else
+                    {
+                        throw new Exception($"Failed to navigate to ContractReceivableInvoice page - redirected to login after {maxRetries} attempts");
+                    }
+                }
+                
+                break;
+            }
+            catch (PlaywrightException ex) when (ex.Message.Contains("ERR_ABORTED") || ex.Message.Contains("interrupted"))
+            {
+                Console.WriteLine($"[RebateInvoiceCreateTests] Navigation interrupted (attempt {retryCount + 1}): {ex.Message}");
+                retryCount++;
+                
+                if (retryCount < maxRetries)
+                {
+                    await Task.Delay(2000);
+                    continue;
+                }
+                else
+                {
+                    throw new Exception($"Navigation failed after {maxRetries} attempts", ex);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[RebateInvoiceCreateTests] Navigation error (attempt {retryCount + 1}): {ex.GetType().Name} - {ex.Message}");
+                retryCount++;
+                
+                if (retryCount < maxRetries)
+                {
+                    await Task.Delay(2000);
+                    continue;
+                }
+                else
+                {
+                    throw new Exception($"Navigation failed after {maxRetries} attempts with error: {ex.Message}", ex);
+                }
             }
         }
+        
+        if (!Page.Url.Contains("ContractReceivableInvoice/Index"))
+        {
+            throw new Exception($"Navigation to ContractReceivableInvoice page failed. Current URL: {Page.Url}");
+        }
+    }
+    
+    private async Task AuthenticateAndWaitAsync()
+    {
+        var loginPage = new LoginPage();
+        await loginPage.NavigateToLoginPageAsync();
+        await loginPage.LoginAsAsync("normal");
+        await loginPage.VerifyLoginSuccessAsync();
+        
+        // Wait for dashboard to load
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000);
     }
 
     [Fact]

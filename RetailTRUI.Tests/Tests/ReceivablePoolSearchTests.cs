@@ -1,6 +1,6 @@
 using RetailTRUI.Tests.Infrastructure;
 using RetailTRUI.Tests.Pages.Common;
-using RetailTRUI.Tests.Pages.Purchasing;
+using RetailTRUI.Tests.Pages.Supplier;
 using Xunit;
 
 namespace RetailTRUI.Tests.Tests;
@@ -20,26 +20,114 @@ public class ReceivablePoolSearchTests : TestBase
         _loginPage = new LoginPage();
         _globalPage = new GlobalPage();
         
+        // Verify we're authenticated and on dashboard
+        Console.WriteLine($"[ReceivablePoolSearchTests] Current URL after login: {Page.Url}");
+        
+        // Wait for page to be fully ready
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(1000); // Give page time to settle
+        
         // Navigate directly to receivable pool search page
         var config = ConfigurationManager.Instance;
         var receivablePoolUrl = config.BaseUrl.TrimEnd('/') + "/ApplicationManagement/ContractReceivableInvoice/Index";
         
-        try
+        Console.WriteLine($"[ReceivablePoolSearchTests] Navigating to: {receivablePoolUrl}");
+        
+        int retryCount = 0;
+        const int maxRetries = 3;
+        
+        while (retryCount < maxRetries)
         {
-            await Page.GotoAsync(receivablePoolUrl, new PageGotoOptions 
-            { 
-                WaitUntil = WaitUntilState.DOMContentLoaded,
-                Timeout = 30000
-            });
-        }
-        catch (PlaywrightException ex) when (ex.Message.Contains("ERR_ABORTED") || ex.Message.Contains("interrupted"))
-        {
-            await Task.Delay(2000);
-            if (!Page.Url.Contains("ContractReceivableInvoice/Index"))
+            try
             {
-                await Page.GotoAsync(receivablePoolUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
+                Console.WriteLine($"[ReceivablePoolSearchTests] Navigation attempt {retryCount + 1}/{maxRetries}");
+                
+                await Page.GotoAsync(receivablePoolUrl, new PageGotoOptions 
+                { 
+                    WaitUntil = WaitUntilState.NetworkIdle,
+                    Timeout = 30000
+                });
+                
+                Console.WriteLine($"[ReceivablePoolSearchTests] Navigation completed. Current URL: {Page.Url}");
+                
+                // Verify page is still active
+                if (Page.IsClosed)
+                {
+                    throw new Exception("Page closed after navigation");
+                }
+                
+                // Wait for page load to complete
+                await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+                
+                // Check if we got redirected to login (session might have expired)
+                if (Page.Url.Contains("/Login/Index"))
+                {
+                    Console.WriteLine($"[ReceivablePoolSearchTests] Redirected to login. Session might have expired.");
+                    retryCount++;
+                    
+                    if (retryCount < maxRetries)
+                    {
+                        Console.WriteLine($"[ReceivablePoolSearchTests] Re-authenticating...");
+                        await AuthenticateAndWaitAsync();
+                        await Task.Delay(2000);
+                        continue;
+                    }
+                    else
+                    {
+                        throw new Exception($"Failed to navigate to ContractReceivableInvoice page - redirected to login after {maxRetries} attempts");
+                    }
+                }
+                
+                break;
+            }
+            catch (PlaywrightException ex) when (ex.Message.Contains("ERR_ABORTED") || ex.Message.Contains("interrupted"))
+            {
+                Console.WriteLine($"[ReceivablePoolSearchTests] Navigation interrupted (attempt {retryCount + 1}): {ex.Message}");
+                retryCount++;
+                
+                if (retryCount < maxRetries)
+                {
+                    await Task.Delay(2000);
+                    continue;
+                }
+                else
+                {
+                    throw new Exception($"Navigation failed after {maxRetries} attempts", ex);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ReceivablePoolSearchTests] Navigation error (attempt {retryCount + 1}): {ex.GetType().Name} - {ex.Message}");
+                retryCount++;
+                
+                if (retryCount < maxRetries)
+                {
+                    await Task.Delay(2000);
+                    continue;
+                }
+                else
+                {
+                    throw new Exception($"Navigation failed after {maxRetries} attempts with error: {ex.Message}", ex);
+                }
             }
         }
+        
+        if (!Page.Url.Contains("ContractReceivableInvoice/Index"))
+        {
+            throw new Exception($"Navigation to ContractReceivableInvoice page failed. Current URL: {Page.Url}");
+        }
+    }
+    
+    private async Task AuthenticateAndWaitAsync()
+    {
+        var loginPage = new LoginPage();
+        await loginPage.NavigateToLoginPageAsync();
+        await loginPage.LoginAsAsync("normal");
+        await loginPage.VerifyLoginSuccessAsync();
+        
+        // Wait for dashboard to load
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000);
     }
 
     [Fact]
@@ -108,12 +196,11 @@ public class ReceivablePoolSearchTests : TestBase
         
         // When: User applies multiple filters
         await _receivablePoolSearchPage.SelectCompanyAsync("BACARDI");
-        await _receivablePoolSearchPage.SelectConditionTypeAsync("Rebate Purchase Bonus");
-        await _receivablePoolSearchPage.SelectCalculationTypeAsync("Alım Adeti");
-        await _receivablePoolSearchPage.SelectCategoryAsync("Tütün Ürünleri");
+        await _receivablePoolSearchPage.FillRebateDateAsync("31.05.2024");
+        await _receivablePoolSearchPage.SelectCategoryAsync("İçki");
         await _receivablePoolSearchPage.SelectCurrencyAsync("EUR");
         await _receivablePoolSearchPage.SelectCalculationPeriodAsync("Aylık");
-        await _receivablePoolSearchPage.SelectStatusAsync("Fatura Oluşturuldu");
+        await _receivablePoolSearchPage.SelectStatusAsync("Hazırlanıyor");
         
         // And: User clicks search button
         await _receivablePoolSearchPage.ClickSearchButtonAsync();
@@ -142,19 +229,19 @@ public class ReceivablePoolSearchTests : TestBase
     }
 
     [Fact]
-    public async Task TEST5_ConditionTypeFilterAndSortAllColumns()
+    public async Task TEST5_CategoryFilterAndSortAllColumns()
     {
         Driver.SetPage(Page);
         
-        // When: User selects condition type
-        await _receivablePoolSearchPage.SelectConditionTypeAsync("Rebate Purchase Bonus");
+        // When: User selects category
+        await _receivablePoolSearchPage.SelectCategoryAsync("Tütün Ürünleri");
         
         // And: User clicks search button
         await _receivablePoolSearchPage.ClickSearchButtonAsync();
         
         // Then: Grid should have results
         bool hasResults = await _receivablePoolSearchPage.VerifyGridHasResultsAsync();
-        Assert.True(hasResults, "Grid should have results for Rebate Purchase Bonus");
+        Assert.True(hasResults, "Grid should have results for Tütün Ürünleri category");
         
         // And: All columns should be sortable
         bool allColumnsSortable = await _receivablePoolSearchPage.VerifyAllColumnsAreSortableAsync();

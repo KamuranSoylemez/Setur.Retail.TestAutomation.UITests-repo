@@ -1,7 +1,7 @@
 using Microsoft.Playwright;
 using RetailTRUI.Tests.Pages.Common;
 
-namespace RetailTRUI.Tests.Pages.Purchasing;
+namespace RetailTRUI.Tests.Pages.Supplier;
 
 public class RebateInvoicePoolSearchPage : BasePage
 {

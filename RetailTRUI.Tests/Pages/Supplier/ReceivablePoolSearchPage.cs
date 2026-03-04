@@ -1,7 +1,7 @@
 using Microsoft.Playwright;
 using RetailTRUI.Tests.Pages.Common;
 
-namespace RetailTRUI.Tests.Pages.Purchasing;
+namespace RetailTRUI.Tests.Pages.Supplier;
 
 public class ReceivablePoolSearchPage : BasePage
 {
@@ -9,12 +9,12 @@ public class ReceivablePoolSearchPage : BasePage
     private ILocator SearchButton => Page.Locator("#FilterButtonId");
     private ILocator CreateRebateInvoiceButton => Page.Locator("#checkboxReceivableInvoice");
     private ILocator CompanyMultiSelect => Page.Locator("#FilterFirmId");
-    private ILocator RebateDateInput => Page.Locator("#FilterContractRebateDate");
+    private ILocator RebateDateInput => Page.Locator("#FilterContractConditionDate");
     private ILocator ConditionTypeDropdown => Page.Locator("#FilterContractRebateTypeId");
     private ILocator CalculationTypeDropdown => Page.Locator("#FilterContractRebateCalculateTypeId");
     private ILocator StatusDropdown => Page.Locator("#FilterContractReceivableInvoiceStatusId");
-    private ILocator CurrencyDropdown => Page.Locator("#FilterCurrencyCode");
-    private ILocator CalculationPeriodDropdown => Page.Locator("#FilterContractRebatePeriodTypeId");
+    private ILocator CurrencyDropdown => Page.Locator("#FilterInvoiceCurrencyCode");
+    private ILocator CalculationPeriodDropdown => Page.Locator("#FilterContractConditionPeriodTypeId");
     private ILocator ContractNameInput => Page.Locator("#FilterContractName");
     private ILocator CategoryDropdown => Page.Locator("#FilterCategoryIds");
     private ILocator DescriptionInput => Page.Locator("#FilterDescription, input[name='FilterDescription'], textarea[name='FilterDescription']");
@@ -301,25 +301,36 @@ public class ReceivablePoolSearchPage : BasePage
     /// </summary>
     public async Task ClickHistoryIconOnFirstRowAsync()
     {
-        var firstRow = GridRows.Nth(0);
-        await firstRow.HoverAsync();
-        await Page.WaitForTimeoutAsync(500);
+        // First, click the dropdown menu button (gear icon)
+        var dropdownMenuButton = Page.Locator(".btn-group-vertical.display-inline-table.k-button.gridCmdBtn.k-info");
         
-        // History icon selector - moon/calendar icon
-        var historyIcon = firstRow.Locator(
-            ".gridCmdBtn.cmdLink.ContractReceivableInvoiceGridIdCmd, " +
-            "a.ContractReceivableInvoiceGridIdCmd, " +
-            "#ContractReceivableInvoiceStatusHistoryButton, " +
-            "a[title*='Tarihçe'], " +
-            "a[title*='History'], " +
-            ".gridCmdBtn:has-text('📅'), " +
-            ".gridCmdBtn:has-text('🕐')"
-        );
-        
-        if (await historyIcon.CountAsync() > 0)
+        if (await dropdownMenuButton.CountAsync() > 0)
         {
-            await historyIcon.First.EvaluateAsync("element => element.click()");
+            Console.WriteLine("[TEST6] Found dropdown menu button, clicking it");
+            await dropdownMenuButton.First.ClickAsync();
+            await Page.WaitForTimeoutAsync(1000);
+        }
+        
+        // Then click the history button
+        var historyButton = Page.Locator("#ContractReceivableInvoiceStatusHistoryButton");
+        
+        if (await historyButton.CountAsync() > 0)
+        {
+            Console.WriteLine("[TEST6] Found history button, clicking it");
+            await historyButton.First.ClickAsync();
             await Page.WaitForTimeoutAsync(2000);
+        }
+        else
+        {
+            Console.WriteLine("[TEST6] History button not found by ID");
+            // Fallback: Try finding it by class
+            var fallbackButton = Page.Locator(".gridCmdBtn.cmdLink.ContractReceivableInvoiceGridIdCmd");
+            if (await fallbackButton.CountAsync() > 0)
+            {
+                Console.WriteLine("[TEST6] Found history button by class, clicking it");
+                await fallbackButton.First.ClickAsync();
+                await Page.WaitForTimeoutAsync(2000);
+            }
         }
     }
     
@@ -446,14 +457,47 @@ public class ReceivablePoolSearchPage : BasePage
     /// </summary>
     public async Task<bool> VerifyWarningMessageDisplayedAsync(string expectedMessage)
     {
-        await Page.WaitForTimeoutAsync(1000);
+        await Page.WaitForTimeoutAsync(1500);
         
-        if (await WarningMessage.CountAsync() > 0)
+        Console.WriteLine($"[TEST10] Looking for warning message: '{expectedMessage}'");
+        
+        // Check all possible warning message selectors
+        var warningSelectors = new[]
         {
-            string? actualMessage = await WarningMessage.First.TextContentAsync();
-            return actualMessage != null && actualMessage.Contains(expectedMessage);
+            ".alert-warning, .alert-danger",
+            "div[role='alert']",
+            ".k-notification-warning, .k-notification-error",
+            ".toast-warning, .toast-error",
+            ".notification",
+            "div:has-text('Lütfen')",
+            "span:has-text('Lütfen')",
+            "div[class*='warning']",
+            "div[class*='alert']",
+            "div[class*='notification']"
+        };
+        
+        foreach (var selector in warningSelectors)
+        {
+            var elements = Page.Locator(selector);
+            int count = await elements.CountAsync();
+            
+            if (count > 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    string? text = await elements.Nth(i).TextContentAsync();
+                    Console.WriteLine($"[TEST10] Found element with selector '{selector}': '{text}'");
+                    
+                    if (text != null && text.Contains(expectedMessage))
+                    {
+                        Console.WriteLine($"[TEST10] Warning message matched!");
+                        return true;
+                    }
+                }
+            }
         }
         
+        Console.WriteLine($"[TEST10] Warning message not found with standard selectors");
         return false;
     }
     
@@ -845,22 +889,54 @@ public class ReceivablePoolSearchPage : BasePage
     /// </summary>
     private async Task SelectFromKendoDropdownAsync(ILocator dropdown, string value)
     {
-        var kendoWrapper = Page.Locator("span.k-dropdown").Filter(new LocatorFilterOptions { Has = dropdown });
+        // Get the dropdown input element ID
+        var inputId = await dropdown.GetAttributeAsync("id");
         
-        int wrapperCount = await kendoWrapper.CountAsync();
-        
-        if (wrapperCount > 0)
+        if (string.IsNullOrEmpty(inputId))
         {
-            await kendoWrapper.First.ClickAsync();
+            return;
+        }
+        
+        try
+        {
+            // Click on the dropdown wrapper to open it
+            var dropdownWrapper = Page.Locator($"#{inputId}").Locator("xpath=ancestor::span[contains(@class, 'k-dropdown')]").First;
+            await dropdownWrapper.ClickAsync();
             await Page.WaitForTimeoutAsync(500);
             
-            var option = Page.Locator("ul.k-list li.k-item").Filter(new LocatorFilterOptions { HasText = value });
+            // Find and click the option with matching text
+            var listId = $"{inputId}_listbox";
+            var optionLocator = Page.Locator($"#{listId} li.k-item").Filter(new LocatorFilterOptions { HasText = value });
             
-            if (await option.CountAsync() > 0)
+            if (await optionLocator.CountAsync() > 0)
             {
-                await option.First.ClickAsync();
-                await Page.WaitForTimeoutAsync(300);
+                await optionLocator.First.ClickAsync();
+                await Page.WaitForTimeoutAsync(500);
             }
+            else
+            {
+                // If text match fails, log and try JavaScript approach
+                Console.WriteLine($"[SelectFromKendoDropdownAsync] Option '{value}' not found in listbox");
+                
+                // Fallback: use JavaScript to set the value
+                await Page.EvaluateAsync($@"
+                    var widget = kendo.jQuery('#{inputId}').data('kendoDropDownList');
+                    if (widget) {{
+                        var dataSource = widget.dataSource.data();
+                        var item = dataSource.find(function(x) {{ return x.text === '{value}' || x.value === '{value}'; }});
+                        if (item) {{
+                            widget.value(item.value);
+                            widget.trigger('change');
+                        }}
+                    }}
+                ");
+                
+                await Page.WaitForTimeoutAsync(500);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[SelectFromKendoDropdownAsync] Error selecting '{value}' from dropdown {inputId}: {ex.Message}");
         }
     }
 }

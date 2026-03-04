@@ -5,17 +5,17 @@ using Xunit.Abstractions;
 namespace RetailTRUI.Tests.Tests;
 
 /// <summary>
-/// Supplier Combined Approval Screen tests for Director role
+/// Contract Approval Screen tests for Director role
 /// Tests unified approval workflows specific to Director responsibilities
 /// Mirrors ContractConfirmationDirectorTests patterns for semantic naming
 /// Requires user with Director approval permissions
 /// </summary>
-public class SupplierCombinedApprovalScreenDirectorTests : DirectorTestBase
+public class ContractApprovalScreenDirectorTests : DirectorTestBase
 {
     private readonly ITestOutputHelper _output;
-    private SupplierCombinedApprovalScreen? _approvalScreen;
+    private ContractApprovalScreen? _approvalScreen;
 
-    public SupplierCombinedApprovalScreenDirectorTests(ITestOutputHelper output)
+    public ContractApprovalScreenDirectorTests(ITestOutputHelper output)
     {
         _output = output;
     }
@@ -23,7 +23,7 @@ public class SupplierCombinedApprovalScreenDirectorTests : DirectorTestBase
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        _approvalScreen = new SupplierCombinedApprovalScreen();
+        _approvalScreen = new ContractApprovalScreen();
     }
 
     // ========== DIRECTOR ROLE - APPROVAL STATUS TESTS ==========

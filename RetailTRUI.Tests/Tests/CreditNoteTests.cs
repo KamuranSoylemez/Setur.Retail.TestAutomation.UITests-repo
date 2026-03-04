@@ -18,26 +18,114 @@ public class CreditNoteTests : TestBase
         _globalPage = new GlobalPage();
         _creditNotePage = new CreditNotePage();
         
+        // Verify we're authenticated and on dashboard
+        Console.WriteLine($"[CreditNoteTests] Current URL after login: {Page.Url}");
+        
+        // Wait for page to be fully ready
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(1000); // Give page time to settle
+        
         // Navigate to credit note page directly via URL
         var config = ConfigurationManager.Instance;
         var creditNoteUrl = config.BaseUrl.TrimEnd('/') + "/ApplicationManagement/CreditNote/Index";
         
-        try
+        Console.WriteLine($"[CreditNoteTests] Navigating to: {creditNoteUrl}");
+        
+        int retryCount = 0;
+        const int maxRetries = 3;
+        
+        while (retryCount < maxRetries)
         {
-            await Page.GotoAsync(creditNoteUrl, new PageGotoOptions 
-            { 
-                WaitUntil = WaitUntilState.DOMContentLoaded,
-                Timeout = 30000
-            });
-        }
-        catch (PlaywrightException ex) when (ex.Message.Contains("ERR_ABORTED") || ex.Message.Contains("interrupted"))
-        {
-            await Task.Delay(2000);
-            if (!Page.Url.Contains("CreditNote/Index"))
+            try
             {
-                await Page.GotoAsync(creditNoteUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
+                Console.WriteLine($"[CreditNoteTests] Navigation attempt {retryCount + 1}/{maxRetries}");
+                
+                await Page.GotoAsync(creditNoteUrl, new PageGotoOptions 
+                { 
+                    WaitUntil = WaitUntilState.NetworkIdle,
+                    Timeout = 30000
+                });
+                
+                Console.WriteLine($"[CreditNoteTests] Navigation completed. Current URL: {Page.Url}");
+                
+                // Verify page is still active
+                if (Page.IsClosed)
+                {
+                    throw new Exception("Page closed after navigation");
+                }
+                
+                // Wait for page load to complete
+                await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+                
+                // Check if we got redirected to login (session might have expired)
+                if (Page.Url.Contains("/Login/Index"))
+                {
+                    Console.WriteLine($"[CreditNoteTests] Redirected to login. Session might have expired.");
+                    retryCount++;
+                    
+                    if (retryCount < maxRetries)
+                    {
+                        Console.WriteLine($"[CreditNoteTests] Re-authenticating...");
+                        await AuthenticateAndWaitAsync();
+                        await Task.Delay(2000);
+                        continue;
+                    }
+                    else
+                    {
+                        throw new Exception($"Failed to navigate to CreditNote page - redirected to login after {maxRetries} attempts");
+                    }
+                }
+                
+                break;
+            }
+            catch (PlaywrightException ex) when (ex.Message.Contains("ERR_ABORTED") || ex.Message.Contains("interrupted"))
+            {
+                Console.WriteLine($"[CreditNoteTests] Navigation interrupted (attempt {retryCount + 1}): {ex.Message}");
+                retryCount++;
+                
+                if (retryCount < maxRetries)
+                {
+                    await Task.Delay(2000);
+                    continue;
+                }
+                else
+                {
+                    throw new Exception($"Navigation failed after {maxRetries} attempts", ex);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[CreditNoteTests] Navigation error (attempt {retryCount + 1}): {ex.GetType().Name} - {ex.Message}");
+                retryCount++;
+                
+                if (retryCount < maxRetries)
+                {
+                    await Task.Delay(2000);
+                    continue;
+                }
+                else
+                {
+                    throw new Exception($"Navigation failed after {maxRetries} attempts with error: {ex.Message}", ex);
+                }
             }
         }
+        
+        if (!Page.Url.Contains("CreditNote/Index"))
+        {
+            throw new Exception($"Navigation to CreditNote page failed. Current URL: {Page.Url}");
+        }
+    }
+    
+    private async Task AuthenticateAndWaitAsync()
+    {
+        var loginPage = new LoginPage();
+        await loginPage.NavigateToLoginPageAsync();
+        await loginPage.LoginAsAsync("normal");
+        await loginPage.VerifyLoginSuccessAsync();
+        
+        // Wait for dashboard to load
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(2000);
     }
 
     [Fact]

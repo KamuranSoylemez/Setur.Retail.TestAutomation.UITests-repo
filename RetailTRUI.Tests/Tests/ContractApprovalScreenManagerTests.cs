@@ -5,16 +5,16 @@ using Xunit.Abstractions;
 namespace RetailTRUI.Tests.Tests;
 
 /// <summary>
-/// Supplier Combined Approval Screen tests for Manager role
+/// Contract Approval Screen tests for Manager role
 /// Tests unified approval workflows for different document types and roles
 /// Requires user with approval permissions (Manager role)
 /// </summary>
-public class SupplierCombinedApprovalScreenManagerTests : ManagerTestBase
+public class ContractApprovalScreenManagerTests : ManagerTestBase
 {
     private readonly ITestOutputHelper _output;
-    private SupplierCombinedApprovalScreen? _approvalScreen;
+    private ContractApprovalScreen? _approvalScreen;
 
-    public SupplierCombinedApprovalScreenManagerTests(ITestOutputHelper output)
+    public ContractApprovalScreenManagerTests(ITestOutputHelper output)
     {
         _output = output;
     }
@@ -22,7 +22,7 @@ public class SupplierCombinedApprovalScreenManagerTests : ManagerTestBase
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        _approvalScreen = new SupplierCombinedApprovalScreen();
+        _approvalScreen = new ContractApprovalScreen();
     }
 
     // ========== MANAGER APPROVAL OPERATIONS TESTS ==========
