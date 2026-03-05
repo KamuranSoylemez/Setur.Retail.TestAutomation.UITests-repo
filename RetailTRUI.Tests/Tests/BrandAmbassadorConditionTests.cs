@@ -1,4 +1,5 @@
 using RetailTRUI.Tests.Infrastructure;
+using RetailTRUI.Tests.Pages.Common;
 using RetailTRUI.Tests.Pages.Supplier;
 
 namespace RetailTRUI.Tests.Tests;
@@ -18,25 +19,91 @@ public class BrandAmbassadorConditionTests : TestBase
         _contractDefPage = new ContractDefinitionPage();
         _brandAmbassadorPage = new BrandAmbassadorConditionPage();
         
-        // Navigate to contract definition page
+        Driver.SetPage(Page);
+        
+        // Verify we're authenticated and on dashboard
+        Console.WriteLine($"[BrandAmbassadorConditionTests] Current URL after login: {Page.Url}");
+        
+        // Wait for page to be fully ready
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Task.Delay(1000); // Give page time to settle
+        
+        // Navigate directly to contract definition page
         var config = ConfigurationManager.Instance;
         var contractDefUrl = config.BaseUrl.TrimEnd('/') + "/ApplicationManagement/Contract/Index";
         
+        Console.WriteLine($"[BrandAmbassadorConditionTests] Navigating to: {contractDefUrl}");
+        
+        int retryCount = 0;
+        const int maxRetries = 3;
+        
+        while (retryCount < maxRetries)
+        {
+            try
+            {
+                Console.WriteLine($"[BrandAmbassadorConditionTests] Navigation attempt {retryCount + 1}/{maxRetries}");
+                
+                await Page.GotoAsync(contractDefUrl, new PageGotoOptions 
+                { 
+                    WaitUntil = WaitUntilState.NetworkIdle,
+                    Timeout = 30000
+                });
+                
+                // Check if we were redirected to login (session expired)
+                if (Page.Url.Contains("/Login/Index") || Page.Url.Contains("/Account/Login"))
+                {
+                    Console.WriteLine("[BrandAmbassadorConditionTests] Session expired, re-authenticating...");
+                    await AuthenticateAndWaitAsync();
+                    continue; // Retry navigation
+                }
+                
+                Console.WriteLine($"[BrandAmbassadorConditionTests] Navigation successful, URL: {Page.Url}");
+                await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+                break; // Success, exit loop
+            }
+            catch (PlaywrightException ex) when (ex.Message.Contains("Target page, context or browser has been closed") || 
+                                                 ex.Message.Contains("ERR_ABORTED") || 
+                                                 ex.Message.Contains("interrupted"))
+            {
+                retryCount++;
+                Console.WriteLine($"[BrandAmbassadorConditionTests] Navigation failed (attempt {retryCount}): {ex.Message}");
+                
+                if (retryCount >= maxRetries)
+                {
+                    throw; // Throw if max retries exceeded
+                }
+                
+                await Task.Delay(2000); // Wait before retrying
+                
+                // Try to re-authenticate
+                try
+                {
+                    await AuthenticateAndWaitAsync();
+                }
+                catch (Exception authEx)
+                {
+                    Console.WriteLine($"[BrandAmbassadorConditionTests] Re-authentication failed: {authEx.Message}");
+                }
+            }
+        }
+    }
+    
+    private async Task AuthenticateAndWaitAsync()
+    {
         try
         {
-            await Page.GotoAsync(contractDefUrl, new PageGotoOptions 
-            { 
-                WaitUntil = WaitUntilState.DOMContentLoaded,
-                Timeout = 30000
-            });
+            Console.WriteLine("[BrandAmbassadorConditionTests] AuthenticateAndWait: Starting authentication");
+            var loginPage = new LoginPage();
+            await loginPage.NavigateToLoginPageAsync();
+            await loginPage.LoginAsAsync("normal");
+            await loginPage.VerifyLoginSuccessAsync();
+            await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            Console.WriteLine("[BrandAmbassadorConditionTests] AuthenticateAndWait: Authentication successful");
         }
-        catch (PlaywrightException ex) when (ex.Message.Contains("ERR_ABORTED") || ex.Message.Contains("interrupted"))
+        catch (Exception ex)
         {
-            await Task.Delay(2000);
-            if (!Page.Url.Contains("Contract/Index"))
-            {
-                await Page.GotoAsync(contractDefUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
-            }
+            Console.WriteLine($"[BrandAmbassadorConditionTests] AuthenticateAndWait: Error: {ex.Message}");
+            throw;
         }
     }
 
@@ -457,5 +524,103 @@ public class BrandAmbassadorConditionTests : TestBase
         await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
         
         Console.WriteLine("✅ TEST9: All field validations passed for Commission + Hesaplamasız");
+    }
+
+    [Fact]
+    public async Task TEST10_PromotionRentalFee_WithoutCalculation_ShouldShowCorrectFieldValidation()
+    {
+        // Ensure Page is available in this async context
+        Driver.SetPage(Page);
+        
+        // Arrange - Navigate to contract and open brand ambassador form
+        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.ClickBrandAmbassadorTabAsync();
+        await _contractDefPage.ClickNewBrandAmbassadorButtonAsync();
+        
+        // Verify form is displayed
+        await _brandAmbassadorPage.VerifyFormIsDisplayedAsync();
+        
+        // Act - Select condition type: Promotion Rental Fee, Calculation type: Hesaplamasız
+        await _brandAmbassadorPage.SelectConditionTypeAsync("Promotion Rental Fee");
+        await _brandAmbassadorPage.SelectCalculationTypeAsync("Hesaplamasız");
+        
+        // Assert - Verify mandatory fields
+        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
+        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Para Birimi");
+        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
+        
+        // Assert - Verify disabled fields
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli mi?");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+        
+        // Assert - Verify optional fields
+        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
+        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+        
+        // Assert - Verify hidden fields
+        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
+        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
+        
+        Console.WriteLine("✅ TEST10: All field validations passed for Promotion Rental Fee + Hesaplamasız");
+    }
+
+    [Fact]
+    public async Task TEST11_PromotionMarketingActivity_WithoutCalculation_ShouldShowCorrectFieldValidation()
+    {
+        // Ensure Page is available in this async context
+        Driver.SetPage(Page);
+        
+        // Arrange - Navigate to contract and open brand ambassador form
+        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.ClickBrandAmbassadorTabAsync();
+        await _contractDefPage.ClickNewBrandAmbassadorButtonAsync();
+        
+        // Verify form is displayed
+        await _brandAmbassadorPage.VerifyFormIsDisplayedAsync();
+        
+        // Act - Select condition type: Promotion Marketing Activity, Calculation type: Hesaplamasız
+        await _brandAmbassadorPage.SelectConditionTypeAsync("Promotion Marketing Activity");
+        await _brandAmbassadorPage.SelectCalculationTypeAsync("Hesaplamasız");
+        
+        // Assert - Verify mandatory fields
+        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
+        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Para Birimi");
+        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
+        
+        // Assert - Verify disabled fields
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli mi?");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
+        
+        // Assert - Verify optional fields
+        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
+        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+        
+        // Assert - Verify hidden fields
+        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
+        
+        Console.WriteLine("✅ TEST11: All field validations passed for Promotion Marketing Activity + Hesaplamasız");
     }
 }
