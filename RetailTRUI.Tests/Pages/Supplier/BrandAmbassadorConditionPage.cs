@@ -273,10 +273,10 @@ public class BrandAmbassadorConditionPage : BasePage
             return "disabled";
         }
         
-        // Check for disabled attribute
+        // Check for disabled attribute (handles disabled, disabled="", disabled="disabled", etc.)
         var disabledAttr = await field.GetAttributeAsync("disabled");
-        var isDisabled = disabledAttr != null || await field.IsDisabledAsync();
-        if (isDisabled)
+        // In HTML, any presence of disabled attribute (including disabled="") means the field is disabled
+        if (disabledAttr != null || await field.IsDisabledAsync())
         {
             return "disabled";
         }
@@ -296,10 +296,16 @@ public class BrandAmbassadorConditionPage : BasePage
             "Bitiş Tarihi",
             "Periyot",
             "Hesaplama Para Birimi",
-            "Faturalama Para Birimi"
+            "Faturalama Para Birimi",
+            "Tutara KDV Dahil",
+            "Fatura Tutarına KDV Dahil"
         };
         
-        if (mandatoryFields.Contains(fieldLabel) && !isDisabled)
+        // Check if field is disabled by checking attributes
+        var checkDisabledAttr = await field.GetAttributeAsync("disabled");
+        var fieldIsDisabled = checkDisabledAttr != null || await field.IsDisabledAsync();
+        
+        if (mandatoryFields.Contains(fieldLabel) && !fieldIsDisabled)
         {
             return "mandatory";
         }
@@ -313,6 +319,11 @@ public class BrandAmbassadorConditionPage : BasePage
         var status = await VerifyFieldStatusAsync(fieldLabel);
         status.Should().Be("mandatory", $"Field '{fieldLabel}' should be mandatory");
         Console.WriteLine($"✅ Field '{fieldLabel}' is mandatory");
+    }
+
+    public async Task<string> GetFieldStatusAsync(string fieldLabel)
+    {
+        return await VerifyFieldStatusAsync(fieldLabel);
     }
 
     public async Task VerifyFieldIsDisabledAsync(string fieldLabel)
@@ -351,6 +362,10 @@ public class BrandAmbassadorConditionPage : BasePage
             "Hesaplama Para Birimi" => "span[aria-owns='TargetRevenueCurrencyCode_listbox']", // Backward compatibility
             // Faturalama Para Birimi is a Kendo dropdown
             "Faturalama Para Birimi" => "span[aria-owns='InvoiceCurrencyCode_listbox']",
+            // New VAT fields (renamed from Kdv Dahil mi?)
+            "Tutara KDV Dahil" => "#IsVatInclude",
+            "Fatura Tutarına KDV Dahil" => "#IsInvoiceVatInclude",
+            // Old field name for backward compatibility
             "Kdv Dahil mi?" => "#yes_IsVatInclude", // Radio button group
             "Kademeli mi?" => "#yes_IsGradual", // Radio button group
             "Hedefli mi?" => "#yes_HasTarget", // Radio button group
