@@ -199,8 +199,8 @@ public class BrandAmbassadorConditionPage : BasePage
             return "not shown";
         }
         
-        // Special handling for radio button groups
-        var radioButtonFields = new[] { "Kademeli mi?", "Hedefli mi?", "Tutar Çarpan Var mı?", "Kdv Dahil mi?" };
+        // Special handling for radio button groups (removed "Kdv Dahil mi?" - replaced with "Tutara KDV Dahil" and "Fatura Tutarına KDV Dahil")
+        var radioButtonFields = new[] { "Kademeli mi?", "Hedefli mi?", "Hedefli", "Tutar Çarpan Var mı?", "Tutara KDV Dahil", "Fatura Tutarına KDV Dahil" };
         if (radioButtonFields.Contains(fieldLabel))
         {
             // For radio buttons, check both yes and no buttons
@@ -362,13 +362,14 @@ public class BrandAmbassadorConditionPage : BasePage
             "Hesaplama Para Birimi" => "span[aria-owns='TargetRevenueCurrencyCode_listbox']", // Backward compatibility
             // Faturalama Para Birimi is a Kendo dropdown
             "Faturalama Para Birimi" => "span[aria-owns='InvoiceCurrencyCode_listbox']",
-            // New VAT fields (renamed from Kdv Dahil mi?)
-            "Tutara KDV Dahil" => "#IsVatInclude",
-            "Fatura Tutarına KDV Dahil" => "#IsInvoiceVatInclude",
+            // New VAT fields - mapped to their input IDs
+            "Tutara KDV Dahil" => "#yes_IsVatInclude",
+            "Fatura Tutarına KDV Dahil" => "#yes_IsInvoiceVatInclude",
             // Old field name for backward compatibility
             "Kdv Dahil mi?" => "#yes_IsVatInclude", // Radio button group
             "Kademeli mi?" => "#yes_IsGradual", // Radio button group
-            "Hedefli mi?" => "#yes_HasTarget", // Radio button group
+            "Hedefli mi?" => "#yes_HasTarget", // Radio button group (old field name)
+            "Hedefli" => "#yes_HasTarget", // Radio button group (new field name)
             "Temel Ölçü Birimi" => "span[aria-owns='MainMeasureUnitId_listbox']", // Kendo dropdown
             "Birim Çarpanı" => "span.k-numerictextbox:has(input#UnitMultiplier)", // Kendo NumericTextBox
             "Hesaplama Tutar" => "span.k-numerictextbox:has(input#RebateValue)", // Kendo NumericTextBox

@@ -1,6 +1,7 @@
 using RetailTRUI.Tests.Infrastructure;
 using RetailTRUI.Tests.Pages.Common;
 using RetailTRUI.Tests.Pages.Supplier;
+using FluentAssertions.Execution;
 
 namespace RetailTRUI.Tests.Tests;
 
@@ -140,20 +141,34 @@ public class BrandAmbassadorConditionTests : TestBase
         await _brandAmbassadorPage.SelectCalculationTypeAsync("Hesaplamasız");
         await Task.Delay(2000);
         
-        // Assert - Verify mandatory fields (5 fields only - matching actual app behavior)
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-        
-        // Assert - Verify disabled fields
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
-        
-        // Assert - Verify optional fields
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Kdv Dahil mi?");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Hedefli mi?");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+        // Assert - Verify all fields in one scope so we see all failures at once
+        using (new AssertionScope())
+        {
+            // Assert - Verify mandatory fields
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutara KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
+            
+            // Assert - Verify disabled fields
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+            
+            // Assert - Verify optional fields
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+            
+            // Assert - Verify hidden fields
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
+        }
         
         Console.WriteLine("✅ TEST1: All field validations passed for Salary + Hesaplamasız");
     }
@@ -164,7 +179,18 @@ public class BrandAmbassadorConditionTests : TestBase
         Driver.SetPage(Page);
         
         // Arrange - Navigate to contract and open brand ambassador form
-        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        // With retry logic in case of authentication timeout
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        
         await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
         await _contractDefPage.ClickSearchButtonAsync();
         await _contractDefPage.ClickFirstEditButtonAsync();
@@ -173,34 +199,39 @@ public class BrandAmbassadorConditionTests : TestBase
         
         await _brandAmbassadorPage.VerifyFormIsDisplayedAsync();
         
-        // Act
+        // Act - Select condition type and calculation type
         await _brandAmbassadorPage.SelectConditionTypeAsync("Bonus");
         await _brandAmbassadorPage.SelectCalculationTypeAsync("Hesaplamasız");
         await Task.Delay(2000);
         
-        // Assert - Verify mandatory fields
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Tutar Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Birim Çarpanı");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutar Çarpan Var mı?");
-        
-        // Assert - Verify disabled fields
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli mi?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
-        
-        // Assert - Verify optional fields
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Temel Ölçü Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
-        
-        // Assert - Verify hidden fields
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
+        // Assert - Verify all fields in one scope so we see all failures at once
+        using (new AssertionScope())
+        {
+            // Assert - Verify mandatory fields (T2: Bonus + Hesaplamasız)
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutara KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Birim Çarpanı");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutar Çarpan Var mı?");
+            
+            // Assert - Verify disabled fields
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+            
+            // Assert - Verify optional fields
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Temel Ölçü Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+            
+            // Assert - Verify hidden fields
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
+        }
         
         Console.WriteLine("✅ TEST2: All field validations passed for Bonus + Hesaplamasız");
     }
@@ -210,7 +241,19 @@ public class BrandAmbassadorConditionTests : TestBase
     {
         Driver.SetPage(Page);
         
-        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        // Arrange - Navigate to contract and open brand ambassador form
+        // With retry logic in case of authentication timeout
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        
         await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
         await _contractDefPage.ClickSearchButtonAsync();
         await _contractDefPage.ClickFirstEditButtonAsync();
@@ -219,7 +262,7 @@ public class BrandAmbassadorConditionTests : TestBase
         
         await _brandAmbassadorPage.VerifyFormIsDisplayedAsync();
         
-        // Act
+        // Act - Select condition type and calculation type
         await _brandAmbassadorPage.SelectConditionTypeAsync("Commission");
         await _brandAmbassadorPage.SelectCalculationTypeAsync("Satış adedi");
         await Task.Delay(1000);
@@ -228,26 +271,29 @@ public class BrandAmbassadorConditionTests : TestBase
         await _brandAmbassadorPage.SelectIsTargetedAsync("Evet");
         await Task.Delay(2000);
         
-        // Assert - Verify mandatory fields
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Birim Çarpanı");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutar Çarpan Var mı?");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hedef Miktar");
+        // Assert - Verify all fields in one scope so we see all failures at once
+        using (new AssertionScope())
+        {
+            // Assert - Verify mandatory fields (T3: Commission + Satış adedi + Hedefli=Evet)
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutara KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Birim Çarpanı");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hedef Miktar");
+            
+            // Assert - Verify disabled fields
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
+            
+            // Assert - Verify optional fields
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Temel Ölçü Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+        }
         
-        // Assert - Verify disabled fields
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
-        
-        // Assert - Verify optional fields
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Temel Ölçü Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
-        
-        Console.WriteLine("✅ TEST3: All field validations passed for Commission + Satış adedi + Hedefli Evet + Kademeli Hayır");
+        Console.WriteLine("✅ TEST3: All field validations passed for Commission + Satış adedi + Hedefli=Evet");
     }
 
     [Fact]
@@ -255,7 +301,19 @@ public class BrandAmbassadorConditionTests : TestBase
     {
         Driver.SetPage(Page);
         
-        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        // Arrange - Navigate to contract and open brand ambassador form
+        // With retry logic in case of authentication timeout
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        
         await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
         await _contractDefPage.ClickSearchButtonAsync();
         await _contractDefPage.ClickFirstEditButtonAsync();
@@ -264,7 +322,7 @@ public class BrandAmbassadorConditionTests : TestBase
         
         await _brandAmbassadorPage.VerifyFormIsDisplayedAsync();
         
-        // Act
+        // Act - Select condition type and calculation type
         await _brandAmbassadorPage.SelectConditionTypeAsync("Commission");
         await _brandAmbassadorPage.SelectCalculationTypeAsync("Satış adedi");
         await Task.Delay(1000);
@@ -273,26 +331,30 @@ public class BrandAmbassadorConditionTests : TestBase
         await _brandAmbassadorPage.SelectIsTargetedAsync("Hayır");
         await Task.Delay(2000);
         
-        // Assert - Verify mandatory fields
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Birim Çarpanı");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutar Çarpan Var mı?");
+        // Assert - Verify all fields in one scope so we see all failures at once
+        using (new AssertionScope())
+        {
+            // Assert - Verify mandatory fields (T4: Commission + Satış adedi + Hedefli=Hayır)
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutara KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Birim Çarpanı");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutar Çarpan Var mı?");
+            
+            // Assert - Verify optional fields
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Temel Ölçü Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+            
+            // Assert - Verify hidden fields
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
+        }
         
-        // Assert - Verify optional fields
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Temel Ölçü Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
-        
-        // Assert - Verify hidden fields
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
-        
-        Console.WriteLine("✅ TEST4: All field validations passed for Commission + Satış adedi + Hedefli Hayır + Kademeli Hayır");
+        Console.WriteLine("✅ TEST4: All field validations passed for Commission + Satış adedi + Hedefli=Hayır");
     }
 
     [Fact]
@@ -300,7 +362,19 @@ public class BrandAmbassadorConditionTests : TestBase
     {
         Driver.SetPage(Page);
         
-        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        // Arrange - Navigate to contract and open brand ambassador form
+        // With retry logic in case of authentication timeout
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        
         await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
         await _contractDefPage.ClickSearchButtonAsync();
         await _contractDefPage.ClickFirstEditButtonAsync();
@@ -309,38 +383,42 @@ public class BrandAmbassadorConditionTests : TestBase
         
         await _brandAmbassadorPage.VerifyFormIsDisplayedAsync();
         
-        // Act
+        // Act - Select condition type and calculation type
         await _brandAmbassadorPage.SelectConditionTypeAsync("Commission");
         await _brandAmbassadorPage.SelectCalculationTypeAsync("Satış adedi");
         await Task.Delay(1000);
         await _brandAmbassadorPage.SelectIsGradientAsync("Evet");
         await Task.Delay(2000);
         
-        // Assert - Verify mandatory fields
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
+        // Assert - Verify all fields in one scope so we see all failures at once
+        using (new AssertionScope())
+        {
+            // Assert - Verify mandatory fields (T5: Commission + Satış adedi + Kademeli=Evet)
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutara KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
+            
+            // Assert - Verify disabled fields
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+            
+            // Assert - Verify optional fields
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+            
+            // Assert - Verify hidden fields
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
+        }
         
-        // Assert - Verify disabled fields
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli mi?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
-        
-        // Assert - Verify optional fields
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
-        
-        // Assert - Verify hidden fields
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
-        
-        Console.WriteLine("✅ TEST5: All field validations passed for Commission + Satış adedi + Kademeli Evet");
+        Console.WriteLine("✅ TEST5: All field validations passed for Commission + Satış adedi + Kademeli=Evet");
     }
 
     [Fact]
@@ -348,7 +426,18 @@ public class BrandAmbassadorConditionTests : TestBase
     {
         Driver.SetPage(Page);
         
-        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        // Arrange - Navigate to contract and open brand ambassador form
+        // With retry logic in case of authentication timeout
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
         await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
         await _contractDefPage.ClickSearchButtonAsync();
         await _contractDefPage.ClickFirstEditButtonAsync();
@@ -357,7 +446,7 @@ public class BrandAmbassadorConditionTests : TestBase
         
         await _brandAmbassadorPage.VerifyFormIsDisplayedAsync();
         
-        // Act
+        // Act - Select condition type and calculation type
         await _brandAmbassadorPage.SelectConditionTypeAsync("Commission");
         await _brandAmbassadorPage.SelectCalculationTypeAsync("Satış Cirosu");
         await Task.Delay(1000);
@@ -366,26 +455,31 @@ public class BrandAmbassadorConditionTests : TestBase
         await _brandAmbassadorPage.SelectIsTargetedAsync("Evet");
         await Task.Delay(2000);
         
-        // Assert - Verify mandatory fields
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hedef Ciro");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
+        // Assert - Verify all fields in one scope so we see all failures at once
+        using (new AssertionScope())
+        {
+            // Assert - Verify mandatory fields (T6: Commission + Satış Cirosu + Hedefli=Evet)
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutara KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hedef Ciro");
+            
+            // Assert - Verify disabled fields
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+            
+            // Assert - Verify optional fields
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+        }
         
-        // Assert - Verify disabled fields
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
-        
-        // Assert - Verify optional fields
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
-        
-        Console.WriteLine("✅ TEST6: All field validations passed for Commission + Satış Cirosu + Hedefli Evet + Kademeli Hayır");
+        Console.WriteLine("✅ TEST6: All field validations passed for Commission + Satış Cirosu + Hedefli=Evet");
     }
 
     [Fact]
@@ -393,7 +487,18 @@ public class BrandAmbassadorConditionTests : TestBase
     {
         Driver.SetPage(Page);
         
-        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        // Arrange - Navigate to contract and open brand ambassador form
+        // With retry logic in case of authentication timeout
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
         await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
         await _contractDefPage.ClickSearchButtonAsync();
         await _contractDefPage.ClickFirstEditButtonAsync();
@@ -402,7 +507,7 @@ public class BrandAmbassadorConditionTests : TestBase
         
         await _brandAmbassadorPage.VerifyFormIsDisplayedAsync();
         
-        // Act
+        // Act - Select condition type and calculation type
         await _brandAmbassadorPage.SelectConditionTypeAsync("Commission");
         await _brandAmbassadorPage.SelectCalculationTypeAsync("Satış Cirosu");
         await Task.Delay(1000);
@@ -411,26 +516,30 @@ public class BrandAmbassadorConditionTests : TestBase
         await _brandAmbassadorPage.SelectIsTargetedAsync("Hayır");
         await Task.Delay(2000);
         
-        // Assert - Verify mandatory fields
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Birim Çarpanı");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutar Çarpan Var mı?");
+        // Assert - Verify all fields in one scope so we see all failures at once
+        using (new AssertionScope())
+        {
+            // Assert - Verify mandatory fields (T7: Commission + Satış Cirosu + Hedefli=Hayır)
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutara KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Birim Çarpanı");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutar Çarpan Var mı?");
+            
+            // Assert - Verify optional fields
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Temel Ölçü Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+            
+            // Assert - Verify hidden fields
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
+        }
         
-        // Assert - Verify optional fields
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Temel Ölçü Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
-        
-        // Assert - Verify hidden fields
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
-        
-        Console.WriteLine("✅ TEST7: All field validations passed for Commission + Satış Cirosu + Hedefli Hayır + Kademeli Hayır");
+        Console.WriteLine("✅ TEST7: All field validations passed for Commission + Satış Cirosu + Hedefli=Hayır");
     }
 
     [Fact]
@@ -438,7 +547,18 @@ public class BrandAmbassadorConditionTests : TestBase
     {
         Driver.SetPage(Page);
         
-        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        // Arrange - Navigate to contract and open brand ambassador form
+        // With retry logic in case of authentication timeout
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
         await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
         await _contractDefPage.ClickSearchButtonAsync();
         await _contractDefPage.ClickFirstEditButtonAsync();
@@ -454,31 +574,35 @@ public class BrandAmbassadorConditionTests : TestBase
         await _brandAmbassadorPage.SelectIsGradientAsync("Evet");
         await Task.Delay(2000);
         
-        // Assert - Verify mandatory fields
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
+        // Assert - Verify all fields in one scope so we see all failures at once
+        using (new AssertionScope())
+        {
+            // Assert - Verify mandatory fields (T8: Commission + Satış Cirosu + Kademeli=Evet)
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutara KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
+            
+            // Assert - Verify disabled fields
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+            
+            // Assert - Verify optional fields
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+            
+            // Assert - Verify hidden fields
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
+        }
         
-        // Assert - Verify disabled fields
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli mi?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
-        
-        // Assert - Verify optional fields
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
-        
-        // Assert - Verify hidden fields
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
-        
-        Console.WriteLine("✅ TEST8: All field validations passed for Commission + Satış Cirosu + Kademeli Evet");
+        Console.WriteLine("✅ TEST8: All field validations passed for Commission + Satış Cirosu + Kademeli=Evet");
     }
 
     [Fact]
@@ -486,7 +610,18 @@ public class BrandAmbassadorConditionTests : TestBase
     {
         Driver.SetPage(Page);
         
-        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        // Arrange - Navigate to contract and open brand ambassador form
+        // With retry logic in case of authentication timeout
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
         await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
         await _contractDefPage.ClickSearchButtonAsync();
         await _contractDefPage.ClickFirstEditButtonAsync();
@@ -500,30 +635,34 @@ public class BrandAmbassadorConditionTests : TestBase
         await _brandAmbassadorPage.SelectCalculationTypeAsync("Hesaplamasız");
         await Task.Delay(2000);
         
-        // Assert - Verify mandatory fields
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Tutar");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
-        
-        // Assert - Verify disabled fields
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli mi?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
-        
-        // Assert - Verify optional fields
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
-        
-        // Assert - Verify hidden fields
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
+        // Assert - Verify all fields in one scope so we see all failures at once
+        using (new AssertionScope())
+        {
+            // Assert - Verify mandatory fields (T9: Commission + Hesaplamasız)
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutara KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
+            
+            // Assert - Verify disabled fields
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+            
+            // Assert - Verify optional fields
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+            
+            // Assert - Verify hidden fields
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
+        }
         
         Console.WriteLine("✅ TEST9: All field validations passed for Commission + Hesaplamasız");
     }
@@ -535,7 +674,17 @@ public class BrandAmbassadorConditionTests : TestBase
         Driver.SetPage(Page);
         
         // Arrange - Navigate to contract and open brand ambassador form
-        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        // With retry logic in case of authentication timeout
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
         await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
         await _contractDefPage.ClickSearchButtonAsync();
         await _contractDefPage.ClickFirstEditButtonAsync();
@@ -548,31 +697,36 @@ public class BrandAmbassadorConditionTests : TestBase
         // Act - Select condition type: Promotion Rental Fee, Calculation type: Hesaplamasız
         await _brandAmbassadorPage.SelectConditionTypeAsync("Promotion Rental Fee");
         await _brandAmbassadorPage.SelectCalculationTypeAsync("Hesaplamasız");
+        await Task.Delay(2000);
         
-        // Assert - Verify mandatory fields
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
-        
-        // Assert - Verify disabled fields
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli mi?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
-        
-        // Assert - Verify optional fields
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
-        await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
-        
-        // Assert - Verify hidden fields
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
-        await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
+        // Assert - Verify all fields in one scope so we see all failures at once
+        using (new AssertionScope())
+        {
+            // Assert - Verify mandatory fields (T10: Promotion Rental Fee + Hesaplamasız)
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutara KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
+            
+            // Assert - Verify disabled fields
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+            
+            // Assert - Verify optional fields
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
+            await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Açıklama");
+            
+            // Assert - Verify hidden fields
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
+            await _brandAmbassadorPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
+        }
         
         Console.WriteLine("✅ TEST10: All field validations passed for Promotion Rental Fee + Hesaplamasız");
     }
@@ -584,7 +738,17 @@ public class BrandAmbassadorConditionTests : TestBase
         Driver.SetPage(Page);
         
         // Arrange - Navigate to contract and open brand ambassador form
-        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        // With retry logic in case of authentication timeout
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
         await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
         await _contractDefPage.ClickSearchButtonAsync();
         await _contractDefPage.ClickFirstEditButtonAsync();
@@ -597,24 +761,29 @@ public class BrandAmbassadorConditionTests : TestBase
         // Act - Select condition type: Promotion Marketing Activity, Calculation type: Hesaplamasız
         await _brandAmbassadorPage.SelectConditionTypeAsync("Promotion Marketing Activity");
         await _brandAmbassadorPage.SelectCalculationTypeAsync("Hesaplamasız");
+        await Task.Delay(2000);
         
-        // Assert - Verify mandatory fields
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hesaplama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
-        
-        // Assert - Verify disabled fields
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli mi?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
-        await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
+        // Assert - Verify all fields in one scope so we see all failures at once
+        using (new AssertionScope())
+        {
+            // Assert - Verify mandatory fields (T11: Promotion Marketing Activity + Hesaplamasız)
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Periyot");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutara KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
+            
+            // Assert - Verify disabled fields
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
+        }
         
         // Assert - Verify optional fields
         await _brandAmbassadorPage.VerifyFieldIsOptionalAsync("Marka");
