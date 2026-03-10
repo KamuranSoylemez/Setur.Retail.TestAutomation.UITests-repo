@@ -151,10 +151,10 @@ public class BrandAmbassadorConditionTests : TestBase
             await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
             await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutara KDV Dahil");
             await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hedefli");
             
             // Assert - Verify disabled fields
             await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
-            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli");
             await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
             await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
             await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
@@ -216,10 +216,10 @@ public class BrandAmbassadorConditionTests : TestBase
             await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Fatura Tutarına KDV Dahil");
             await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Birim Çarpanı");
             await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Tutar Çarpan Var mı?");
+            await _brandAmbassadorPage.VerifyFieldIsMandatoryAsync("Hedefli");
             
             // Assert - Verify disabled fields
             await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
-            await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hedefli");
             await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
             await _brandAmbassadorPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
             

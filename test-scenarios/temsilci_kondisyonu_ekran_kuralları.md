@@ -5,7 +5,7 @@ Başlangıç Tarihi: Required
 Hesaplama Periyodu: Required
 Kademeli mi?: Disabled
 Hesaplama Para Birimi: Required
-Hedefli mi?: Disabled
+Hedefli mi?: Required
 Hedef Ciro: Not Shown
 Temel Ölçü Birimi: Disabled
 Birim Çarpanı: Disabled
@@ -27,7 +27,7 @@ Başlangıç Tarihi: Required
 Hesaplama Periyodu: Dynamic
 Kademeli mi?: Disabled
 Hesaplama Para Birimi: Required
-Hedefli mi?: Disabled
+Hedefli mi?: Required
 Hedef Ciro: Not Shown
 Temel Ölçü Birimi: Optional
 Birim Çarpanı: Required
