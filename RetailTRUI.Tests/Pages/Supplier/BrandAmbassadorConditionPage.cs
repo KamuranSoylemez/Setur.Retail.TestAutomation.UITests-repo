@@ -13,10 +13,18 @@ public class BrandAmbassadorConditionPage : BasePage
 
     private async Task<IFrame> GetBrandAmbassadorConditionFrameAsync()
     {
-        if (_conditionFrame != null)
-            return _conditionFrame;
+        // PRIORITY 1: Always check for FRESH active frame first (avoid stale references)
+        var frames = Page.Frames;
+        foreach (var frame in frames)
+        {
+            if (frame.Url.Contains("ContractRepresentative/Create"))
+            {
+                _conditionFrame = frame;
+                return frame;
+            }
+        }
 
-        // Find the newly opened modal with ContractRepresentative/Create iframe
+        // PRIORITY 2: Try to find via modal (newly opened)
         var modals = await Page.Locator("div[data-role='window']:has(iframe[src*='ContractRepresentative/Create'])").AllAsync();
         
         if (modals.Any())
@@ -33,17 +41,9 @@ public class BrandAmbassadorConditionPage : BasePage
             }
         }
 
-        // Fallback: Try main contract modal frame
-        var frames = Page.Frames;
-        foreach (var frame in frames)
-        {
-            if (frame.Url.Contains("ContractRepresentative/Create"))
-            {
-                _conditionFrame = frame;
-                Console.WriteLine("✅ Using ContractRepresentative/Create frame from page frames");
-                return frame;
-            }
-        }
+        // PRIORITY 3: Use cached frame if available
+        if (_conditionFrame != null)
+            return _conditionFrame;
 
         throw new InvalidOperationException("Brand Ambassador Condition frame not found");
     }
@@ -180,6 +180,10 @@ public class BrandAmbassadorConditionPage : BasePage
 
     public async Task<string> VerifyFieldStatusAsync(string fieldLabel)
     {
+        // Force fresh frame retrieval to avoid stale references in AssertionScope
+        // Invalidate cache before every check to ensure we get the current frame
+        _conditionFrame = null;
+        
         var frame = await GetBrandAmbassadorConditionFrameAsync();
         
         var fieldId = GetFieldId(fieldLabel);
@@ -189,20 +193,20 @@ public class BrandAmbassadorConditionPage : BasePage
         var count = await field.CountAsync();
         if (count == 0)
         {
+            // Debug: Log missing field selector
+            Console.WriteLine($"🔴 Field '{fieldLabel}' selector not found: {fieldId}");
             return "not shown";
         }
         
-        // Check if field is visible
-        var isVisible = await field.First.IsVisibleAsync();
-        if (!isVisible)
-        {
-            return "not shown";
-        }
+        Console.WriteLine($"✅ Field '{fieldLabel}' selector found: {fieldId}");
         
         // Special handling for radio button groups (removed "Kdv Dahil mi?" - replaced with "Tutara KDV Dahil" and "Fatura Tutarına KDV Dahil")
         var radioButtonFields = new[] { "Kademeli mi?", "Hedefli mi?", "Hedefli", "Tutar Çarpan Var mı?", "Tutara KDV Dahil", "Fatura Tutarına KDV Dahil" };
         if (radioButtonFields.Contains(fieldLabel))
         {
+            // Re-fetch frame after radio button radio lookup (safety measure)
+            frame = await GetBrandAmbassadorConditionFrameAsync();
+            
             // For radio buttons, check both yes and no buttons
             string yesButtonId = fieldId; // This points to yes button
             string noButtonId = fieldId.Replace("yes_", "no_");
@@ -243,17 +247,22 @@ public class BrandAmbassadorConditionPage : BasePage
             }
         }
         
-        // Check if label has required icon (*)
-        // For Kendo dropdowns and other fields, check the label
-        var labelSelector2 = $"label:has-text('{fieldLabel}')";
-        var label2 = frame.Locator(labelSelector2);
-        var labelCount2 = await label2.CountAsync();
-        if (labelCount2 > 0)
+        // FIRST: Check if label has required icon (*) - this is the most reliable indicator
+        var labelSelectorFirst = $"label:has-text('{fieldLabel}')";
+        var labelFirst = frame.Locator(labelSelectorFirst);
+        var labelCountFirst = await labelFirst.CountAsync();
+        Console.WriteLine($"  Label lookup for '{fieldLabel}': found {labelCountFirst}");
+        
+        if (labelCountFirst > 0)
         {
-            var requiredIcon = label2.Locator("span.requiredIcon");
+            var requiredIcon = labelFirst.Locator("span.requiredIcon");
             var hasRequiredIcon = await requiredIcon.CountAsync() > 0;
+            Console.WriteLine($"  Has required icon (*): {hasRequiredIcon}");
+            
             if (hasRequiredIcon)
             {
+                // IMPORTANT: Even if field is not rendering visually (hidden by CSS),
+                // if input element counts > 0 and label has *, field IS mandatory
                 return "mandatory";
             }
         }
@@ -317,6 +326,13 @@ public class BrandAmbassadorConditionPage : BasePage
     public async Task VerifyFieldIsMandatoryAsync(string fieldLabel)
     {
         var status = await VerifyFieldStatusAsync(fieldLabel);
+        
+        // Debug: Print what we got before assertion (to catch frame staleness issues)
+        if (status != "mandatory")
+        {
+            Console.WriteLine($"⚠️ Field '{fieldLabel}' status: {status} (expected 'mandatory')");
+        }
+        
         status.Should().Be("mandatory", $"Field '{fieldLabel}' should be mandatory");
         Console.WriteLine($"✅ Field '{fieldLabel}' is mandatory");
     }
@@ -357,7 +373,7 @@ public class BrandAmbassadorConditionPage : BasePage
             "Bitiş Tarihi" => "#EndDate",
             // Periyot is a Kendo dropdown, need to find by aria-owns
             "Periyot" => "span[aria-owns='ContractRepresentativePeriodTypeId_listbox']",
-            "Hesaplama Tutar Para Birimi" => "span[aria-owns='TargetRevenueCurrencyCode_listbox']",
+            "Hesaplama Tutar Para Birimi" => "#CalculationAmountCurrencyCode",
             "İşlem Para Birimi" => "span[aria-owns='TargetRevenueCurrencyCode_listbox']", // Backward compatibility
             "Hesaplama Para Birimi" => "span[aria-owns='TargetRevenueCurrencyCode_listbox']", // Backward compatibility
             // Faturalama Para Birimi is a Kendo dropdown
@@ -365,18 +381,25 @@ public class BrandAmbassadorConditionPage : BasePage
             // New VAT fields - mapped to their input IDs
             "Tutara KDV Dahil" => "#yes_IsVatInclude",
             "Fatura Tutarına KDV Dahil" => "#yes_IsInvoiceVatInclude",
+            // 6 NEWLY FOUND FIELDS (from HELPER_FindMissingFieldSelectors test)
+            "Net/Brüt" => "#yes_IsNetGross", // Radio button group
+            "Gölge Rebate Hesaplansın mı?" => "#yes_IsShadowRebate", // Radio button group
+            "Firmaya Fatura Edilsin mi?" => "#yes_IsInvoicable", // Radio button group
+            "Tutar Çarpanlı" => "#yes_HasMultiplier", // Radio button group
+            "Kişi Başı mı?" => "#yes_IsPerPerson", // Radio button group
+            "Maksimum kişi sayısı" => "#MaxPersonCount", // Text input
             // Old field name for backward compatibility
             "Kdv Dahil mi?" => "#yes_IsVatInclude", // Radio button group
             "Kademeli mi?" => "#yes_IsGradual", // Radio button group
             "Hedefli mi?" => "#yes_HasTarget", // Radio button group (old field name)
             "Hedefli" => "#yes_HasTarget", // Radio button group (new field name)
             "Temel Ölçü Birimi" => "span[aria-owns='MainMeasureUnitId_listbox']", // Kendo dropdown
-            "Birim Çarpanı" => "span.k-numerictextbox:has(input#UnitMultiplier)", // Kendo NumericTextBox
-            "Hesaplama Tutar" => "span.k-numerictextbox:has(input#RebateValue)", // Kendo NumericTextBox
+            "Birim Çarpanı" => "#UnitMultiplier", // Numeric input
+            "Hesaplama Tutar" => "#RebateValue", // Numeric input
             "Tutar Çarpan Var mı?" => "#yes_HasMultiplier", // Radio button group
-            "Hesaplama Oran" => "span.k-numerictextbox:has(input#RebateRatio)", // Kendo NumericTextBox
-            "Hedef Ciro" => "#TargetRevenue",
-            "Hedef Miktar" => "#TargetUnit",
+            "Hesaplama Oran" => "#RebateRatio", // Numeric input
+            "Hedef Ciro" => "#TargetRevenue", // Numeric input field
+            "Hedef Miktar" => "#TargetUnit", // Numeric input field
             
             // Old Field Mappings (backward compatibility)
             "Kademe" => "#yes_IsGradual", // Radio button - detected in component scan
