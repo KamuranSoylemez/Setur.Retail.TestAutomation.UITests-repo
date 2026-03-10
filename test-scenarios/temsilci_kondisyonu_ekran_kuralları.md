@@ -17,6 +17,7 @@
 **Actions:**
 - Kondisyon Tipi: Salary
 - Hedef Tipi: Hesaplamasız
+- Hedefli: Hayır (select action)
 
 **Verifications:**
 - Kademeli: Disabled
@@ -50,6 +51,7 @@
 **Actions:**
 - Kondisyon Tipi: Bonus
 - Hedef Tipi: Hesaplamasız
+- Hedefli: Hayır (select action)
 
 **Verifications:**
 - Kademeli: Disabled
@@ -105,7 +107,7 @@
 - Net/Brüt: Required
 - Hedef Ciro: Disabled
 - Hedef Miktar: Required
-- Kişi Başı mı?: Optional
+- Kişi Başı mı?: Required
 - Maksimum kişi sayısı: Optional
 - Gölge Rebate Hesaplansın mı?: Required
 - Firmaya Fatura Edilsin mi?: Required
@@ -128,7 +130,7 @@
 - Tutara Kdv Dahil: Required
 - Fatura Tutarına Kdv Dahil: Required
 - Temel Ölçü Birimi: Optional
-- Tutar Çarpanlı: Optional
+- Tutar Çarpanlı: Required
 - Hesaplama Tutar Para Birimi: Optional
 - Birim Çarpanı: Required
 - Hesaplama Tutar: Required (conditional: Oran Girilmediyse)
@@ -138,7 +140,7 @@
 - Net/Brüt: Required
 - Hedef Ciro: Not Shown
 - Hedef Miktar: Not Shown
-- Kişi Başı mı?: Optional
+- Kişi Başı mı?: Required
 - Maksimum kişi sayısı: Optional
 - Gölge Rebate Hesaplansın mı?: Required
 - Firmaya Fatura Edilsin mi?: Required
@@ -161,17 +163,17 @@
 - Tutara Kdv Dahil: Required
 - Fatura Tutarına Kdv Dahil: Required
 - Temel Ölçü Birimi: Disabled
-- Tutar Çarpanlı: Optional
-- Hesaplama Tutar Para Birimi: Disabled
+- Tutar Çarpanlı: Disabled
+- Hesaplama Tutar Para Birimi: Optional
 - Birim Çarpanı: Disabled
 - Hesaplama Tutar: Disabled
-- Hesaplama Oran: Optional
+- Hesaplama Oran: Disabled
 - Marka: Optional
 - Açıklama: Optional
 - Net/Brüt: Required
 - Hedef Ciro: Not Shown
 - Hedef Miktar: Not Shown
-- Kişi Başı mı?: Optional
+- Kişi Başı mı?: Required
 - Maksimum kişi sayısı: Optional
 - Gölge Rebate Hesaplansın mı?: Required
 - Firmaya Fatura Edilsin mi?: Required
@@ -205,7 +207,7 @@
 - Net/Brüt: Required
 - Hedef Ciro: Required
 - Hedef Miktar: Disabled
-- Kişi Başı mı?: Optional
+- Kişi Başı mı?: Required
 - Maksimum kişi sayısı: Optional
 - Gölge Rebate Hesaplansın mı?: Required
 - Firmaya Fatura Edilsin mi?: Required
@@ -238,7 +240,7 @@
 - Net/Brüt: Required
 - Hedef Ciro: Not Shown
 - Hedef Miktar: Not Shown
-- Kişi Başı mı?: Optional
+- Kişi Başı mı?: Required
 - Maksimum kişi sayısı: Optional
 - Gölge Rebate Hesaplansın mı?: Required
 - Firmaya Fatura Edilsin mi?: Required
@@ -271,7 +273,7 @@
 - Net/Brüt: Required
 - Hedef Ciro: Not Shown
 - Hedef Miktar: Not Shown
-- Kişi Başı mı?: Optional
+- Kişi Başı mı?: Required
 - Maksimum kişi sayısı: Optional
 - Gölge Rebate Hesaplansın mı?: Required
 - Firmaya Fatura Edilsin mi?: Required
@@ -305,7 +307,7 @@
 - Net/Brüt: Required
 - Hedef Ciro: Not Shown
 - Hedef Miktar: Not Shown
-- Kişi Başı mı?: Optional
+- Kişi Başı mı?: Required
 - Maksimum kişi sayısı: Optional
 - Gölge Rebate Hesaplansın mı?: Required
 - Firmaya Fatura Edilsin mi?: Required
@@ -339,7 +341,7 @@
 - Net/Brüt: Required
 - Hedef Ciro: Disabled
 - Hedef Miktar: Disabled
-- Kişi Başı mı?: Optional
+- Kişi Başı mı?: Required
 - Maksimum kişi sayısı: Optional
 - Gölge Rebate Hesaplansın mı?: Required
 - Firmaya Fatura Edilsin mi?: Required
@@ -470,6 +472,74 @@
 - Birim Çarpanı: Disabled
 - Hesaplama Tutar: Disabled
 - Hesaplama Oran: Optional
+- Marka: Optional
+- Açıklama: Optional
+- Net/Brüt: Required
+- Hedef Ciro: Disabled
+- Hedef Miktar: Disabled
+- Kişi Başı mı?: Disabled
+- Maksimum kişi sayısı: Disabled
+- Gölge Rebate Hesaplansın mı?: Required
+- Firmaya Fatura Edilsin mi?: Required
+
+---
+
+## T15: Salary + Hesaplamasız + Kademeli:Disabled + Hedefli:Evet
+**Actions:**
+- Kondisyon Tipi: Salary
+- Hedef Tipi: Hesaplamasız
+- Hedefli: Evet (select action)
+
+**Verifications:**
+- Kademeli: Disabled
+- Hedefli: Required
+- Başlangıç Tarihi: Required
+- Bitiş Tarihi: Required
+- Hesaplama Periyodu: Required
+- İşlem Para Birimi: Disabled
+- Faturalama Para Birimi: Required
+- Tutara Kdv Dahil: Required
+- Fatura Tutarına Kdv Dahil: Required
+- Temel Ölçü Birimi: Disabled
+- Tutar Çarpanlı: Disabled
+- Hesaplama Tutar Para Birimi: Optional
+- Birim Çarpanı: Disabled
+- Hesaplama Tutar: Disabled
+- Hesaplama Oran: Optional
+- Marka: Optional
+- Açıklama: Optional
+- Net/Brüt: Required
+- Hedef Ciro: Disabled
+- Hedef Miktar: Disabled
+- Kişi Başı mı?: Disabled
+- Maksimum kişi sayısı: Disabled
+- Gölge Rebate Hesaplansın mı?: Required
+- Firmaya Fatura Edilsin mi?: Required
+
+---
+
+## T16: Bonus + Hesaplamasız + Kademeli:Disabled + Hedefli:Evet
+**Actions:**
+- Kondisyon Tipi: Bonus
+- Hedef Tipi: Hesaplamasız
+- Hedefli: Evet (select action)
+
+**Verifications:**
+- Kademeli: Disabled
+- Hedefli: Required
+- Başlangıç Tarihi: Required
+- Bitiş Tarihi: Required
+- Hesaplama Periyodu: Required
+- İşlem Para Birimi: Disabled
+- Faturalama Para Birimi: Required
+- Tutara Kdv Dahil: Required
+- Fatura Tutarına Kdv Dahil: Required
+- Temel Ölçü Birimi: Optional
+- Tutar Çarpanlı: Required
+- Hesaplama Tutar Para Birimi: Optional
+- Birim Çarpanı: Required
+- Hesaplama Tutar: Disabled
+- Hesaplama Oran: Disabled
 - Marka: Optional
 - Açıklama: Optional
 - Net/Brüt: Required

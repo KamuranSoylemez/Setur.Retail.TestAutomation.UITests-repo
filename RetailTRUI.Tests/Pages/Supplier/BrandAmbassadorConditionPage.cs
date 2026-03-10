@@ -200,8 +200,23 @@ public class BrandAmbassadorConditionPage : BasePage
         
         Console.WriteLine($"✅ Field '{fieldLabel}' selector found: {fieldId}");
         
+        // NEW: Check if field label is hidden by CSS (if label hidden, then field is "not shown")
+        var labelSelectorForVisibilityCheck = $"label:has-text('{fieldLabel}')";
+        var labelForVisibilityCheck = frame.Locator(labelSelectorForVisibilityCheck);
+        var labelVisibilityCount = await labelForVisibilityCheck.CountAsync();
+        
+        if (labelVisibilityCount > 0)
+        {
+            var labelIsHidden = await IsFieldHiddenByCssAsync(labelForVisibilityCheck);
+            if (labelIsHidden)
+            {
+                Console.WriteLine($"  Field '{fieldLabel}' label is hidden by CSS → Not Shown");
+                return "not shown";
+            }
+        }
+        
         // Special handling for radio button groups (removed "Kdv Dahil mi?" - replaced with "Tutara KDV Dahil" and "Fatura Tutarına KDV Dahil")
-        var radioButtonFields = new[] { "Kademeli mi?", "Hedefli mi?", "Hedefli", "Tutar Çarpan Var mı?", "Tutara KDV Dahil", "Fatura Tutarına KDV Dahil" };
+        var radioButtonFields = new[] { "Kademeli mi?", "Hedefli mi?", "Hedefli", "Tutar Çarpanlı", "Tutara KDV Dahil", "Fatura Tutarına KDV Dahil" };
         if (radioButtonFields.Contains(fieldLabel))
         {
             // Re-fetch frame after radio button radio lookup (safety measure)
@@ -412,5 +427,42 @@ public class BrandAmbassadorConditionPage : BasePage
             // Default: use field name as ID (camelCase)
             _ => "#" + fieldName.Replace(" ", "")
         };
+    }
+
+    /// <summary>
+    /// Check if field element is hidden by CSS (display:none, visibility:hidden, or parent hidden)
+    /// </summary>
+    private async Task<bool> IsFieldHiddenByCssAsync(ILocator field)
+    {
+        try
+        {
+            var isHidden = await field.EvaluateAsync<bool>("""
+                (element) => {
+                    // Check element's own visibility
+                    const style = window.getComputedStyle(element);
+                    if (style.display === 'none' || style.visibility === 'hidden') {
+                        return true;
+                    }
+                    
+                    // Check if any parent is hidden
+                    let parent = element.parentElement;
+                    while (parent && parent !== document.body) {
+                        const parentStyle = window.getComputedStyle(parent);
+                        if (parentStyle.display === 'none' || parentStyle.visibility === 'hidden') {
+                            return true;
+                        }
+                        parent = parent.parentElement;
+                    }
+                    
+                    return false;
+                }
+                """);
+            return isHidden;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Error checking CSS visibility: {ex.Message}");
+            return false;
+        }
     }
 }
