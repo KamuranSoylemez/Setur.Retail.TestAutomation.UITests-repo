@@ -197,9 +197,9 @@
 - Tutara Kdv Dahil: Required
 - Fatura Tutarına Kdv Dahil: Required
 - Temel Ölçü Birimi: Disabled
-- Tutar Çarpanlı: Optional
-- Hesaplama Tutar Para Birimi: Disabled
-- Birim Çarpanı: Required (conditional: Oran Girilmediyse)
+- Tutar Çarpanlı: Disabled
+- Hesaplama Tutar Para Birimi: Optional
+- Birim Çarpanı: Disabled
 - Hesaplama Tutar: Required (conditional: Tutar Girilmediyse)
 - Hesaplama Oran: Required (conditional: Tutar Girilmediyse)
 - Marka: Optional
@@ -207,7 +207,7 @@
 - Net/Brüt: Required
 - Hedef Ciro: Required
 - Hedef Miktar: Disabled
-- Kişi Başı mı?: Required
+- Kişi Başı mı?: Optional
 - Maksimum kişi sayısı: Optional
 - Gölge Rebate Hesaplansın mı?: Required
 - Firmaya Fatura Edilsin mi?: Required
@@ -230,10 +230,10 @@
 - Tutara Kdv Dahil: Required
 - Fatura Tutarına Kdv Dahil: Required
 - Temel Ölçü Birimi: Disabled
-- Tutar Çarpanlı: Optional
-- Hesaplama Tutar Para Birimi: Disabled
-- Birim Çarpanı: Required (conditional: Oran Girilmediyse)
-- Hesaplama Tutar: Required (conditional: Tutar Girilmediyse)
+- Tutar Çarpanlı: Disabled
+- Hesaplama Tutar Para Birimi: Optional
+- Birim Çarpanı: Disabled
+- Hesaplama Tutar: Required (conditional: Oran Girilmediyse)
 - Hesaplama Oran: Required (conditional: Tutar Girilmediyse)
 - Marka: Optional
 - Açıklama: Optional
@@ -263,11 +263,11 @@
 - Tutara Kdv Dahil: Required
 - Fatura Tutarına Kdv Dahil: Required
 - Temel Ölçü Birimi: Disabled
-- Tutar Çarpanlı: Optional
-- Hesaplama Tutar Para Birimi: Disabled
+- Tutar Çarpanlı: Disabled
+- Hesaplama Tutar Para Birimi: Optional
 - Birim Çarpanı: Disabled
 - Hesaplama Tutar: Disabled
-- Hesaplama Oran: Optional
+- Hesaplama Oran: Disabled
 - Marka: Optional
 - Açıklama: Optional
 - Net/Brüt: Required
@@ -297,11 +297,11 @@
 - Tutara Kdv Dahil: Required
 - Fatura Tutarına Kdv Dahil: Required
 - Temel Ölçü Birimi: Disabled
-- Tutar Çarpanlı: Optional
-- Hesaplama Tutar Para Birimi: Disabled
-- Birim Çarpanı: Required
-- Hesaplama Tutar: Disabled
-- Hesaplama Oran: Optional
+- Tutar Çarpanlı: Disabled
+- Hesaplama Tutar Para Birimi: Optional
+- Birim Çarpanı: Disabled
+- Hesaplama Tutar: Required
+- Hesaplama Oran: Disabled
 - Marka: Optional
 - Açıklama: Optional
 - Net/Brüt: Required
@@ -331,11 +331,11 @@
 - Tutara Kdv Dahil: Required
 - Fatura Tutarına Kdv Dahil: Required
 - Temel Ölçü Birimi: Disabled
-- Tutar Çarpanlı: Optional
-- Hesaplama Tutar Para Birimi: Disabled
-- Birim Çarpanı: Required
-- Hesaplama Tutar: Disabled
-- Hesaplama Oran: Optional
+- Tutar Çarpanlı: Disabled
+- Hesaplama Tutar Para Birimi: Optional
+- Birim Çarpanı: Disabled
+- Hesaplama Tutar: Required
+- Hesaplama Oran: Disabled
 - Marka: Optional
 - Açıklama: Optional
 - Net/Brüt: Required
@@ -369,7 +369,7 @@
 - Hesaplama Tutar Para Birimi: Optional
 - Birim Çarpanı: Disabled
 - Hesaplama Tutar: Disabled
-- Hesaplama Oran: Optional
+- Hesaplama Oran: Disabled
 - Marka: Optional
 - Açıklama: Optional
 - Net/Brüt: Required
@@ -403,7 +403,7 @@
 - Hesaplama Tutar Para Birimi: Optional
 - Birim Çarpanı: Disabled
 - Hesaplama Tutar: Disabled
-- Hesaplama Oran: Optional
+- Hesaplama Oran: Disabled
 - Marka: Optional
 - Açıklama: Optional
 - Net/Brüt: Required
@@ -437,7 +437,7 @@
 - Hesaplama Tutar Para Birimi: Optional
 - Birim Çarpanı: Disabled
 - Hesaplama Tutar: Disabled
-- Hesaplama Oran: Optional
+- Hesaplama Oran: Disabled
 - Marka: Optional
 - Açıklama: Optional
 - Net/Brüt: Required
@@ -471,7 +471,7 @@
 - Hesaplama Tutar Para Birimi: Optional
 - Birim Çarpanı: Disabled
 - Hesaplama Tutar: Disabled
-- Hesaplama Oran: Optional
+- Hesaplama Oran: Disabled
 - Marka: Optional
 - Açıklama: Optional
 - Net/Brüt: Required
@@ -505,7 +505,7 @@
 - Hesaplama Tutar Para Birimi: Optional
 - Birim Çarpanı: Disabled
 - Hesaplama Tutar: Disabled
-- Hesaplama Oran: Optional
+- Hesaplama Oran: Disabled
 - Marka: Optional
 - Açıklama: Optional
 - Net/Brüt: Required
