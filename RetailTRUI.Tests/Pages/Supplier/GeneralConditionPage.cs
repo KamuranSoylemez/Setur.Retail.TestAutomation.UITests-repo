@@ -104,12 +104,40 @@ public class GeneralConditionPage : BasePage
         
         // Find and click Hesaplama Tipi dropdown
         var dropdown = frame.Locator("span[aria-owns='ReckoningSourceId_listbox']");
-        await dropdown.ClickAsync();
+        try
+        {
+            await dropdown.ClickAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Error clicking dropdown: {ex.Message}");
+            // Try to find the dropdown by alternative selectors
+            var alternatives = new[] 
+            {
+                "span:has(input#ReckoningSourceId)",
+                "#ReckoningSourceId",
+                "div.k-dropdown:has(#ReckoningSourceId)"
+            };
+            
+            foreach (var alt in alternatives)
+            {
+                try
+                {
+                    await frame.Locator(alt).First.ClickAsync();
+                    Console.WriteLine($"✅ Found dropdown using alternative selector: {alt}");
+                    break;
+                }
+                catch { /* Try next */ }
+            }
+        }
+        
         await Task.Delay(1500);
         
-        // Find listbox
+        // Find listbox - check both frame and page
         var listboxInFrame = await frame.Locator("#ReckoningSourceId_listbox").CountAsync();
         var listboxInPage = await Page.Locator("#ReckoningSourceId_listbox").CountAsync();
+        
+        Console.WriteLine($"📊 Listbox in frame: {listboxInFrame}, in page: {listboxInPage}");
         
         ILocator listbox;
         if (listboxInFrame > 0)
@@ -122,12 +150,110 @@ public class GeneralConditionPage : BasePage
         }
         else
         {
-            throw new Exception("ReckoningSourceId_listbox not found");
+            // Debug: List all visible elements in the frame
+            Console.WriteLine("⚠️ ReckoningSourceId_listbox not found, trying alternative search...");
+            var allListboxes = await frame.Locator("div.k-list").AllAsync();
+            Console.WriteLine($"📊 Found {allListboxes.Count} listboxes in frame");
+            
+            if (allListboxes.Count > 0)
+            {
+                listbox = allListboxes[0];
+            }
+            else
+            {
+                throw new Exception("ReckoningSourceId_listbox not found, and no alternative listboxes found");
+            }
         }
         
-        await listbox.Locator($"li:has-text('{calculationType}')").First.ClickAsync();
+        // Try to find the option with timeout
+        try
+        {
+            var option = listbox.Locator($"li:has-text('{calculationType}'), li:text-is('{calculationType}')").First;
+            await option.ClickAsync(new LocatorClickOptions { Timeout = 5000 });
+        }
+        catch (TimeoutException)
+        {
+            // If first approach fails, list all available options
+            var allOptions = await listbox.Locator("li").AllAsync();
+            Console.WriteLine($"⚠️ Could not find '{calculationType}', available options:");
+            foreach (var opt in allOptions)
+            {
+                var text = await opt.TextContentAsync();
+                Console.WriteLine($"  - {text}");
+            }
+            
+            throw new Exception($"Option '{calculationType}' not found in dropdown. Available options listed above.");
+        }
+        
         await Task.Delay(2000); // Wait for field states to update after calculation type change
         Console.WriteLine($"✅ Calculation type selected: {calculationType}");
+    }
+
+    /// <summary>
+    /// Selects target type (Hedef Tipi) - used for Target Bonus conditions
+    /// Options: Alım Adedi, Alım Tutarı, Hesaplamasız, Satış Adedi, Satış Cirosu
+    /// </summary>
+    public async Task SelectTargetTypeAsync(string targetType)
+    {
+        await Task.Delay(1000);
+        var frame = await GetGeneralConditionFrameAsync();
+        
+        // Try multiple possible IDs for Hedef Tipi dropdown
+        var possibleIds = new[] 
+        { 
+            "ReckoningTargetId",
+            "TargetTypeId",
+            "ContractRebateTargetTypeId",
+            "ReckoningSourceId" // Fallback to calculation type
+        };
+        
+        ILocator? dropdown = null;
+        string? foundId = null;
+        
+        // Try to find the dropdown
+        foreach (var id in possibleIds)
+        {
+            var testDropdown = frame.Locator($"span[aria-owns='{id}_listbox']");
+            var count = await testDropdown.CountAsync();
+            if (count > 0)
+            {
+                dropdown = testDropdown;
+                foundId = id;
+                break;
+            }
+        }
+        
+        if (dropdown == null)
+        {
+            throw new Exception($"Target Type dropdown not found. Tried IDs: {string.Join(", ", possibleIds)}");
+        }
+        
+        Console.WriteLine($"🔍 Found Target Type dropdown with ID: {foundId}");
+        
+        await dropdown.ClickAsync();
+        await Task.Delay(1500);
+        
+        // Find listbox
+        var listboxInFrame = await frame.Locator($"#{foundId}_listbox").CountAsync();
+        var listboxInPage = await Page.Locator($"#{foundId}_listbox").CountAsync();
+        
+        ILocator listbox;
+        if (listboxInFrame > 0)
+        {
+            listbox = frame.Locator($"#{foundId}_listbox");
+        }
+        else if (listboxInPage > 0)
+        {
+            listbox = Page.Locator($"#{foundId}_listbox");
+        }
+        else
+        {
+            throw new Exception($"{foundId}_listbox not found");
+        }
+        
+        await listbox.Locator($"li:has-text('{targetType}')").First.ClickAsync();
+        await Task.Delay(2000); // Wait for field states to update after target type change
+        Console.WriteLine($"✅ Target type selected: {targetType}");
     }
 
     public async Task SelectIsGradientAsync(string value)
@@ -203,7 +329,7 @@ public class GeneralConditionPage : BasePage
         }
         
         // Special handling for radio button groups
-        var radioButtonFields = new[] { "Kademeli mi?", "Kdv Dahil mi?", "Çarpan Var mı?", "Tutar Çarpan Var mı?", "Çoklu Ödül mü?" };
+        var radioButtonFields = new[] { "Kademeli mi?", "Kdv Dahil mi?", "Çarpan Var mı?", "Tutar Çarpanlı", "Çoklu Ödül mü?" };
         if (radioButtonFields.Contains(fieldLabel))
         {
             string yesButtonId = fieldId;
@@ -386,6 +512,17 @@ public class GeneralConditionPage : BasePage
         Console.WriteLine($"✅ Field '{fieldLabel}' is not displayed");
     }
 
+    /// <summary>
+    /// Gets the field state without assertion
+    /// Returns: "enabled", "disabled", "mandatory", "optional", or "not shown"
+    /// </summary>
+    public async Task<string> GetFieldStateAsync(string fieldLabel)
+    {
+        var status = await VerifyFieldStatusAsync(fieldLabel);
+        Console.WriteLine($"📊 Field '{fieldLabel}' state: {status}");
+        return status;
+    }
+
     public async Task VerifyFieldHasRequiredAsteriskAsync(string fieldLabel)
     {
         var frame = await GetGeneralConditionFrameAsync();
@@ -414,6 +551,7 @@ public class GeneralConditionPage : BasePage
             "Periyot" => "span[aria-owns='ContractRebatePeriodTypeId_listbox']",
             "Kademeli mi?" => "#yes_IsGradual",
             "Kdv Dahil mi?" => "#yes_IsVatInclude",
+            "Tutar Kdv Dahil" => "#yes_IsVatInclude",
             "Çarpan Var mı?" => "#yes_HasMultiplier",
             "Tutar Çarpan Var mı?" => "#yes_HasMultiplier",
             "Hedef Ciro" => "span.k-numerictextbox:has(input#TargetRevenue)",
@@ -434,6 +572,8 @@ public class GeneralConditionPage : BasePage
             "Marj Tipi" => "span[aria-owns='MarginCalculationType_listbox']",
             "Marj" => "span.k-numerictextbox:has(input#MarginRatio)",
             "Çoklu Ödül mü?" => "#yes_HasMultipleReward",
+            "Gölge Rebate Hesaplansın mı?" => "#yes_IsShadowRebate",
+            "Tutar Çarpanlı" => "#yes_HasMultiplier",
             _ => "#" + fieldName.Replace(" ", "")
         };
     }
@@ -482,6 +622,94 @@ public class GeneralConditionPage : BasePage
         var status = await VerifyFieldStatusAsync(fieldLabel);
         status.Should().NotBe("disabled", $"Field '{fieldLabel}' should NOT be disabled");
         Console.WriteLine($"✅ Field '{fieldLabel}' is not disabled (status: {status})");
+    }
+
+    /// <summary>
+    /// Selects margin type (Tekli or Çoklu)
+    /// </summary>
+    public async Task SelectMarginTypeAsync(string marginType)
+    {
+        await Task.Delay(1000);
+        var frame = await GetGeneralConditionFrameAsync();
+        
+        // Find and click Marj Tipi dropdown
+        var dropdown = frame.Locator("span[aria-owns='MarginCalculationType_listbox']");
+        await dropdown.ClickAsync();
+        await Task.Delay(1500);
+        
+        // Find listbox
+        var listboxInFrame = await frame.Locator("#MarginCalculationType_listbox").CountAsync();
+        var listboxInPage = await Page.Locator("#MarginCalculationType_listbox").CountAsync();
+        
+        ILocator listbox;
+        if (listboxInFrame > 0)
+        {
+            listbox = frame.Locator("#MarginCalculationType_listbox");
+        }
+        else if (listboxInPage > 0)
+        {
+            listbox = Page.Locator("#MarginCalculationType_listbox");
+        }
+        else
+        {
+            throw new Exception("MarginCalculationType_listbox not found");
+        }
+        
+        await listbox.Locator($"li:has-text('{marginType}')").First.ClickAsync();
+        await Task.Delay(500);
+        Console.WriteLine($"✅ Margin type selected: {marginType}");
+    }
+
+    /// <summary>
+    /// Verifies that a field is enabled (not disabled) without requirement
+    /// Used for enabled but non-required fields
+    /// </summary>
+    public async Task VerifyFieldIsEnabledAsync(string fieldLabel)
+    {
+        var frame = await GetGeneralConditionFrameAsync();
+        var fieldId = GetFieldId(fieldLabel);
+        var field = frame.Locator(fieldId);
+        
+        // Check if field exists
+        var count = await field.CountAsync();
+        if (count == 0)
+        {
+            throw new Exception($"Field '{fieldLabel}' not found");
+        }
+        
+        // Check if field is visible
+        var isVisible = await field.First.IsVisibleAsync();
+        isVisible.Should().BeTrue($"Field '{fieldLabel}' should be visible");
+        
+        // Check for radio button fields
+        var radioButtonFields = new[] { "Kademeli mi?", "Kdv Dahil mi?", "Çarpan Var mı?", "Tutar Çarpanlı", "Çoklu Ödül mü?", "Toptan Kâr Merkezi", "Gölge Rebate Hesaplansın mı?" };
+        if (radioButtonFields.Contains(fieldLabel))
+        {
+            string yesButtonId = fieldId;
+            string noButtonId = fieldId.Replace("yes_", "no_");
+            
+            var yesButton = frame.Locator(yesButtonId);
+            var noButton = frame.Locator(noButtonId);
+            
+            var yesExists = await yesButton.CountAsync() > 0;
+            var noExists = await noButton.CountAsync() > 0;
+            
+            if (yesExists && noExists)
+            {
+                var yesDisabled = await yesButton.GetAttributeAsync("disabled");
+                var noDisabled = await noButton.GetAttributeAsync("disabled");
+                
+                (yesDisabled == null && noDisabled == null).Should().BeTrue($"Field '{fieldLabel}' should be enabled (not disabled)");
+                Console.WriteLine($"✅ Field '{fieldLabel}' is enabled");
+                return;
+            }
+        }
+        
+        // For regular input fields, just ensure not disabled
+        var isDisabled = await field.First.GetAttributeAsync("disabled");
+        isDisabled.Should().BeNull($"Field '{fieldLabel}' should not be disabled");
+        
+        Console.WriteLine($"✅ Field '{fieldLabel}' is enabled");
     }
 
 }
