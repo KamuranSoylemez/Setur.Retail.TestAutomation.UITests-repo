@@ -308,6 +308,40 @@ public class GeneralConditionPage : BasePage
         }
     }
 
+    public async Task SelectMultipleRewardAsync(string value)
+    {
+        var frame = await GetGeneralConditionFrameAsync();
+        
+        // Select "Çoklu Ödül mü?" radio button
+        var radioId = value.ToLower() == "evet" ? "#yes_HasMultipleReward" : "#no_HasMultipleReward";
+        var radioButton = frame.Locator(radioId);
+        
+        // Wait for radio button to be enabled (calculation type may enable/disable it)
+        await radioButton.WaitForAsync(new LocatorWaitForOptions 
+        { 
+            State = WaitForSelectorState.Visible,
+            Timeout = 10000 
+        });
+        
+        // Check if it's still disabled after waiting
+        var isDisabled = await radioButton.GetAttributeAsync("disabled");
+        if (isDisabled != null)
+        {
+            // Wait a bit more and retry
+            await Task.Delay(2000);
+            isDisabled = await radioButton.GetAttributeAsync("disabled");
+            if (isDisabled != null)
+            {
+                Console.WriteLine($"⚠️ 'Çoklu Ödül mü?' radio button is disabled, skipping selection");
+                return;
+            }
+        }
+        
+        await radioButton.CheckAsync();
+        await Task.Delay(500);
+        Console.WriteLine($"✅ Çoklu Ödül mü? set to: {value}");
+    }
+
     public async Task<string> VerifyFieldStatusAsync(string fieldLabel)
     {
         var frame = await GetGeneralConditionFrameAsync();
