@@ -723,7 +723,7 @@
 - Faturalama Para Birimi: Required
 - Hedef Ciro: Disabled
 - Hedef Miktar: Disabled
-- Hesaplama Tutar Para Birimi: Disabled
+- Hesaplama Tutar Para Birimi: Optional
 - Tutar Kdv Dahil: Enabled
 - Brüt Alım Kalem Tipi: Not Shown
 - Hesaplama Tutar: Required

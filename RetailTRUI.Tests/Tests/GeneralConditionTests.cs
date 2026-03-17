@@ -1200,7 +1200,7 @@ public class GeneralConditionTests : TestBase
     }
 
     [Fact]
-    public async Task TEST18_RebateSalesBonus_Hesaplamasiz_ShouldShowCorrectFieldValidation()
+    public async Task TEST20_RebateSalesBonus_Hesaplamasiz_Coklu_Hayir_ShouldShowCorrectFieldValidation()
     {
         Driver.SetPage(Page);
         
@@ -1215,39 +1215,92 @@ public class GeneralConditionTests : TestBase
         
         await _generalConditionPage.SelectConditionTypeAsync("Rebate Sales Bonus");
         await _generalConditionPage.SelectCalculationTypeAsync("Hesaplamasız");
+        await _generalConditionPage.SelectMultipleRewardAsync("Hayır");
         await Task.Delay(2000);
         
-        // Assert - Verify disabled fields
+        // Assert - Verify disabled fields (10)
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar Para Birimi");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Faturalama Para Birimi");
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Marj Tipi");
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Marj");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpanlı");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
         
-        // Assert - Verify mandatory fields
-        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
+        // Assert - Verify mandatory fields (4)
         await _generalConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
-        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Tutar");
         await _generalConditionPage.VerifyFieldIsMandatoryAsync("İşlem Para Birimi");
+        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Tutar");
         
-        // Assert - Verify optional fields
+        // Assert - Verify optional fields (5)
+        await _generalConditionPage.VerifyFieldIsOptionalAsync("Çoklu Ödül mü?");
+        await _generalConditionPage.VerifyFieldIsOptionalAsync("Hesaplama Tutar Para Birimi");
+        await _generalConditionPage.VerifyFieldIsOptionalAsync("Kdv Dahil mi?");
         await _generalConditionPage.VerifyFieldIsOptionalAsync("Marka");
         await _generalConditionPage.VerifyFieldIsOptionalAsync("Açıklama");
         
-        // Assert - Verify not displayed fields
+        // Assert - Verify not displayed fields (1)
         await _generalConditionPage.VerifyFieldIsNotDisplayedAsync("Brüt Alım Kalem Tipi");
         
-        Console.WriteLine("✅ TEST18: All field validations passed for Rebate Sales Bonus + Hesaplamasız");
+        Console.WriteLine("✅ TEST20: All field validations passed for Rebate Sales Bonus + Hesaplamasız + Çoklu Ödül:Hayır");
     }
 
     [Fact]
-    public async Task TEST19_RentalFee_Hesaplamasiz_ShouldShowCorrectFieldValidation()
+    public async Task TEST21_RebateSalesBonus_Hesaplamasiz_Coklu_Evet_ShouldShowCorrectFieldValidation()
+    {
+        Driver.SetPage(Page);
+        
+        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        await _contractDefPage.FillContractNameAsync("AL LIBA-2025-CFR");
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.ClickGeneralConditionTabAsync();
+        await _contractDefPage.ClickNewGeneralConditionButtonAsync();
+        
+        await _generalConditionPage.VerifyFormIsDisplayedAsync();
+        
+        await _generalConditionPage.SelectConditionTypeAsync("Rebate Sales Bonus");
+        await _generalConditionPage.SelectCalculationTypeAsync("Hesaplamasız");
+        await _generalConditionPage.SelectMultipleRewardAsync("Evet");
+        await Task.Delay(2000);
+        
+        // Assert - Verify disabled fields (11)
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Marj Tipi");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Marj");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpanlı");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
+        
+        // Assert - Verify mandatory fields (3)
+        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
+        await _generalConditionPage.VerifyFieldIsMandatoryAsync("İşlem Para Birimi");
+        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+        
+        // Assert - Verify optional fields (5)
+        await _generalConditionPage.VerifyFieldIsOptionalAsync("Çoklu Ödül mü?");
+        await _generalConditionPage.VerifyFieldIsOptionalAsync("Hesaplama Tutar Para Birimi");
+        await _generalConditionPage.VerifyFieldIsOptionalAsync("Kdv Dahil mi?");
+        await _generalConditionPage.VerifyFieldIsOptionalAsync("Marka");
+        await _generalConditionPage.VerifyFieldIsOptionalAsync("Açıklama");
+        
+        // Assert - Verify not displayed fields (1)
+        await _generalConditionPage.VerifyFieldIsNotDisplayedAsync("Brüt Alım Kalem Tipi");
+        
+        Console.WriteLine("✅ TEST21: All field validations passed for Rebate Sales Bonus + Hesaplamasız + Çoklu Ödül:Evet");
+    }
+
+    [Fact]
+    public async Task TEST22_RentalFee_Hesaplamasiz_ShouldShowCorrectFieldValidation()
     {
         Driver.SetPage(Page);
         
@@ -1264,37 +1317,36 @@ public class GeneralConditionTests : TestBase
         await _generalConditionPage.SelectCalculationTypeAsync("Hesaplamasız");
         await Task.Delay(2000);
         
-        // Assert - Verify disabled fields
+        // Assert - Verify disabled fields (11)
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar Para Birimi");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Faturalama Para Birimi");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Çoklu Ödül mü?");
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Marj Tipi");
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Marj");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpanlı");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
         
-        // Assert - Verify mandatory fields
-        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
+        // Assert - Verify mandatory fields (4)
         await _generalConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
-        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Tutar");
         await _generalConditionPage.VerifyFieldIsMandatoryAsync("İşlem Para Birimi");
+        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Tutar");
         
-        // Assert - Verify optional fields
+        // Assert - Verify optional fields (4)
+        await _generalConditionPage.VerifyFieldIsOptionalAsync("Hesaplama Tutar Para Birimi");
+        await _generalConditionPage.VerifyFieldIsOptionalAsync("Kdv Dahil mi?");
         await _generalConditionPage.VerifyFieldIsOptionalAsync("Marka");
         await _generalConditionPage.VerifyFieldIsOptionalAsync("Açıklama");
         
-        // Assert - Verify not displayed fields
-        await _generalConditionPage.VerifyFieldIsNotDisplayedAsync("Brüt Alım Kalem Tipi");
-        
-        Console.WriteLine("✅ TEST19: All field validations passed for Rental Fee + Hesaplamasız");
+        // Assert - Verify not displayed fields (1)
     }
 
     [Fact]
-    public async Task TEST20_MarketingActivity_Hesaplamasiz_ShouldShowCorrectFieldValidation()
+    public async Task TEST23_MarketingActivity_Hesaplamasiz_ShouldShowCorrectFieldValidation()
     {
         Driver.SetPage(Page);
         
@@ -1311,37 +1363,39 @@ public class GeneralConditionTests : TestBase
         await _generalConditionPage.SelectCalculationTypeAsync("Hesaplamasız");
         await Task.Delay(2000);
         
-        // Assert - Verify disabled fields
+        // Assert - Verify disabled fields (11)
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar Para Birimi");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Brüt Alım Kalem Tipi");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Faturalama Para Birimi");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Çoklu Ödül mü?");
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Marj Tipi");
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Marj");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpanlı");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
         
-        // Assert - Verify mandatory fields
-        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Kdv Dahil mi?");
+        // Assert - Verify mandatory fields (4)
         await _generalConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
-        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Tutar");
         await _generalConditionPage.VerifyFieldIsMandatoryAsync("İşlem Para Birimi");
+        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
+        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Tutar");
         
-        // Assert - Verify optional fields
+        // Assert - Verify optional fields (4) - Hesaplama Tutar Para Birimi is optional per spec
+        await _generalConditionPage.VerifyFieldIsOptionalAsync("Hesaplama Tutar Para Birimi");
+        await _generalConditionPage.VerifyFieldIsOptionalAsync("Kdv Dahil mi?");
         await _generalConditionPage.VerifyFieldIsOptionalAsync("Marka");
         await _generalConditionPage.VerifyFieldIsOptionalAsync("Açıklama");
         
-        // Assert - Verify not displayed fields
-        await _generalConditionPage.VerifyFieldIsNotDisplayedAsync("Hesaplama Oran");
+        // Assert - Verify not displayed fields (1)
+        await _generalConditionPage.VerifyFieldIsNotDisplayedAsync("Brüt Alım Kalem Tipi");
         
-        Console.WriteLine("✅ TEST20: All field validations passed for Marketing Activity + Hesaplamasız");
+        Console.WriteLine("✅ TEST23: All field validations passed for Marketing Activity + Hesaplamasız");
     }
 
     [Fact]
-    public async Task TEST21_ContractMargin_Hesaplamasiz_ShouldShowCorrectFieldValidation()
+    public async Task TEST24_ContractMargin_Hesaplamasiz_Tekli_ShouldShowCorrectFieldValidation()
     {
         Driver.SetPage(Page);
         
@@ -1358,33 +1412,34 @@ public class GeneralConditionTests : TestBase
         await _generalConditionPage.SelectCalculationTypeAsync("Hesaplamasız");
         await Task.Delay(2000);
         
-        // Assert - Verify disabled fields
+        // Assert - Verify disabled fields (10)
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Kademeli mi?");
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Çoklu Ödül mü?");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpan Var mı?");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpanlı");
         await _generalConditionPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
-        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
+        await _generalConditionPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
         
-        // Assert - Verify mandatory fields
+        // Assert - Verify mandatory fields (4) - Marj is required per spec
+        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Marj");
         await _generalConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
         await _generalConditionPage.VerifyFieldIsMandatoryAsync("İşlem Para Birimi");
         await _generalConditionPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-        await _generalConditionPage.VerifyFieldIsMandatoryAsync("Marj");
         
-        // Assert - Verify optional fields
+        // Assert - Verify optional fields (4)
         await _generalConditionPage.VerifyFieldIsOptionalAsync("Hesaplama Tutar Para Birimi");
         await _generalConditionPage.VerifyFieldIsOptionalAsync("Kdv Dahil mi?");
         await _generalConditionPage.VerifyFieldIsOptionalAsync("Marka");
         await _generalConditionPage.VerifyFieldIsOptionalAsync("Açıklama");
         
-        // Assert - Verify not displayed fields
+        // Assert - Verify not displayed fields (1)
         await _generalConditionPage.VerifyFieldIsNotDisplayedAsync("Brüt Alım Kalem Tipi");
         
-        Console.WriteLine("✅ TEST21: All field validations passed for Contract Margin + Hesaplamasız");
+        Console.WriteLine("✅ TEST24: All field validations passed for Contract Margin + Hesaplamasız");
     }
 }
 
