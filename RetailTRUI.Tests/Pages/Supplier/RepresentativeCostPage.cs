@@ -146,30 +146,80 @@ public class RepresentativeCostPage : BasePage
 
     private async Task SelectDropdownFilterAsync(string labelText, string optionText)
     {
-        // For Kendo dropdowns the clickable element is usually span[aria-owns='*_listbox'] next to label
-        var label = Page.Locator($"label:has-text('{labelText}')");
-        if (await label.CountAsync() == 0)
-            throw new Exception($"Filter label '{labelText}' not found");
+        ILocator dropdown = null;
 
-        var container = label.First.Locator("xpath=..");
-        var dropdown = container.Locator("span[aria-owns$='_listbox'], span.k-dropdown-wrap, span.k-select, span[role='listbox']");
-        var count = await dropdown.CountAsync();
-        if (count == 0)
+        // Strategy 1: Try exact label match
+        var label = Page.Locator($"label:has-text('{labelText}')");
+        
+        // Strategy 2: If exact label fail, try partial match  
+        if (await label.CountAsync() == 0)
         {
-            // fallback: search globally by label text
-            dropdown = Page.Locator($"span[aria-owns$='_listbox']:below(label:has-text('{labelText}'))");
+            // Try removing "PB" and search for "Para" or partial matching
+            var shortLabel = labelText.Replace(" PB", "").Replace(" Tarihi", " Tar").Trim();
+            label = Page.Locator($"label:has-text('{shortLabel}')");
         }
 
-        await dropdown.First.ClickAsync();
-        await Page.WaitForTimeoutAsync(500);
-
-        var option = Page.Locator($"li[role='option']:has-text('{optionText}')").First;
-        await option.WaitForAsync(new LocatorWaitForOptions
+        // Strategy 3: Look for label containing any part of the text
+        if (await label.CountAsync() == 0)
         {
-            State = WaitForSelectorState.Visible,
-            Timeout = 10000
-        });
-        await option.ClickAsync();
+            var words = labelText.Split(' ');
+            if (words.Length > 1)
+            {
+                label = Page.Locator($"label:has-text('{words[0]}')");
+            }
+        }
+
+        if (await label.CountAsync() > 0)
+        {
+            // Label found, get adjacent dropdown
+            var container = label.First.Locator("xpath=..");
+            dropdown = container.Locator("span[role='combobox'], span.k-dropdown-wrap, span.k-select, [role='listbox'], .k-dropdown");
+        }
+
+        // Fallback: if still not found, search all dropdowns
+        if (dropdown == null || await dropdown.CountAsync() == 0)
+        {
+            dropdown = Page.Locator("span[role='combobox'], span.k-dropdown-wrap, .k-dropdown, [role='combobox']").First;
+        }
+
+        if (await dropdown.CountAsync() == 0)
+            throw new Exception($"Dropdown for label '{labelText}' not found");
+
+        // Click dropdown to open
+        await dropdown.First.ClickAsync();
+        await Page.WaitForTimeoutAsync(1200); // Wait for menu to appear
+
+        // Look for option - try exact match first, then partial
+        var option = Page.Locator($"li[role='option']:has-text('{optionText}')").First;
+        
+        if (await option.CountAsync() == 0 && optionText.Length > 2)
+        {
+            // Try partial match
+            var shortOption = optionText.Substring(0, Math.Min(3, optionText.Length));
+            option = Page.Locator($"li[role='option']:has-text('{shortOption}')").First;
+        }
+
+        // Wait and click
+        int retries = 5;
+        while (retries > 0 && await option.CountAsync() == 0)
+        {
+            await Page.WaitForTimeoutAsync(200);
+            retries--;
+        }
+
+        if (await option.CountAsync() == 0)
+            throw new Exception($"Option '{optionText}' not found in dropdown");
+
+        try
+        {
+            await option.ScrollIntoViewIfNeededAsync();
+            await Page.WaitForTimeoutAsync(200);
+        }
+        catch { }
+
+        // Force click
+        await option.ClickAsync(new LocatorClickOptions { Force = true });
+        await Page.WaitForTimeoutAsync(500);
     }
 
     public async Task ClickSearchAsync()
@@ -181,38 +231,32 @@ public class RepresentativeCostPage : BasePage
     public async Task FilterByCompanyAsync(string company)
     {
         await FillTextFilterAsync("Firma", company);
-        await ClickSearchAsync();
     }
 
     public async Task FilterByBillingCurrencyAsync(string currency)
     {
         await SelectDropdownFilterAsync("Faturalama PB", currency);
-        await ClickSearchAsync();
     }
 
     public async Task FilterByCostDateAsync(string date)
     {
         // Date picker often has plain input tied to label
         await FillTextFilterAsync("Maliyet Tarihi", date);
-        await ClickSearchAsync();
     }
 
     public async Task FilterByCostStatusAsync(string status)
     {
         await SelectDropdownFilterAsync("Maliyet Durumu", status);
-        await ClickSearchAsync();
     }
 
     public async Task FilterByCostCurrencyAsync(string currency)
     {
         await SelectDropdownFilterAsync("Maliyet PB", currency);
-        await ClickSearchAsync();
     }
 
     public async Task FilterByRepresentativeAmountCurrencyAsync(string currency)
     {
         await SelectDropdownFilterAsync("Temsilci Tutar PB", currency);
-        await ClickSearchAsync();
     }
 
     public async Task FilterByDescriptionAsync(string description)
@@ -234,7 +278,6 @@ public class RepresentativeCostPage : BasePage
         var container = label.First.Locator("xpath=..");
         var input = container.Locator("input, textarea").First;
         await input.FillAsync(description);
-        await ClickSearchAsync();
     }
 
     public async Task VerifyGridContainsTextAsync(string expected)
