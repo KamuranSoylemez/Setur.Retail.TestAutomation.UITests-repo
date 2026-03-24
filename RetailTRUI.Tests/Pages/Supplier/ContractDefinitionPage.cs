@@ -628,6 +628,30 @@ public class ContractDefinitionPage : BasePage
         Console.WriteLine("✅ Clicked New General Condition button");
     }
 
+    public async Task ClickIncentiveTabAsync()
+    {
+        var frame = await GetContractEditFrameAsync();
+        
+        // Click on "Incentive" tab - use the first exact match
+        var incentiveTab = frame.Locator("a.k-link").Filter(new() { HasText = "Incentive" }).First;
+        await incentiveTab.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
+        await incentiveTab.ClickAsync();
+        await Page.WaitForTimeoutAsync(2000);
+        Console.WriteLine("✅ Clicked Incentive tab");
+    }
+
+    public async Task ClickNewIncentiveButtonAsync()
+    {
+        var frame = await GetContractEditFrameAsync();
+        
+        // Find and click "Yeni Kayıt" button for Incentive
+        var newButton = frame.Locator("a.k-grid-ContractRepresentativeIncentiveGridIdAddNew");
+        await newButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
+        await newButton.ClickAsync();
+        await Page.WaitForTimeoutAsync(2000);
+        Console.WriteLine("✅ Clicked New Incentive button");
+    }
+
     private async Task<IFrame> GetContractEditFrameAsync()
     {
         // Wait for the contract edit frame to load
