@@ -209,9 +209,17 @@ public class ContractDefinitionPage : BasePage
     }
     
     /// <summary>
-    /// Select fiscal month start (Ocak/January)
+    /// Select fiscal month start (default: Ocak/January)
     /// </summary>
     public async Task SelectFiscalMonthStartAsync()
+    {
+        await SelectFiscalMonthAsync("Ocak");
+    }
+    
+    /// <summary>
+    /// Select fiscal month start with specific month
+    /// </summary>
+    public async Task SelectFiscalMonthAsync(string monthName)
     {
         var frame = GetContractDefinitionFrame();
         
@@ -219,16 +227,24 @@ public class ContractDefinitionPage : BasePage
         await dropdown.ClickAsync(new LocatorClickOptions { Force = true });
         await Page.WaitForTimeoutAsync(500);
         
-        var option = frame.Locator("#FiscalMonthStart_listbox >> text=Ocak");
+        var option = frame.Locator($"#FiscalMonthStart_listbox >> text={monthName}");
         await option.ClickAsync();
         await Page.WaitForTimeoutAsync(500);
-        Console.WriteLine("✅ Selected fiscal month start: Ocak");
+        Console.WriteLine($"✅ Selected fiscal month: {monthName}");
     }
     
     /// <summary>
-    /// Select Incoterms (DAP - Delivered At Place)
+    /// Select Incoterms (default: DAP - Delivered At Place)
     /// </summary>
     public async Task SelectIncotermsAsync()
+    {
+        await SelectIncotermsAsync("DAP - Delivered At Place");
+    }
+    
+    /// <summary>
+    /// Select specific Incoterms option
+    /// </summary>
+    public async Task SelectIncotermsAsync(string incotermsValue)
     {
         var frame = GetContractDefinitionFrame();
         
@@ -236,10 +252,10 @@ public class ContractDefinitionPage : BasePage
         await dropdown.ClickAsync(new LocatorClickOptions { Force = true });
         await Page.WaitForTimeoutAsync(500);
         
-        var option = frame.Locator("#IncotermsID_listbox >> text=DAP - Delivered At Place");
+        var option = frame.Locator($"#IncotermsID_listbox >> text={incotermsValue}");
         await option.ClickAsync();
         await Page.WaitForTimeoutAsync(500);
-        Console.WriteLine("✅ Selected Incoterms: DAP");
+        Console.WriteLine($"✅ Selected Incoterms: {incotermsValue}");
     }
     
     /// <summary>

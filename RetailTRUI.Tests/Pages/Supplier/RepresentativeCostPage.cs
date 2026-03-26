@@ -146,61 +146,49 @@ public class RepresentativeCostPage : BasePage
 
     private async Task SelectDropdownFilterAsync(string labelText, string optionText)
     {
-        ILocator dropdown = null;
-
-        // Strategy 1: Try exact label match
-        var label = Page.Locator($"label:has-text('{labelText}')");
+        // Try multiple variations of the label text
+        var labelVariations = new List<string> { labelText };
         
-        // Strategy 2: If exact label fail, try partial match  
+        // Add variations
+        if (labelText.Contains(" "))
+        {
+            labelVariations.Add(labelText.Split(' ')[0]); // First word only
+        }
+        if (labelText.Contains("PB"))
+        {
+            labelVariations.Add(labelText.Replace(" PB", "").Trim()); // Without PB
+        }
+
+        ILocator label = null;
+        foreach (var labelVariation in labelVariations)
+        {
+            label = Page.Locator($"label:has-text('{labelVariation}')");
+            if (await label.CountAsync() > 0)
+                break;
+        }
+
         if (await label.CountAsync() == 0)
-        {
-            // Try removing "PB" and search for "Para" or partial matching
-            var shortLabel = labelText.Replace(" PB", "").Replace(" Tarihi", " Tar").Trim();
-            label = Page.Locator($"label:has-text('{shortLabel}')");
-        }
+            throw new Exception($"Filter label '{labelText}' not found");
 
-        // Strategy 3: Look for label containing any part of the text
-        if (await label.CountAsync() == 0)
-        {
-            var words = labelText.Split(' ');
-            if (words.Length > 1)
-            {
-                label = Page.Locator($"label:has-text('{words[0]}')");
-            }
-        }
-
-        if (await label.CountAsync() > 0)
-        {
-            // Label found, get adjacent dropdown
-            var container = label.First.Locator("xpath=..");
-            dropdown = container.Locator("span[role='combobox'], span.k-dropdown-wrap, span.k-select, [role='listbox'], .k-dropdown");
-        }
-
-        // Fallback: if still not found, search all dropdowns
-        if (dropdown == null || await dropdown.CountAsync() == 0)
-        {
-            dropdown = Page.Locator("span[role='combobox'], span.k-dropdown-wrap, .k-dropdown, [role='combobox']").First;
-        }
+        var container = label.First.Locator("xpath=following-sibling::*[1]");
+        var dropdown = container.Locator("span[role='combobox'], span.k-dropdown-wrap, .k-dropdown");
 
         if (await dropdown.CountAsync() == 0)
             throw new Exception($"Dropdown for label '{labelText}' not found");
 
-        // Click dropdown to open
+        // Click dropdown
         await dropdown.First.ClickAsync();
-        await Page.WaitForTimeoutAsync(1200); // Wait for menu to appear
+        await Page.WaitForTimeoutAsync(1500);
 
-        // Look for option - try exact match first, then partial
+        // Look for option
         var option = Page.Locator($"li[role='option']:has-text('{optionText}')").First;
-        
         if (await option.CountAsync() == 0 && optionText.Length > 2)
         {
-            // Try partial match
-            var shortOption = optionText.Substring(0, Math.Min(3, optionText.Length));
-            option = Page.Locator($"li[role='option']:has-text('{shortOption}')").First;
+            option = Page.Locator($"li[role='option']:has-text('{optionText.Substring(0, 3)}')").First;
         }
 
-        // Wait and click
-        int retries = 5;
+        // Wait for option
+        int retries = 8;
         while (retries > 0 && await option.CountAsync() == 0)
         {
             await Page.WaitForTimeoutAsync(200);
@@ -208,18 +196,12 @@ public class RepresentativeCostPage : BasePage
         }
 
         if (await option.CountAsync() == 0)
-            throw new Exception($"Option '{optionText}' not found in dropdown");
+            throw new Exception($"Option '{optionText}' not found");
 
-        try
-        {
-            await option.ScrollIntoViewIfNeededAsync();
-            await Page.WaitForTimeoutAsync(200);
-        }
-        catch { }
-
-        // Force click
+        try { await option.ScrollIntoViewIfNeededAsync(); } catch { }
+        await Page.WaitForTimeoutAsync(300);
         await option.ClickAsync(new LocatorClickOptions { Force = true });
-        await Page.WaitForTimeoutAsync(500);
+        await Page.WaitForTimeoutAsync(600);
     }
 
     public async Task ClickSearchAsync()
