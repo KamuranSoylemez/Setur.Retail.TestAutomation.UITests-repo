@@ -1,0 +1,98 @@
+## GENEL KONDISYON TESTLERI - MODERNİZASYON PROMPT'U
+
+Temsilci kondisyon testlerinden aldığımız deneyimleri kullanarak, genel kondisyon testlerini aşağıdaki yapı ve kurallara göre düzenleyeceğiz.
+
+### AMAÇ
+- Genel Kondisyon Tanımlama ekranının tüm kombinasyonlarını test etmek
+- Disable, Mandatory (Required), Optional, Not Shown alanları sistematik olarak kontrol etmek
+- Page yapısını Temsilci kondisyon testlerine benzer şekilde organize etmek
+
+### PAGE YAPISI (ACTIONS - VERİFİCATIONS)
+
+#### ACTIONS (Test başında ayarlanacak alanlar):
+- **Kondisyon Tipi**: Rebate Target Purchase, Rebate Purchase, Rebate Target Sales vs.
+- **Hesaplama Tipi**: Alım Tutarı, Alım Adeti, Satış Adedi, Satış Cirosu, Hesaplamasız
+- **Kademeli mi?**: "Required:Evet" ise Evet, "Required:Hayır" ise Hayır seçilir (Disabled ise seçilmez)
+- **Hedef Ciro**: "Required:Evet" ise Evet, "Required:Hayır" ise Hayır seçilir (Disabled ise seçilmez)
+
+#### VERIFICATION (Kontrol edilecek alanlar):
+- Tüm diğer alanlar durum kontrol edilecek: **Required (Mandatory)**, **Disabled**, **Optional**, **Not Shown**
+- Conditional rules kontrol edilecek (örn: "Tutar girilirse Oran disabled")
+
+### ALAN STATUS TANIMLAMALARI
+
+| Status | Açıklama |
+|--------|----------|
+| **Required (Mandatory)** | Alan zorunlu, doldurulması gerekli, kırmızı yıldızlı |
+| **Disabled** | Alan devre dışı, kullanıcı tarafından düzenlenemez, griymiş görünüm |
+| **Optional** | Alan isteğe bağlı, boş bırakılabilir |
+| **Not Shown** | Alan ekranda görünmüyor, tamamen gizli |
+| **Conditional** | Koşullu kural, bir başka değere göre değişiyor |
+
+### GENEL KONDISYON EKRANI ALANLARI
+
+| Alan Adı | Tür |
+|----------|-----|
+| Kondisyon Tipi | Dropdown |
+| Hesaplama Tipi | Dropdown |
+| Kdv Dahil mi? | Checkbox / Mandatory |
+| Tutar | Text Input |
+| Oran | Text Input |
+| Temel Ölçü Birimi | Dropdown |
+| Marka | Dropdown |
+| Açıklama | Text Area |
+| Hesaplama Periyodu | Dropdown |
+| Hedef Miktar | Text Input |
+| Hedef Ciro | Text Input |
+| Brüt Satın Alma Tipi | Dropdown |
+| Çarpan Var mı? | Checkbox |
+| Birim Çarpanı | Text Input |
+| Kademeli mi? | Checkbox |
+| Başlangıç Tarihi | Date Picker |
+| Bitiş Tarihi | Date Picker |
+
+### TEST YAZIM STANDARDI
+
+Her test aşağıdaki format kullanılacak:
+
+```
+## T[N]: [Kondisyon Tipi] + [Hesaplama Tipi] + [Kademeli:Y/N] + [Hedef Ciro:Y/N/Disabled]
+
+**Actions:**
+- Kondisyon Tipi: [seçim]
+- Hesaplama Tipi: [seçim]
+- Kademeli: [Required:Y/N/Disabled - seçim yapılacaksa]
+- Hedef Ciro: [Required:Y/N/Disabled - seçim yapılacaksa]
+
+**Verifications:**
+- Kdv Dahil mi?: [Status]
+- Tutar: [Status]
+- Oran: [Status]
+- Temel Ölçü Birimi: [Status]
+- Marka: [Status]
+- Açıklama: [Status]
+- Hesaplama Periyodu: [Status]
+- Hedef Miktar: [Status]
+- Hedef Ciro: [Status]
+- Brüt Satın Alma Tipi: [Status]
+- Çarpan Var mı?: [Status]
+- Birim Çarpanı: [Status]
+- Kademeli: [Status]
+- Başlangıç Tarihi: [Status]
+- Bitiş Tarihi: [Status]
+
+**Ek Test Notları:**
+[Conditional rules veya özel durumlar]
+```
+
+### CONDITIONAL RULES ÖRNEĞİ
+
+- **Tutar/Oran**: Tutar girilirse Oran otomatik disabled, Oran girilirse Tutar otomatik disabled
+- **Kademeli/Hesaplama**: Kademeli seçilirse Tutar ve Oran disabled
+- **Target Alanları**: Hedef Ciro seçilirse Hedef Miktar değişiyor
+
+### NOTLAR
+- Test sayısı: 16-18 arasında olmalı
+- Her kombinasyon test edilmeli
+- Temsilci kondisyon testlerindeki T1-T14 mantığı uygulanmalı
+- Conditional rules açıkça belirtilmeli

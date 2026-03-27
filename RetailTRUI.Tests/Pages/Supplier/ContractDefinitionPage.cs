@@ -209,9 +209,17 @@ public class ContractDefinitionPage : BasePage
     }
     
     /// <summary>
-    /// Select fiscal month start (Ocak/January)
+    /// Select fiscal month start (default: Ocak/January)
     /// </summary>
     public async Task SelectFiscalMonthStartAsync()
+    {
+        await SelectFiscalMonthAsync("Ocak");
+    }
+    
+    /// <summary>
+    /// Select fiscal month start with specific month
+    /// </summary>
+    public async Task SelectFiscalMonthAsync(string monthName)
     {
         var frame = GetContractDefinitionFrame();
         
@@ -219,16 +227,24 @@ public class ContractDefinitionPage : BasePage
         await dropdown.ClickAsync(new LocatorClickOptions { Force = true });
         await Page.WaitForTimeoutAsync(500);
         
-        var option = frame.Locator("#FiscalMonthStart_listbox >> text=Ocak");
+        var option = frame.Locator($"#FiscalMonthStart_listbox >> text={monthName}");
         await option.ClickAsync();
         await Page.WaitForTimeoutAsync(500);
-        Console.WriteLine("✅ Selected fiscal month start: Ocak");
+        Console.WriteLine($"✅ Selected fiscal month: {monthName}");
     }
     
     /// <summary>
-    /// Select Incoterms (DAP - Delivered At Place)
+    /// Select Incoterms (default: DAP - Delivered At Place)
     /// </summary>
     public async Task SelectIncotermsAsync()
+    {
+        await SelectIncotermsAsync("DAP - Delivered At Place");
+    }
+    
+    /// <summary>
+    /// Select specific Incoterms option
+    /// </summary>
+    public async Task SelectIncotermsAsync(string incotermsValue)
     {
         var frame = GetContractDefinitionFrame();
         
@@ -236,10 +252,10 @@ public class ContractDefinitionPage : BasePage
         await dropdown.ClickAsync(new LocatorClickOptions { Force = true });
         await Page.WaitForTimeoutAsync(500);
         
-        var option = frame.Locator("#IncotermsID_listbox >> text=DAP - Delivered At Place");
+        var option = frame.Locator($"#IncotermsID_listbox >> text={incotermsValue}");
         await option.ClickAsync();
         await Page.WaitForTimeoutAsync(500);
-        Console.WriteLine("✅ Selected Incoterms: DAP");
+        Console.WriteLine($"✅ Selected Incoterms: {incotermsValue}");
     }
     
     /// <summary>
@@ -626,6 +642,30 @@ public class ContractDefinitionPage : BasePage
         await newButton.ClickAsync();
         await Page.WaitForTimeoutAsync(2000);
         Console.WriteLine("✅ Clicked New General Condition button");
+    }
+
+    public async Task ClickIncentiveTabAsync()
+    {
+        var frame = await GetContractEditFrameAsync();
+        
+        // Click on "Incentive" tab - use the first exact match
+        var incentiveTab = frame.Locator("a.k-link").Filter(new() { HasText = "Incentive" }).First;
+        await incentiveTab.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
+        await incentiveTab.ClickAsync();
+        await Page.WaitForTimeoutAsync(2000);
+        Console.WriteLine("✅ Clicked Incentive tab");
+    }
+
+    public async Task ClickNewIncentiveButtonAsync()
+    {
+        var frame = await GetContractEditFrameAsync();
+        
+        // Find and click "Yeni Kayıt" button for Incentive
+        var newButton = frame.Locator("a.k-grid-ContractRepresentativeIncentiveGridIdAddNew");
+        await newButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
+        await newButton.ClickAsync();
+        await Page.WaitForTimeoutAsync(2000);
+        Console.WriteLine("✅ Clicked New Incentive button");
     }
 
     private async Task<IFrame> GetContractEditFrameAsync()
