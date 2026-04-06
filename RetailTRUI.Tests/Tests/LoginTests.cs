@@ -43,9 +43,9 @@ public class LoginTests : IAsyncLifetime
     [InlineData("USERNAME", "PASSWORD")]
     [InlineData("", "")]
     [InlineData("ADMINUSER", "1234567")]
-    [InlineData("MELIKE_GORGUN", "")]
+    [InlineData("KAMURAN_SOYLEMEZ", "")]
     [InlineData("", "correctPassword")]
-    [InlineData("MELIKE_GORGUN", "xxx")]
+    [InlineData("KAMURAN_SOYLEMEZ", "xxx")]
     [InlineData("xxxxxx", "correctPassword")]
     public async Task UnsuccessfulLogin_WithInvalidCredentials_ShouldShowError(string username, string password)
     {

@@ -101,8 +101,8 @@ Users are defined in `Config/Env/staging.users.yml`:
 
 ```yaml
 normal:
-  username: "MELIKE_GORGUN"
-  password: "Alaz060624."
+  username: "KAMURAN_SOYLEMEZ"
+  password: "ks1221KS!!3"
 
 RETAIL_DIRECTOR:
   username: "RETAIL_DIRECTOR"
