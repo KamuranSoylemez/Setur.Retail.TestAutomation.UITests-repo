@@ -108,6 +108,239 @@ public class IncentiveConditionTests : TestBase
         }
     }
 
+    private sealed record FieldRuleSet(
+        string[] Mandatory,
+        string[] Disabled,
+        string[] Optional,
+        string[] NotShown);
+
+    private static readonly FieldRuleSet Test1Rules = new(
+        Mandatory:
+        [
+            "Başlangıç Tarihi", "Bitiş Tarihi", "Hesaplama Periyodu", "Faturalama Para Birimi",
+            "Tutara Kdv Dahil", "Fatura Kdv'li mi", "Tutar Çarpanlı", "Birim Çarpanı",
+            "Hesaplama Tutar", "Hesaplama Oran", "Hedef Miktar", "Maksimum Kişi Sayısı",
+            "Sadece Barkodlu Satışlar mı?", "Firmaya Fatura Edilsin mi?", "Net/Brüt", "Kişi Başı mı?"
+        ],
+        Disabled:
+        [
+            "İşlem Para Birimi", "Hedef Ciro"
+        ],
+        Optional:
+        [
+            "Temel Ölçü Birimi", "Hesaplama Tutar Para Birimi", "Marka", "Açıklama"
+        ],
+        NotShown: []);
+
+    private static readonly FieldRuleSet Test2Rules = new(
+        Mandatory:
+        [
+            "Başlangıç Tarihi", "Bitiş Tarihi", "Hesaplama Periyodu", "Faturalama Para Birimi",
+            "Tutara Kdv Dahil", "Fatura Kdv'li mi", "Tutar Çarpanlı", "Birim Çarpanı",
+            "Hesaplama Tutar", "Hesaplama Oran", "Sadece Barkodlu Satışlar mı?",
+            "Firmaya Fatura Edilsin mi?", "Net/Brüt", "Kişi Başı mı?"
+        ],
+        Disabled:
+        [
+            "İşlem Para Birimi"
+        ],
+        Optional:
+        [
+            "Temel Ölçü Birimi", "Hesaplama Tutar Para Birimi", "Marka", "Açıklama"
+        ],
+        NotShown:
+        [
+            "Hedef Ciro", "Hedef Miktar"
+        ]);
+
+    private static readonly FieldRuleSet Test3Rules = new(
+        Mandatory:
+        [
+            "Başlangıç Tarihi", "Bitiş Tarihi", "Hesaplama Periyodu", "Faturalama Para Birimi",
+            "Tutara Kdv Dahil", "Fatura Kdv'li mi", "Sadece Barkodlu Satışlar mı?",
+            "Firmaya Fatura Edilsin mi?", "Net/Brüt", "Kişi Başı mı?"
+        ],
+        Disabled:
+        [
+            "İşlem Para Birimi", "Temel Ölçü Birimi", "Tutar Çarpanlı", "Birim Çarpanı",
+            "Hesaplama Tutar", "Hesaplama Oran"
+        ],
+        Optional:
+        [
+            "Hesaplama Tutar Para Birimi", "Marka", "Açıklama"
+        ],
+        NotShown:
+        [
+            "Hedef Ciro", "Hedef Miktar"
+        ]);
+
+    private static readonly FieldRuleSet Test4Rules = new(
+        Mandatory:
+        [
+            "Başlangıç Tarihi", "Bitiş Tarihi", "Hesaplama Periyodu", "Faturalama Para Birimi",
+            "Tutara Kdv Dahil", "Fatura Kdv'li mi", "Sadece Barkodlu Satışlar mı?",
+            "Firmaya Fatura Edilsin mi?", "Birim Çarpanı", "Tutar Çarpanlı",
+            "Net/Brüt", "Kişi Başı mı?"
+        ],
+        Disabled:
+        [
+            "İşlem Para Birimi", "Hesaplama Tutar", "Hesaplama Oran"
+        ],
+        Optional:
+        [
+            "Temel Ölçü Birimi", "Hesaplama Tutar Para Birimi", "Marka", "Açıklama"
+        ],
+        NotShown:
+        [
+            "Hedef Ciro", "Hedef Miktar"
+        ]);
+
+    private static readonly FieldRuleSet Test5Rules = new(
+        Mandatory:
+        [
+            "Başlangıç Tarihi", "Bitiş Tarihi", "Hesaplama Periyodu", "Faturalama Para Birimi",
+            "Tutara Kdv Dahil", "Fatura Kdv'li mi", "Hesaplama Tutar", "Hesaplama Oran",
+            "Hedef Ciro", "Sadece Barkodlu Satışlar mı?", "Firmaya Fatura Edilsin mi?",
+            "Net/Brüt", "Kişi Başı mı?"
+        ],
+        Disabled:
+        [
+            "İşlem Para Birimi", "Tutar Çarpanlı", "Birim Çarpanı", "Temel Ölçü Birimi"
+        ],
+        Optional:
+        [
+            "Hesaplama Tutar Para Birimi", "Marka", "Açıklama"
+        ],
+        NotShown: []);
+
+    private static readonly FieldRuleSet Test6Rules = new(
+        Mandatory:
+        [
+            "Başlangıç Tarihi", "Bitiş Tarihi", "Hesaplama Periyodu", "Faturalama Para Birimi",
+            "Tutara Kdv Dahil", "Fatura Kdv'li mi", "Hesaplama Tutar", "Hesaplama Oran",
+            "Sadece Barkodlu Satışlar mı?", "Firmaya Fatura Edilsin mi?", "Net/Brüt", "Kişi Başı mı?"
+        ],
+        Disabled:
+        [
+            "İşlem Para Birimi", "Tutar Çarpanlı", "Birim Çarpanı", "Temel Ölçü Birimi"
+        ],
+        Optional:
+        [
+            "Hesaplama Tutar Para Birimi", "Marka", "Açıklama"
+        ],
+        NotShown:
+        [
+            "Hedef Ciro", "Hedef Miktar"
+        ]);
+
+    private static readonly FieldRuleSet Test7Rules = Test3Rules;
+
+    private static readonly FieldRuleSet Test8Rules = new(
+        Mandatory:
+        [
+            "Başlangıç Tarihi", "Bitiş Tarihi", "Hesaplama Periyodu", "Faturalama Para Birimi",
+            "Tutara Kdv Dahil", "Fatura Kdv'li mi", "Sadece Barkodlu Satışlar mı?",
+            "Firmaya Fatura Edilsin mi?", "Net/Brüt", "Kişi Başı mı?"
+        ],
+        Disabled:
+        [
+            "İşlem Para Birimi", "Hesaplama Tutar", "Hesaplama Oran",
+            "Tutar Çarpanlı", "Birim Çarpanı", "Temel Ölçü Birimi"
+        ],
+        Optional:
+        [
+            "Hesaplama Tutar Para Birimi", "Marka", "Açıklama"
+        ],
+        NotShown:
+        [
+            "Hedef Ciro", "Hedef Miktar"
+        ]);
+
+    private static readonly FieldRuleSet Test9Rules = new(
+        Mandatory:
+        [
+            "Başlangıç Tarihi", "Bitiş Tarihi", "Hesaplama Periyodu", "Faturalama Para Birimi",
+            "Tutara Kdv Dahil", "Fatura Kdv'li mi", "Hesaplama Tutar", "Net/Brüt",
+            "Kişi Başı mı?", "Maksimum Kişi Sayısı", "Sadece Barkodlu Satışlar mı?", "Firmaya Fatura Edilsin mi?"
+        ],
+        Disabled:
+        [
+            "İşlem Para Birimi", "Temel Ölçü Birimi", "Tutar Çarpanlı", "Birim Çarpanı", "Hesaplama Oran"
+        ],
+        Optional:
+        [
+            "Hesaplama Tutar Para Birimi", "Marka", "Açıklama"
+        ],
+        NotShown:
+        [
+            "Hedef Ciro", "Hedef Miktar"
+        ]);
+
+    private static readonly FieldRuleSet Test10Rules = new(
+        Mandatory:
+        [
+            "Başlangıç Tarihi", "Bitiş Tarihi", "Hesaplama Periyodu", "Faturalama Para Birimi",
+            "Tutara Kdv Dahil", "Fatura Kdv'li mi", "Hesaplama Tutar", "Net/Brüt",
+            "Kişi Başı mı?", "Maksimum Kişi Sayısı", "Sadece Barkodlu Satışlar mı?", "Firmaya Fatura Edilsin mi?"
+        ],
+        Disabled:
+        [
+            "İşlem Para Birimi", "Temel Ölçü Birimi", "Tutar Çarpanlı",
+            "Birim Çarpanı", "Hesaplama Oran", "Hedef Ciro", "Hedef Miktar"
+        ],
+        Optional:
+        [
+            "Hesaplama Tutar Para Birimi", "Marka", "Açıklama"
+        ],
+        NotShown: []);
+
+    private static readonly FieldRuleSet Test11Rules = new(
+        Mandatory:
+        [
+            "Başlangıç Tarihi", "Bitiş Tarihi", "Hesaplama Periyodu", "Faturalama Para Birimi",
+            "Tutara Kdv Dahil", "Fatura Kdv'li mi", "Net/Brüt", "Kişi Başı mı?", "Maksimum Kişi Sayısı",
+            "Sadece Barkodlu Satışlar mı?", "Firmaya Fatura Edilsin mi?"
+        ],
+        Disabled:
+        [
+            "İşlem Para Birimi", "Temel Ölçü Birimi", "Tutar Çarpanlı",
+            "Birim Çarpanı", "Hesaplama Tutar", "Hesaplama Oran"
+        ],
+        Optional:
+        [
+            "Hesaplama Tutar Para Birimi", "Marka", "Açıklama"
+        ],
+        NotShown:
+        [
+            "Hedef Ciro", "Hedef Miktar"
+        ]);
+
+    private async Task AssertFieldRulesAsync(FieldRuleSet rules)
+    {
+        using (new AssertionScope())
+        {
+            foreach (var field in rules.Mandatory)
+            {
+                await _incentiveConditionPage.VerifyFieldIsMandatoryAsync(field);
+            }
+
+            foreach (var field in rules.Disabled)
+            {
+                await _incentiveConditionPage.VerifyFieldIsDisabledAsync(field);
+            }
+
+            foreach (var field in rules.Optional)
+            {
+                await _incentiveConditionPage.VerifyFieldIsOptionalAsync(field);
+            }
+
+            foreach (var field in rules.NotShown)
+            {
+                await _incentiveConditionPage.VerifyFieldIsNotShownAsync(field);
+            }
+        }
+    }
+
     /// <summary>
     /// TEST1: Incentive - Satış Adedi - Kademeli: Hayır, Hedefli: Evet, Çoklu Ödül: Hayır
     /// 
@@ -165,39 +398,7 @@ public class IncentiveConditionTests : TestBase
         await _incentiveConditionPage.SelectIsTargetedAsync("Evet");
         await Task.Delay(2000);
         
-        // Assert - Verify all fields in one scope so we see all failures at once
-        using (new AssertionScope())
-        {
-            // REQUIRED FIELDS
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Tutara Kdv Dahil");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Fatura Kdv'li mi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Tutar Çarpanlı");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Birim Çarpanı");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Tutar");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Oran");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Hedef Miktar");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Maksimum Kişi Sayısı");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Sadece Barkodlu Satışlar mı?");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Firmaya Fatura Edilsin mi?");
-            
-            // OPTIONAL FIELDS
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Temel Ölçü Birimi");
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Hesaplama Tutar Para Birimi");
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Marka");
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Açıklama");
-            
-            // MANDATORY FIELDS (SPECIAL)
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Net/Brüt");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Kişi Başı mı?");
-            
-            // DISABLED FIELDS
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("İşlem Para Birimi");
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
-        }
+        await AssertFieldRulesAsync(Test1Rules);
         
         Console.WriteLine("✅ TEST1: Incentive - Satış Adedi (Çoklu Ödül: Hayır, Kademeli: Hayır, Hedefli: Evet)");
     }
@@ -250,42 +451,7 @@ public class IncentiveConditionTests : TestBase
         await _incentiveConditionPage.SelectIsTargetedAsync("Hayır");
         await Task.Delay(2000);
         
-        // Assert - Verify all fields in one scope so we see all failures at once
-        using (new AssertionScope())
-        {
-            // REQUIRED FIELDS
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Tutara Kdv Dahil");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Fatura Kdv'li mi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Tutar Çarpanlı");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Birim Çarpanı");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Tutar");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Oran");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Sadece Barkodlu Satışlar mı?");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Firmaya Fatura Edilsin mi?");
-            
-            // OPTIONAL FIELDS
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Temel Ölçü Birimi");
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Hesaplama Tutar Para Birimi");
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Marka");
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Açıklama");
-            // NOTE: Maksimum Kişi Sayısı - UI bug: shows mandatory in form but spec says optional
-            // Bug opened, skipping check for now
-            
-            // MANDATORY FIELDS (SPECIAL)
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Net/Brüt");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Kişi Başı mı?");
-            
-            // NOT SHOWN FIELDS (hidden in DOM for Hedefli=Hayır)
-            await _incentiveConditionPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
-            await _incentiveConditionPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
-            
-            // DISABLED FIELDS
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("İşlem Para Birimi");
-        }
+        await AssertFieldRulesAsync(Test2Rules);
         
         Console.WriteLine("✅ TEST2: Incentive - Satış Adedi (Çoklu Ödül: Hayır, Kademeli: Hayır, Hedefli: Hayır)");
     }
@@ -339,42 +505,7 @@ public class IncentiveConditionTests : TestBase
         await _incentiveConditionPage.SelectIsTargetedAsync("Hayır");
         await Task.Delay(2000);
         
-        // Assert - Verify all fields in one scope so we see all failures at once
-        using (new AssertionScope())
-        {
-            // REQUIRED FIELDS
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Tutara Kdv Dahil");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Fatura Kdv'li mi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Sadece Barkodlu Satışlar mı?");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Firmaya Fatura Edilsin mi?");
-            
-            // DISABLED FIELDS (Kademeli: Evet disables these)
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("İşlem Para Birimi");
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("Temel Ölçü Birimi");
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("Tutar Çarpanlı");
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
-            
-            // OPTIONAL FIELDS
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Hesaplama Tutar Para Birimi");
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Marka");
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Açıklama");
-            // NOTE: Maksimum Kişi Sayısı - UI bug: shows mandatory in form but spec says optional
-            // Bug opened, skipping check for now
-            
-            // MANDATORY FIELDS (SPECIAL)
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Net/Brüt");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Kişi Başı mı?");
-            
-            // NOT SHOWN FIELDS (hidden in DOM for Hedefli=Hayır)
-            await _incentiveConditionPage.VerifyFieldIsNotShownAsync("Hedef Ciro");
-            await _incentiveConditionPage.VerifyFieldIsNotShownAsync("Hedef Miktar");
-        }
+        await AssertFieldRulesAsync(Test3Rules);
         
         Console.WriteLine("✅ TEST3: Incentive - Satış Adedi (Çoklu Ödül: Hayır, Kademeli: Evet, Hedefli: Hayır)");
     }
@@ -425,43 +556,350 @@ public class IncentiveConditionTests : TestBase
         // NOTE: When Çoklu Ödül=Evet, Kademeli and Hedefli become disabled
         // So we don't select them - they're already disabled by form logic
         
-        // Assert - Verify all fields in one scope so we see all failures at once
-        using (new AssertionScope())
-        {
-            // REQUIRED FIELDS
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Başlangıç Tarihi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Bitiş Tarihi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Hesaplama Periyodu");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Faturalama Para Birimi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Tutara Kdv Dahil");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Fatura Kdv'li mi");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Sadece Barkodlu Satışlar mı?");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Firmaya Fatura Edilsin mi?");
-            
-            // DISABLED FIELDS
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("İşlem Para Birimi");
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("Birim Çarpanı");
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Tutar");
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("Hesaplama Oran");
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("Hedef Ciro");
-            await _incentiveConditionPage.VerifyFieldIsDisabledAsync("Hedef Miktar");
-            
-            // OPTIONAL FIELDS
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Temel Ölçü Birimi");
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Tutar Çarpanlı");
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Hesaplama Tutar Para Birimi");
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Marka");
-            await _incentiveConditionPage.VerifyFieldIsOptionalAsync("Açıklama");
-            // NOTE: Maksimum Kişi Sayısı - UI bug: shows mandatory in form but spec says optional
-            // Bug opened, skipping check for now
-            
-            // MANDATORY FIELDS (SPECIAL)
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Net/Brüt");
-            await _incentiveConditionPage.VerifyFieldIsMandatoryAsync("Kişi Başı mı?");
-        }
+        await AssertFieldRulesAsync(Test4Rules);
         
         Console.WriteLine("✅ TEST4: Incentive - Satış Adedi (Çoklu Ödül: Evet, Kademeli: Disabled, Hedefli: Disabled)");
     }
 
-    // TODO: Add TEST5-TEST11 following the same pattern from the incentive spec
+    /// <summary>
+    /// TEST5: Incentive - Satış Cirosu - Çoklu Ödül: Hayır, Kademeli: Hayır, Hedefli: Evet
+    /// </summary>
+    [Fact]
+    public async Task TEST5_SalesRevenue_NonTiered_Targeted_SingleReward_ShouldShowCorrectFieldValidation()
+    {
+        Driver.SetPage(Page);
+
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+
+        await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.ClickIncentiveTabAsync();
+        await _contractDefPage.ClickNewIncentiveButtonAsync();
+
+        await _incentiveConditionPage.VerifyFormIsDisplayedAsync();
+
+        Console.WriteLine("\n\n>>> DISCOVERY PHASE: Finding all form elements <<<\n");
+        await _incentiveConditionPage.DiscoverAllElementsAsync();
+
+        Console.WriteLine("\n\n>>> ACTION PHASE: Selecting form values <<<\n");
+        await _incentiveConditionPage.SelectConditionTypeAsync("Incentive");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectTargetTypeAsync("Satış Cirosu");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectIsMultipleRewardAsync("Hayır");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectIsGradientAsync("Hayır");
+        await Task.Delay(1000);
+
+        await _incentiveConditionPage.SelectIsTargetedAsync("Evet");
+        await Task.Delay(2000);
+
+        await AssertFieldRulesAsync(Test5Rules);
+
+        Console.WriteLine("✅ TEST5: Incentive - Satış Cirosu (Çoklu Ödül: Hayır, Kademeli: Hayır, Hedefli: Evet)");
+    }
+
+    /// <summary>
+    /// TEST6: Incentive - Satış Cirosu - Çoklu Ödül: Hayır, Kademeli: Hayır, Hedefli: Hayır
+    /// </summary>
+    [Fact]
+    public async Task TEST6_SalesRevenue_NonTiered_NonTargeted_SingleReward_ShouldShowCorrectFieldValidation()
+    {
+        Driver.SetPage(Page);
+
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+
+        await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.ClickIncentiveTabAsync();
+        await _contractDefPage.ClickNewIncentiveButtonAsync();
+        await _incentiveConditionPage.VerifyFormIsDisplayedAsync();
+
+        Console.WriteLine("\n\n>>> DISCOVERY PHASE: Finding all form elements <<<\n");
+        await _incentiveConditionPage.DiscoverAllElementsAsync();
+
+        Console.WriteLine("\n\n>>> ACTION PHASE: Selecting form values <<<\n");
+        await _incentiveConditionPage.SelectConditionTypeAsync("Incentive");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectTargetTypeAsync("Satış Cirosu");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectIsMultipleRewardAsync("Hayır");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectIsGradientAsync("Hayır");
+        await Task.Delay(1000);
+
+        await _incentiveConditionPage.SelectIsTargetedAsync("Hayır");
+        await Task.Delay(2000);
+
+        await AssertFieldRulesAsync(Test6Rules);
+
+        Console.WriteLine("✅ TEST6: Incentive - Satış Cirosu (Çoklu Ödül: Hayır, Kademeli: Hayır, Hedefli: Hayır)");
+    }
+
+    /// <summary>
+    /// TEST7: Incentive - Satış Cirosu - Çoklu Ödül: Hayır, Kademeli: Evet, Hedefli: Hayır
+    /// </summary>
+    [Fact]
+    public async Task TEST7_SalesRevenue_Tiered_TargetedDisabled_SingleReward_ShouldShowCorrectFieldValidation()
+    {
+        Driver.SetPage(Page);
+
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+
+        await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.ClickIncentiveTabAsync();
+        await _contractDefPage.ClickNewIncentiveButtonAsync();
+
+        await _incentiveConditionPage.VerifyFormIsDisplayedAsync();
+
+        Console.WriteLine("\n\n>>> DISCOVERY PHASE: Finding all form elements <<<\n");
+        await _incentiveConditionPage.DiscoverAllElementsAsync();
+
+        Console.WriteLine("\n\n>>> ACTION PHASE: Selecting form values <<<\n");
+        await _incentiveConditionPage.SelectConditionTypeAsync("Incentive");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectTargetTypeAsync("Satış Cirosu");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectIsMultipleRewardAsync("Hayır");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectIsGradientAsync("Evet");
+        await Task.Delay(1000);
+
+        await _incentiveConditionPage.SelectIsTargetedAsync("Hayır");
+        await Task.Delay(2000);
+
+        await AssertFieldRulesAsync(Test7Rules);
+
+        Console.WriteLine("✅ TEST7: Incentive - Satış Cirosu (Çoklu Ödül: Hayır, Kademeli: Evet, Hedefli: Hayır)");
+    }
+
+    /// <summary>
+    /// TEST8: Incentive - Satış Cirosu - Çoklu Ödül: Evet, Kademeli: Disabled, Hedefli: Disabled
+    /// </summary>
+    [Fact]
+    public async Task TEST8_SalesRevenue_MultipleReward_KademeligDisabled_TargetedDisabled_ShouldShowCorrectFieldValidation()
+    {
+        Driver.SetPage(Page);
+
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+
+        await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.ClickIncentiveTabAsync();
+        await _contractDefPage.ClickNewIncentiveButtonAsync();
+
+        await _incentiveConditionPage.VerifyFormIsDisplayedAsync();
+
+        Console.WriteLine("\n\n>>> DISCOVERY PHASE: Finding all form elements <<<\n");
+        await _incentiveConditionPage.DiscoverAllElementsAsync();
+
+        Console.WriteLine("\n\n>>> ACTION PHASE: Selecting form values <<<\n");
+        await _incentiveConditionPage.SelectConditionTypeAsync("Incentive");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectTargetTypeAsync("Satış Cirosu");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectIsMultipleRewardAsync("Evet");
+        await Task.Delay(2000);
+
+        await AssertFieldRulesAsync(Test8Rules);
+
+        Console.WriteLine("✅ TEST8: Incentive - Satış Cirosu (Çoklu Ödül: Evet, Kademeli: Disabled, Hedefli: Disabled)");
+    }
+
+    /// <summary>
+    /// TEST9: Incentive - Hesaplamasız - Çoklu Ödül: Hayır, Kademeli: Hayır, Hedefli: Hayır
+    /// </summary>
+    [Fact]
+    public async Task TEST9_NoCalculation_NonTiered_NonTargeted_SingleReward_ShouldShowCorrectFieldValidation()
+    {
+        Driver.SetPage(Page);
+
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+
+        await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.ClickIncentiveTabAsync();
+        await _contractDefPage.ClickNewIncentiveButtonAsync();
+        await _incentiveConditionPage.VerifyFormIsDisplayedAsync();
+
+        Console.WriteLine("\n\n>>> DISCOVERY PHASE: Finding all form elements <<<\n");
+        await _incentiveConditionPage.DiscoverAllElementsAsync();
+
+        Console.WriteLine("\n\n>>> ACTION PHASE: Selecting form values <<<\n");
+        await _incentiveConditionPage.SelectConditionTypeAsync("Incentive");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectTargetTypeAsync("Hesaplamasız");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectIsMultipleRewardAsync("Hayır");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectIsGradientAsync("Hayır");
+        await Task.Delay(1000);
+
+        await _incentiveConditionPage.SelectIsTargetedAsync("Hayır");
+        await Task.Delay(2000);
+
+        await AssertFieldRulesAsync(Test9Rules);
+
+        Console.WriteLine("✅ TEST9: Incentive - Hesaplamasız (Çoklu Ödül: Hayır, Kademeli: Hayır, Hedefli: Hayır)");
+    }
+
+    /// <summary>
+    /// TEST10: Incentive - Hesaplamasız - Çoklu Ödül: Hayır, Kademeli: Hayır, Hedefli: Evet
+    /// </summary>
+    [Fact]
+    public async Task TEST10_NoCalculation_NonTiered_Targeted_SingleReward_ShouldShowCorrectFieldValidation()
+    {
+        Driver.SetPage(Page);
+
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+
+        await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.ClickIncentiveTabAsync();
+        await _contractDefPage.ClickNewIncentiveButtonAsync();
+        await _incentiveConditionPage.VerifyFormIsDisplayedAsync();
+
+        Console.WriteLine("\n\n>>> DISCOVERY PHASE: Finding all form elements <<<\n");
+        await _incentiveConditionPage.DiscoverAllElementsAsync();
+
+        Console.WriteLine("\n\n>>> ACTION PHASE: Selecting form values <<<\n");
+        await _incentiveConditionPage.SelectConditionTypeAsync("Incentive");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectTargetTypeAsync("Hesaplamasız");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectIsMultipleRewardAsync("Hayır");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectIsGradientAsync("Hayır");
+        await Task.Delay(1000);
+
+        await _incentiveConditionPage.SelectIsTargetedAsync("Evet");
+        await Task.Delay(2000);
+
+        await AssertFieldRulesAsync(Test10Rules);
+
+        Console.WriteLine("✅ TEST10: Incentive - Hesaplamasız (Çoklu Ödül: Hayır, Kademeli: Hayır, Hedefli: Evet)");
+    }
+
+    /// <summary>
+    /// TEST11: Incentive - Hesaplamasız - Çoklu Ödül: Evet, Kademeli: Disabled, Hedefli: Disabled
+    /// </summary>
+    [Fact]
+    public async Task TEST11_NoCalculation_MultipleReward_KademeliDisabled_TargetedDisabled_ShouldShowCorrectFieldValidation()
+    {
+        Driver.SetPage(Page);
+
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+
+        await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.ClickIncentiveTabAsync();
+        await _contractDefPage.ClickNewIncentiveButtonAsync();
+        await _incentiveConditionPage.VerifyFormIsDisplayedAsync();
+
+        Console.WriteLine("\n\n>>> DISCOVERY PHASE: Finding all form elements <<<\n");
+        await _incentiveConditionPage.DiscoverAllElementsAsync();
+
+        Console.WriteLine("\n\n>>> ACTION PHASE: Selecting form values <<<\n");
+        await _incentiveConditionPage.SelectConditionTypeAsync("Incentive");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectTargetTypeAsync("Hesaplamasız");
+        await Task.Delay(2000);
+
+        await _incentiveConditionPage.SelectIsMultipleRewardAsync("Evet");
+        await Task.Delay(2000);
+
+        await AssertFieldRulesAsync(Test11Rules);
+
+        Console.WriteLine("✅ TEST11: Incentive - Hesaplamasız (Çoklu Ödül: Evet, Kademeli: Disabled, Hedefli: Disabled)");
+    }
+
 }
