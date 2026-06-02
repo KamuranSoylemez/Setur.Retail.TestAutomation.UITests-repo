@@ -127,7 +127,7 @@ public class BrandAmbassadorConditionTests : TestBase
             await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
         }
         
-        await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
+        await _contractDefPage.FillContractNameAsync("AL LIBA-2025-CFR");
         await _contractDefPage.ClickSearchButtonAsync();
         await _contractDefPage.ClickFirstEditButtonAsync();
         await _contractDefPage.ClickBrandAmbassadorTabAsync();
@@ -1506,5 +1506,49 @@ public class BrandAmbassadorConditionTests : TestBase
         }
         
         Console.WriteLine("✅ TEST16: All field validations passed for Bonus + Hesaplamasız + Kademeli:Disabled + Hedefli:Evet");
+    }
+
+    [Fact]
+    public async Task TEST17_BrandAmbassador_CreateNewRecord_WithMandatoryFields_ShouldSaveSuccessfully()
+    {
+        Driver.SetPage(Page);
+
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+
+        await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.ClickBrandAmbassadorTabAsync();
+        await _contractDefPage.ClickNewBrandAmbassadorButtonAsync();
+        await _brandAmbassadorPage.VerifyFormIsDisplayedAsync();
+
+        // First phase: only select required 3 fields and click save.
+        await _brandAmbassadorPage.SelectConditionTypeAsync("Salary");
+        await _brandAmbassadorPage.SelectCalculationTypeAsync("Hesaplamasız");
+        await _brandAmbassadorPage.SelectFirstAvailableDropdownOptionAsync("Periyot");
+        await _brandAmbassadorPage.SelectFirstAvailableDropdownOptionAsync("Faturalama Para Birimi");
+
+        await _brandAmbassadorPage.ClickSaveButtonAsync();
+
+        // Some flows show a confirmation dialog before returning to the grid.
+        var okButton = Page.Locator(".ajs-button.ajs-ok");
+        if (await okButton.CountAsync() > 0 && await okButton.First.IsVisibleAsync())
+        {
+            await okButton.First.ClickAsync();
+            await Task.Delay(500);
+        }
+
+        await _contractDefPage.VerifyRecordSavedSuccessfullyAsync();
+
+        Console.WriteLine("✅ TEST17: First phase completed (Type + Target Type + Invoice Currency + Save)");
     }
 }

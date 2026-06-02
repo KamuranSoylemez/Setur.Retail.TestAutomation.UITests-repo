@@ -1441,5 +1441,34 @@ public class GeneralConditionTests : TestBase
         
         Console.WriteLine("✅ TEST24: All field validations passed for Contract Margin + Hesaplamasız");
     }
+
+            [Fact]
+            public async Task TEST25_GeneralCondition_CreateNewRecord_WithMandatoryFields_ShouldSaveSuccessfully()
+            {
+                Driver.SetPage(Page);
+
+                await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+                await _contractDefPage.FillContractNameAsync("AL LIBA-2025-CFR");
+                await _contractDefPage.ClickSearchButtonAsync();
+                await _contractDefPage.ClickFirstEditButtonAsync();
+                await _contractDefPage.ClickGeneralConditionTabAsync();
+                await _contractDefPage.ClickNewGeneralConditionButtonAsync();
+
+                await _generalConditionPage.VerifyFormIsDisplayedAsync();
+
+                // Choose a scenario with clear mandatory inputs and complete them before save.
+                await _generalConditionPage.SelectConditionTypeAsync("Rebate Fixed Margin");
+                await _generalConditionPage.SelectCalculationTypeAsync("Hesaplamasız");
+                await _generalConditionPage.SelectMarginTypeAsync("Tekli");
+
+                await _generalConditionPage.FillFieldAsync("Marj", "5");
+                await _generalConditionPage.SelectFirstAvailableDropdownOptionAsync("Hesaplama Periyodu");
+                await _generalConditionPage.SelectFirstAvailableDropdownOptionAsync("Faturalama Para Birimi");
+
+                await _generalConditionPage.ClickSaveButtonAsync();
+                await _contractDefPage.VerifyRecordSavedSuccessfullyAsync();
+
+                Console.WriteLine("✅ TEST25: New General Condition record created and saved successfully");
+            }
 }
 

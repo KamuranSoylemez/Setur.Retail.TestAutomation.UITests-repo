@@ -620,7 +620,7 @@ public class GeneralConditionPage : BasePage
         // Handle numeric textboxes
         if (fieldId.Contains("k-numerictextbox"))
         {
-            var numericInput = frame.Locator(fieldId).Locator("input").First;
+            var numericInput = frame.Locator(fieldId).Locator("input:visible").First;
             await numericInput.ClearAsync();
             await numericInput.FillAsync(value);
             await Task.Delay(500); // Wait for field state updates
@@ -632,6 +632,78 @@ public class GeneralConditionPage : BasePage
         }
     }
 
+    private string GetDropdownId(string fieldLabel)
+    {
+        return fieldLabel switch
+        {
+            "Hesaplama Periyodu" => "ContractRebatePeriodTypeId",
+            "İşlem Para Birimi" => "TargetRevenueCurrencyCode",
+            "Faturalama Para Birimi" => "InvoiceCurrencyCode",
+            _ => throw new NotImplementedException($"Dropdown id mapping not implemented for: {fieldLabel}")
+        };
+    }
+
+    public async Task SelectFirstAvailableDropdownOptionAsync(string fieldLabel)
+    {
+        var frame = await GetGeneralConditionFrameAsync();
+        var dropdownId = GetDropdownId(fieldLabel);
+
+        var dropdown = frame.Locator($"span[aria-owns='{dropdownId}_listbox']");
+        await dropdown.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
+        await dropdown.ClickAsync();
+        await Task.Delay(700);
+
+        var listboxInFrame = await frame.Locator($"#{dropdownId}_listbox").CountAsync();
+        var listboxInPage = await Page.Locator($"#{dropdownId}_listbox").CountAsync();
+
+        ILocator listbox;
+        if (listboxInFrame > 0)
+        {
+            listbox = frame.Locator($"#{dropdownId}_listbox");
+        }
+        else if (listboxInPage > 0)
+        {
+            listbox = Page.Locator($"#{dropdownId}_listbox");
+        }
+        else
+        {
+            throw new Exception($"{dropdownId}_listbox not found");
+        }
+
+        var options = await listbox.Locator("li").AllAsync();
+        foreach (var option in options)
+        {
+            var text = (await option.TextContentAsync() ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                continue;
+            }
+
+            var normalized = text.ToLowerInvariant();
+            if (normalized.Contains("seçiniz") || normalized.Contains("select") || normalized.Contains("lütfen"))
+            {
+                continue;
+            }
+
+            await option.ClickAsync();
+            await Task.Delay(400);
+            Console.WriteLine($"✅ '{fieldLabel}' selected with first available option: {text}");
+            return;
+        }
+
+        throw new Exception($"No selectable option found for field '{fieldLabel}'");
+    }
+
+    public async Task ClickSaveButtonAsync()
+    {
+        var frame = await GetGeneralConditionFrameAsync();
+        var saveButton = frame.Locator("#btnSave, button:has-text('Kaydet'), a:has-text('Kaydet')").First;
+        await saveButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
+        await saveButton.ClickAsync();
+        await Task.Delay(2000);
+        Console.WriteLine("✅ Clicked save button on General Condition form");
+    }
+
     public async Task ClearFieldAsync(string fieldLabel)
     {
         var frame = await GetGeneralConditionFrameAsync();
@@ -640,7 +712,7 @@ public class GeneralConditionPage : BasePage
         // Handle numeric textboxes
         if (fieldId.Contains("k-numerictextbox"))
         {
-            var numericInput = frame.Locator(fieldId).Locator("input").First;
+            var numericInput = frame.Locator(fieldId).Locator("input:visible").First;
             await numericInput.ClearAsync();
             await Task.Delay(500); // Wait for field state updates
             Console.WriteLine($"✅ Cleared field: {fieldLabel}");
