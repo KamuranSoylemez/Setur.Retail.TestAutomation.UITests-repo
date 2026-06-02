@@ -1,7 +1,8 @@
-<<<<<<< HEAD
-# Setur.Retail.TestAutomation.UITests
-=======
 # Retail TRUI Test Automation Suite
+
+## Latest Update
+
+- [2026-06-02 Release Notes - Create and Save Flows](test_reports/2026-06-02_RELEASE_NOTES_CREATE_SAVE.md)
 
 ## Introduction
 
@@ -211,4 +212,3 @@ See `azure-pipelines.yml` for CI/CD configuration.
 - [Playwright C# Documentation](https://playwright.dev/dotnet/)
 - [xUnit Documentation](https://xunit.net/)
 - [Page Object Model Pattern](https://www.selenium.dev/documentation/test_practices/encouraged/page_object_models/)
->>>>>>> testsCopilot
