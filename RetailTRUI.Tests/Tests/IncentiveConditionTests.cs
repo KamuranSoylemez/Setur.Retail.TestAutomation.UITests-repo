@@ -902,4 +902,68 @@ public class IncentiveConditionTests : TestBase
         Console.WriteLine("✅ TEST11: Incentive - Hesaplamasız (Çoklu Ödül: Evet, Kademeli: Disabled, Hedefli: Disabled)");
     }
 
+    [Fact]
+    public async Task TEST12_Incentive_CreateNewRecord_WithMandatorySelections_ShouldSaveSuccessfully()
+    {
+        Driver.SetPage(Page);
+
+        try
+        {
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Initial navigation failed: {ex.Message}, attempting re-authentication...");
+            await AuthenticateAndWaitAsync();
+            await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        }
+
+        await _contractDefPage.FillContractNameAsync("PMI-2025-DAP");
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.ClickIncentiveTabAsync();
+        await _contractDefPage.ClickNewIncentiveButtonAsync();
+        await _incentiveConditionPage.VerifyFormIsDisplayedAsync();
+
+        // First phase create flow: select required combos and save.
+        await _incentiveConditionPage.SelectConditionTypeAsync("Incentive");
+        await _incentiveConditionPage.SelectTargetTypeAsync("Satış Adedi");
+        await _incentiveConditionPage.SelectIsMultipleRewardAsync("Evet");
+        await _incentiveConditionPage.SelectFirstAvailableDropdownOptionAsync("Periyot");
+        await _incentiveConditionPage.SelectFirstAvailableDropdownOptionAsync("Faturalama Para Birimi");
+
+        await _incentiveConditionPage.ClickSaveButtonAsync();
+
+        var okButton = Page.Locator(".ajs-button.ajs-ok").First;
+        try
+        {
+            await okButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 3000 });
+            await okButton.ClickAsync();
+            await Task.Delay(800);
+        }
+        catch
+        {
+            // Optional confirmation is not always shown.
+        }
+
+        var successToast = Page.Locator(".ajs-message.ajs-success").First;
+        try
+        {
+            await successToast.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
+        }
+        catch
+        {
+            var errorToast = Page.Locator(".ajs-message.ajs-error").First;
+            string? errorText = null;
+            if (await errorToast.CountAsync() > 0)
+            {
+                errorText = (await errorToast.TextContentAsync())?.Trim();
+            }
+
+            throw new Exception($"Incentive record save confirmation not observed. Error toast: '{errorText ?? "N/A"}'");
+        }
+
+        Console.WriteLine("✅ TEST12: Incentive new record saved successfully with mandatory selections");
+    }
+
 }
