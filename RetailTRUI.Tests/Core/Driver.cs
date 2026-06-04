@@ -25,7 +25,7 @@ public sealed class Driver
         
         var launchOptions = new BrowserTypeLaunchOptions
         {
-            Headless = config.Headless,
+            Headless = false,
             SlowMo = config.SlowMo
         };
 

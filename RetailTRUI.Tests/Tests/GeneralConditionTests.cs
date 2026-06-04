@@ -1470,5 +1470,64 @@ public class GeneralConditionTests : TestBase
 
                 Console.WriteLine("✅ TEST25: New General Condition record created and saved successfully");
             }
+
+    /// <summary>
+    /// T1: Genel kondisyon sekmesinde Yeni Kayıt butonu, belirli sözleşme durumlarında aktif olmalıdır.
+    /// </summary>
+    [Theory]
+    [InlineData("Hazırlanıyor")]
+    [InlineData("Onaylandı")]
+    [InlineData("Reddedildi")]
+    public async Task TEST26_GeneralCondition_NewRecordButton_ShouldBeActive_ForAllowedContractStatuses(string expectedStatus)
+    {
+        Driver.SetPage(Page);
+
+        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        await _contractDefPage.SelectContractStatusFromMainPageAsync(expectedStatus);
+        await _contractDefPage.ClickSearchButtonAsync();
+        await _contractDefPage.ClickFirstEditButtonAsync();
+
+        await _contractDefPage.VerifyContractStatusAsync(expectedStatus);
+        await _contractDefPage.ClickGeneralConditionTabAsync();
+        await _contractDefPage.VerifyNewGeneralConditionButtonIsActiveAsync();
+
+        Console.WriteLine($"✅ TEST26: Yeni Kayıt butonu aktif - Status: {expectedStatus}");
+    }
+
+    /// <summary>
+    /// T2: Genel kondisyon sekmesinde Yeni Kayıt butonu,
+    /// izinli olmayan sözleşme durumlarının her birinde görünmemelidir.
+    /// </summary>
+    [Theory]
+    [InlineData("Müdür Onayı Bekleniyor")]
+    [InlineData("İptal")]
+    [InlineData("Tamamlandı")]
+    [InlineData("İptal Onayı Bekleniyor")]
+    [InlineData("Direktör Onayı Bekleniyor")]
+    public async Task TEST27_GeneralCondition_NewRecordButton_ShouldBeInactive_ForDisallowedContractStatuses(string disallowedStatus)
+    {
+        Driver.SetPage(Page);
+
+        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+
+        await _contractDefPage.SelectContractStatusFromMainPageAsync(disallowedStatus);
+        await _contractDefPage.ClickSearchButtonAsync();
+
+        var hasRecord = await _contractDefPage.HasAnyContractRecordOnMainPageAsync();
+        if (!hasRecord && disallowedStatus.Equals("Tamamlandı", StringComparison.OrdinalIgnoreCase))
+        {
+            Console.WriteLine("ℹ️ TEST27 INFO: Tamamlandı durumunda kayıt bulunamadı, case skip/info olarak sonlandırıldı.");
+            return;
+        }
+
+        hasRecord.Should().BeTrue($"{disallowedStatus} durumunda en az bir sözleşme kaydı bulunmalıdır");
+
+        await _contractDefPage.ClickFirstEditButtonAsync();
+        await _contractDefPage.VerifyContractStatusAsync(disallowedStatus);
+        await _contractDefPage.ClickGeneralConditionTabAsync();
+        await _contractDefPage.VerifyNewGeneralConditionButtonIsInactiveAsync();
+
+        Console.WriteLine($"✅ TEST27: Yeni Kayıt butonu görünmüyor - Status: {disallowedStatus}");
+    }
 }
 

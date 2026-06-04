@@ -22,7 +22,7 @@ public sealed class ConfigurationManager
     public int DefaultTimeout => int.Parse(GetValue("default_timeout", "30"));
     public int DefaultAssertionTimeout => int.Parse(GetValue("default_assertion_timeout", "30"));
     public int SlowMo => int.Parse(GetValue("slow_mo", "0"));
-    public bool Headless => bool.Parse(GetValue("headless", "true"));
+    public bool Headless => bool.Parse(GetValue("headless", "false"));
 
     private void LoadConfiguration()
     {

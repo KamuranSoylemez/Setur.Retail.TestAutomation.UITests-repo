@@ -15,6 +15,7 @@ public class ContractDefinitionPage : BasePage
     private ILocator FilterFirmButtonOnMainPage => Page.Locator("#FilterFirmIDButtonId");
     private ILocator CategoryDropdownOnMainPage => Page.Locator("#FilterCategoryIds");
     private ILocator TypeMultiSelectOnMainPage => Page.Locator("input.k-input[aria-owns*='FilterTypeIds']");
+    private ILocator ContractStatusDropdownOnMainPage => Page.Locator("span[aria-owns='FilterContractStatusId_listbox']");
     private ILocator SearchButtonOnMainPage => Page.Locator("#FilterButtonId");
     
     // Grid locators
@@ -469,6 +470,82 @@ public class ContractDefinitionPage : BasePage
         await Page.WaitForTimeoutAsync(500);
         Console.WriteLine("✅ Selected type on main page");
     }
+
+    /// <summary>
+    /// Select contract status from main page dropdown
+    /// </summary>
+    public async Task SelectContractStatusFromMainPageAsync(string status)
+    {
+        bool selected = await Page.EvaluateAsync<bool>(@"
+            (statusText) => {
+                const ddlElement = document.querySelector('#FilterContractStatusId');
+                if (!ddlElement || !window.$) {
+                    return false;
+                }
+
+                const ddl = window.$(ddlElement).data('kendoDropDownList');
+                if (!ddl) {
+                    return false;
+                }
+
+                const data = ddl.dataSource && ddl.dataSource.data ? ddl.dataSource.data() : [];
+                let matchedItem = null;
+
+                for (let i = 0; i < data.length; i++) {
+                    const item = data[i];
+                    const text = (item.Text || item.text || '').toString().trim().toLowerCase();
+                    if (text.includes(statusText.trim().toLowerCase())) {
+                        matchedItem = item;
+                        break;
+                    }
+                }
+
+                if (!matchedItem) {
+                    return false;
+                }
+
+                const value = matchedItem.Value ?? matchedItem.value;
+                ddl.value(value);
+                ddl.trigger('change');
+                return true;
+            }
+        ", status);
+
+        if (!selected)
+        {
+            throw new InvalidOperationException($"Contract status option not found: {status}");
+        }
+
+        await Page.WaitForTimeoutAsync(500);
+        Console.WriteLine($"✅ Selected contract status on main page: {status}");
+    }
+
+    /// <summary>
+    /// Get available contract status options from main page dropdown
+    /// </summary>
+    public async Task<List<string>> GetContractStatusOptionsFromMainPageAsync()
+    {
+        await ContractStatusDropdownOnMainPage.ClickAsync();
+        await Page.WaitForSelectorAsync("ul#FilterContractStatusId_listbox >> li[role='option']:visible");
+
+        var options = Page.Locator("ul#FilterContractStatusId_listbox >> li[role='option']:visible");
+        var optionCount = await options.CountAsync();
+        var statuses = new List<string>();
+
+        for (int i = 0; i < optionCount; i++)
+        {
+            var option = options.Nth(i);
+            var text = (await option.TextContentAsync())?.Trim();
+            if (!string.IsNullOrWhiteSpace(text) && !statuses.Contains(text, StringComparer.OrdinalIgnoreCase))
+            {
+                statuses.Add(text);
+            }
+        }
+
+        await Page.Keyboard.PressAsync("Escape");
+        Console.WriteLine($"✅ Retrieved {statuses.Count} contract status options from main page");
+        return statuses;
+    }
     
     /// <summary>
     /// Search for record on main page
@@ -478,6 +555,15 @@ public class ContractDefinitionPage : BasePage
         await SearchButtonOnMainPage.ClickAsync();
         await Page.WaitForTimeoutAsync(2000);
         Console.WriteLine("✅ Searched for record on main page");
+    }
+
+    /// <summary>
+    /// Check if any contract record exists on main page grid
+    /// </summary>
+    public async Task<bool> HasAnyContractRecordOnMainPageAsync()
+    {
+        await Page.WaitForTimeoutAsync(1000);
+        return await GridRecords.CountAsync() > 0;
     }
     
     /// <summary>
@@ -642,6 +728,40 @@ public class ContractDefinitionPage : BasePage
         await newButton.ClickAsync();
         await Page.WaitForTimeoutAsync(2000);
         Console.WriteLine("✅ Clicked New General Condition button");
+    }
+
+    public async Task VerifyNewGeneralConditionButtonIsActiveAsync()
+    {
+        var frame = await GetContractEditFrameAsync();
+
+        var newButton = frame.Locator("a.k-grid-ContractRebateGridIdAddNew");
+        await newButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
+
+        string? classList = await newButton.First.GetAttributeAsync("class");
+        bool isDisabled = classList != null && classList.Contains("k-state-disabled", StringComparison.OrdinalIgnoreCase);
+
+        isDisabled.Should().BeFalse("Genel kondisyon 'Yeni Kayıt' butonu aktif olmalıdır");
+        Console.WriteLine("✅ New General Condition button is active");
+    }
+
+    public async Task VerifyNewGeneralConditionButtonIsInactiveAsync()
+    {
+        var frame = await GetContractEditFrameAsync();
+
+        var newButton = frame.Locator("a.k-grid-ContractRebateGridIdAddNew");
+        var buttonCount = await newButton.CountAsync();
+
+        if (buttonCount == 0)
+        {
+            Console.WriteLine("✅ New General Condition button is not available");
+            return;
+        }
+
+        await newButton.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Attached, Timeout = 10000 });
+        var isVisible = await newButton.First.IsVisibleAsync();
+
+        isVisible.Should().BeFalse("Genel kondisyon 'Yeni Kayıt' butonu görünmemelidir");
+        Console.WriteLine("✅ New General Condition button is not visible");
     }
 
     public async Task ClickIncentiveTabAsync()
