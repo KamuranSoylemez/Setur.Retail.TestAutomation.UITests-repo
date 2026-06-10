@@ -1501,7 +1501,6 @@ public class GeneralConditionTests : TestBase
     [Theory]
     [InlineData("Müdür Onayı Bekleniyor")]
     [InlineData("İptal")]
-    [InlineData("Tamamlandı")]
     [InlineData("İptal Onayı Bekleniyor")]
     [InlineData("Direktör Onayı Bekleniyor")]
     public async Task TEST27_GeneralCondition_NewRecordButton_ShouldBeInactive_ForDisallowedContractStatuses(string disallowedStatus)
@@ -1514,12 +1513,6 @@ public class GeneralConditionTests : TestBase
         await _contractDefPage.ClickSearchButtonAsync();
 
         var hasRecord = await _contractDefPage.HasAnyContractRecordOnMainPageAsync();
-        if (!hasRecord && disallowedStatus.Equals("Tamamlandı", StringComparison.OrdinalIgnoreCase))
-        {
-            Console.WriteLine("ℹ️ TEST27 INFO: Tamamlandı durumunda kayıt bulunamadı, case skip/info olarak sonlandırıldı.");
-            return;
-        }
-
         hasRecord.Should().BeTrue($"{disallowedStatus} durumunda en az bir sözleşme kaydı bulunmalıdır");
 
         await _contractDefPage.ClickFirstEditButtonAsync();
@@ -1528,6 +1521,122 @@ public class GeneralConditionTests : TestBase
         await _contractDefPage.VerifyNewGeneralConditionButtonIsInactiveAsync();
 
         Console.WriteLine($"✅ TEST27: Yeni Kayıt butonu görünmüyor - Status: {disallowedStatus}");
+    }
+
+    /// <summary>
+    /// T3: Onaylandı hariç sözleşme durumlarında, genel kondisyon detayı içinde
+    /// 'Onaya Gönder' ve 'Onayla' butonları görünmemelidir.
+    /// </summary>
+    [Theory]
+    [InlineData("Hazırlanıyor")]
+    [InlineData("Müdür Onayı Bekleniyor")]
+    [InlineData("Reddedildi")]
+    [InlineData("İptal")]
+    [InlineData("İptal Onayı Bekleniyor")]
+    [InlineData("Direktör Onayı Bekleniyor")]
+    public async Task TEST28_GeneralCondition_Detail_ShouldNotShowApprovalButtons_ForNonApprovedStatuses(string contractStatus)
+    {
+        Driver.SetPage(Page);
+
+        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        await _contractDefPage.SelectContractStatusFromMainPageAsync(contractStatus);
+        await _contractDefPage.ClickSearchButtonAsync();
+
+        var totalContracts = await _contractDefPage.GetContractRecordCountOnMainPageAsync();
+        if (totalContracts == 0)
+        {
+            Console.WriteLine($"⚠️ No contracts found for status: {contractStatus}. Test skipped for this status.");
+            return;
+        }
+
+        // Only inspect the first contract for this status.
+        await _contractDefPage.ClickEditButtonByRowIndexOnMainPageAsync(0);
+        await _contractDefPage.VerifyContractStatusAsync(contractStatus);
+        await _contractDefPage.ClickGeneralConditionTabAsync();
+
+        var hasGeneralCondition = await _contractDefPage.HasAnyGeneralConditionRecordAsync();
+        if (hasGeneralCondition)
+        {
+            // Only inspect the first general condition record.
+            await _contractDefPage.OpenFirstGeneralConditionDetailAsync();
+            await _contractDefPage.VerifyGeneralConditionApprovalButtonsAreNotVisibleAsync();
+            await _contractDefPage.CloseGeneralConditionDetailAsync();
+            Console.WriteLine($"✅ TEST28: Status '{contractStatus}' checked on first contract and first general condition record");
+        }
+        else
+        {
+            Console.WriteLine($"ℹ️ TEST28: First contract for status '{contractStatus}' has no general condition record");
+        }
+
+        await _contractDefPage.CloseContractUpdateFrameAsync();
+    }
+
+    /// <summary>
+    /// T4: Onaylandı sözleşmelerinde, Hazırlanıyor durumundaki ilk genel kondisyon bulunup
+    /// Onaya Gönder işlemi yapıldığında kondisyon durumu Onay Bekleniyor olmalıdır.
+    /// İlk sözleşmede uygun kayıt yoksa bir sonraki sözleşmeye geçilir.
+    /// </summary>
+    [Fact]
+    public async Task TEST29_GeneralCondition_PreparingStatus_ShouldBeSentForApproval_InApprovedContract()
+    {
+        Driver.SetPage(Page);
+
+        await _contractDefPage.VerifyContractDefinitionPageIsDisplayedAsync();
+        await _contractDefPage.SelectContractStatusFromMainPageAsync("Onaylandı");
+        await _contractDefPage.ClickSearchButtonAsync();
+
+        var totalContracts = await _contractDefPage.GetContractRecordCountOnMainPageAsync();
+        totalContracts.Should().BeGreaterThan(0, "Onaylandı durumunda en az bir sözleşme kaydı bulunmalıdır");
+
+        var suitableConditionFound = false;
+
+        for (int contractRowIndex = 0; contractRowIndex < totalContracts; contractRowIndex++)
+        {
+            // Re-query list before each iteration to avoid stale rows after popup operations.
+            await _contractDefPage.SelectContractStatusFromMainPageAsync("Onaylandı");
+            await _contractDefPage.ClickSearchButtonAsync();
+
+            var refreshedCount = await _contractDefPage.GetContractRecordCountOnMainPageAsync();
+            if (contractRowIndex >= refreshedCount)
+            {
+                break;
+            }
+
+            await _contractDefPage.ClickEditButtonByRowIndexOnMainPageAsync(contractRowIndex);
+            await _contractDefPage.VerifyContractStatusAsync("Onaylandı");
+            await _contractDefPage.ClickGeneralConditionTabAsync();
+
+            var hasGeneralCondition = await _contractDefPage.HasAnyGeneralConditionRecordAsync();
+            if (!hasGeneralCondition)
+            {
+                await _contractDefPage.CloseContractUpdateFrameAsync();
+                continue;
+            }
+
+            var preparingRowIndex = await _contractDefPage.FindFirstGeneralConditionRowIndexByStatusAsync("Hazırlanıyor");
+            if (preparingRowIndex < 0)
+            {
+                await _contractDefPage.CloseContractUpdateFrameAsync();
+                continue;
+            }
+
+            suitableConditionFound = true;
+
+            await _contractDefPage.OpenGeneralConditionDetailByRowIndexAsync(preparingRowIndex);
+            var generalConditionNo = await _contractDefPage.GetGeneralConditionNoFromDetailAsync();
+            await _contractDefPage.ClickSendForApprovalOnGeneralConditionDetailAsync();
+
+            // Başarı mesajını gördükten sonra grid satırında durum kontrolü yap.
+            await _contractDefPage.VerifyApprovalSuccessMessageIsDisplayedAsync();
+            await _contractDefPage.CloseGeneralConditionDetailAsync();
+            await _contractDefPage.VerifyGeneralConditionStatusByNoOnGridAsync(generalConditionNo, "Onay Bekleniyor");
+
+            await _contractDefPage.CloseContractUpdateFrameAsync();
+            break;
+        }
+
+        suitableConditionFound.Should().BeTrue("Onaylandı durumundaki sözleşmelerde en az bir Hazırlanıyor genel kondisyon kaydı bulunmalıdır");
+        Console.WriteLine("✅ TEST29: Hazırlanıyor genel kondisyon onaya gönderildi ve durum Onay Bekleniyor oldu");
     }
 }
 

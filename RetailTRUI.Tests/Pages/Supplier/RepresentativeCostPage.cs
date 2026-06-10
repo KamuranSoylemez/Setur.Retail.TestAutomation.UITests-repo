@@ -159,7 +159,7 @@ public class RepresentativeCostPage : BasePage
             labelVariations.Add(labelText.Replace(" PB", "").Trim()); // Without PB
         }
 
-        ILocator label = null;
+        ILocator? label = null;
         foreach (var labelVariation in labelVariations)
         {
             label = Page.Locator($"label:has-text('{labelVariation}')");
@@ -167,7 +167,7 @@ public class RepresentativeCostPage : BasePage
                 break;
         }
 
-        if (await label.CountAsync() == 0)
+        if (label == null || await label.CountAsync() == 0)
             throw new Exception($"Filter label '{labelText}' not found");
 
         var container = label.First.Locator("xpath=following-sibling::*[1]");

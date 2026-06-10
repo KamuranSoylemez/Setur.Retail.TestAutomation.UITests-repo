@@ -7,8 +7,23 @@ namespace RetailTRUI.Tests.Pages.Supplier;
 /// Contract Definition page object
 /// Handles contract definition creation and search operations
 /// </summary>
-public class ContractDefinitionPage : BasePage
+public partial class ContractDefinitionPage : BasePage
 {
+    private const string ContractCreateFrameSelector = "iframe[src*='Contract/Create']";
+    private const string FirmSearchFrameSelector = "iframe[src*='Firm/Search']";
+    private const string ContractUpdateIframesSelector = "iframe[src*='Contract/Update'], iframe[src*='Contract/Edit']";
+    private const string SeturModalIframeSelector = "#SeturModalWin iframe";
+    private const string ContractEditFrameUrlPart = "/ApplicationManagement/Contract/Edit";
+
+    private const string GeneralConditionGridRowsSelector = "#GeneralConditionGridId tbody tr[data-uid], #ContractRebateGridId tbody tr[data-uid]";
+    private const string SeturPopupIframesSelector = "iframe.k-content-frame[title='Setur'], iframe[title='Setur']";
+    private const string ContractEditTabsSelector = "a.k-link";
+    private const string FirstContractEditButtonSelector = "a.k-button.gridCmdBtn.k-success.cmdLink.ContractGridIdCmd";
+    private const string ContractRowEditButtonSelector = "a.k-button.gridCmdBtn.k-success.cmdLink.ContractGridIdCmd, a.k-grid-edit, a.k-button.k-success";
+    private const string NewBrandAmbassadorButtonSelector = "a.k-grid-ContractRepresentativeGridIdAddNew";
+    private const string NewIncentiveButtonSelector = "a.k-grid-ContractRepresentativeIncentiveGridIdAddNew";
+    private const string NewGeneralConditionButtonSelector = "a.k-grid-ContractRebateGridIdAddNew";
+
     // Main page locators
     private ILocator PageTitle => Page.Locator("#PageTitle");
     private ILocator NewRecordButton => Page.Locator(".glyphicon.glyphicon-plus");
@@ -23,6 +38,51 @@ public class ContractDefinitionPage : BasePage
     private ILocator FirmNameCell => Page.Locator("td[data-field-name='FirmName']").First;
     private ILocator CategoryNameCell => Page.Locator("td[data-field-name='CategoryNames']").First;
     private ILocator TypeNameCell => Page.Locator("td[data-field-name='TypeNames']").First;
+
+    private ILocator GetGeneralConditionRows(IFrame frame)
+    {
+        return frame.Locator(GeneralConditionGridRowsSelector);
+    }
+
+    private ILocator GetSeturPopupIframes()
+    {
+        return Page.Locator(SeturPopupIframesSelector);
+    }
+
+    private async Task WaitForSeturModalIframeAsync(int timeoutMs = 10000)
+    {
+        await Page.WaitForSelectorAsync(SeturModalIframeSelector, new() { Timeout = timeoutMs });
+    }
+
+    private ILocator GetFirstContractEditButtonOnMainPage()
+    {
+        return Page.Locator(FirstContractEditButtonSelector).First;
+    }
+
+    private ILocator GetRowEditButton(ILocator row)
+    {
+        return row.Locator(ContractRowEditButtonSelector).First;
+    }
+
+    private ILocator GetContractEditTab(IFrame frame, string tabText)
+    {
+        return frame.Locator(ContractEditTabsSelector).Filter(new LocatorFilterOptions { HasText = tabText }).First;
+    }
+
+    private ILocator GetNewBrandAmbassadorButton(IFrame frame)
+    {
+        return frame.Locator(NewBrandAmbassadorButtonSelector);
+    }
+
+    private ILocator GetNewIncentiveButton(IFrame frame)
+    {
+        return frame.Locator(NewIncentiveButtonSelector);
+    }
+
+    private ILocator GetNewGeneralConditionButton(IFrame frame)
+    {
+        return frame.Locator(NewGeneralConditionButtonSelector);
+    }
     
     /// <summary>
     /// Verify contract definition page is displayed
@@ -49,7 +109,7 @@ public class ContractDefinitionPage : BasePage
     /// </summary>
     private IFrameLocator GetContractDefinitionFrame()
     {
-        return Page.FrameLocator("iframe[src*='Contract/Create']");
+        return Page.FrameLocator(ContractCreateFrameSelector);
     }
     
     /// <summary>
@@ -57,7 +117,7 @@ public class ContractDefinitionPage : BasePage
     /// </summary>
     private IFrameLocator GetCompanyIdentificationFrame()
     {
-        return Page.FrameLocator("iframe[src*='Firm/Search']");
+        return Page.FrameLocator(FirmSearchFrameSelector);
     }
     
     /// <summary>
@@ -65,7 +125,7 @@ public class ContractDefinitionPage : BasePage
     /// </summary>
     private async Task<IFrame> GetContractUpdateFrameAsync()
     {
-        var iframeElements = await Page.Locator("iframe[src*='Contract/Update'], iframe[src*='Contract/Edit']").ElementHandlesAsync();
+        var iframeElements = await Page.Locator(ContractUpdateIframesSelector).ElementHandlesAsync();
         if (iframeElements.Count == 0)
         {
             throw new Exception("Contract update iframe not found");
@@ -628,179 +688,4 @@ public class ContractDefinitionPage : BasePage
         };
     }
 
-    // ============ LEGACY METHODS FOR EXISTING TESTS (Brand Ambassador & General Condition) ============
-    // These methods are used by ConditionUpdateTests.cs and BrandAmbassadorConditionTests.cs
-
-    private ILocator ContractNameInput => Page.Locator("#FilterContractName");
-    private ILocator SearchButton => Page.Locator("#FilterButtonId");
-    private ILocator FirstEditButton => Page.Locator("a.k-button.gridCmdBtn.k-success.cmdLink.ContractGridIdCmd").First;
-
-    public async Task FillContractNameAsync(string contractName)
-    {
-        await ContractNameInput.FillAsync(contractName);
-        Console.WriteLine($"✅ Contract name filled: {contractName}");
-    }
-
-    public async Task ClickSearchButtonAsync()
-    {
-        await SearchButton.ClickAsync();
-        await WaitForLoadingAsync();
-        await Page.WaitForTimeoutAsync(2000);
-        Console.WriteLine("✅ Search completed");
-    }
-
-    public async Task ClickFirstEditButtonAsync()
-    {
-        await FirstEditButton.ClickAsync();
-        await Page.WaitForTimeoutAsync(2000);
-        Console.WriteLine("✅ Clicked first edit button");
-    }
-
-    public async Task ClickBrandAmbassadorTabAsync()
-    {
-        // Wait for modal to load
-        await Page.WaitForSelectorAsync("#SeturModalWin iframe", new() { Timeout = 10000 });
-        
-        // Find the iframe
-        var frame = await GetContractEditFrameAsync();
-        
-        // Use Kendo TabStrip API to switch to Temsilci Kondisyon tab
-        await frame.Locator("body").EvaluateAsync(@"
-            () => {
-                const tabstrip = document.querySelector('.k-tabstrip');
-                if (!tabstrip) { return 'no_tabstrip'; }
-                const kendoTabStrip = $(tabstrip).data('kendoTabStrip');
-                if (!kendoTabStrip) { return 'no_kendo'; }
-                const tabs = kendoTabStrip.tabGroup.find('li[role=tab]');
-                let targetIndex = -1;
-                tabs.each(function(index) {
-                    if ($(this).text().trim() === 'Temsilci Kondisyon') {
-                        targetIndex = index;
-                    }
-                });
-                if (targetIndex === -1) { return 'no_tab_found'; }
-                kendoTabStrip.select(targetIndex);
-                return 'success_' + targetIndex;
-            }
-        ");
-        
-        await Page.WaitForTimeoutAsync(3000);
-        
-        // Wait for ContractRepresentativeGridId to become visible
-        var representativeGrid = frame.Locator("#ContractRepresentativeGridId");
-        await representativeGrid.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 15000 });
-        
-        await Page.WaitForTimeoutAsync(1000);
-        Console.WriteLine("✅ Clicked Brand Ambassador tab");
-    }
-
-    public async Task ClickNewBrandAmbassadorButtonAsync()
-    {
-        var frame = await GetContractEditFrameAsync();
-        
-        // Find and click "Yeni Kayıt" button - specifically for ContractRepresentativeGridIdAddNew
-        var newButton = frame.Locator("a.k-grid-ContractRepresentativeGridIdAddNew");
-        await newButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
-        await newButton.ClickAsync();
-        await Page.WaitForTimeoutAsync(2000);
-        Console.WriteLine("✅ Clicked New Brand Ambassador button");
-    }
-
-    public async Task ClickGeneralConditionTabAsync()
-    {
-        var frame = await GetContractEditFrameAsync();
-        
-        // Click on "Genel Kondisyon" tab - use the first exact match
-        var generalConditionTab = frame.Locator("a.k-link").Filter(new() { HasText = "Genel Kondisyon" }).First;
-        await generalConditionTab.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
-        await generalConditionTab.ClickAsync();
-        await Page.WaitForTimeoutAsync(2000);
-        Console.WriteLine("✅ Clicked General Condition tab");
-    }
-
-    public async Task ClickNewGeneralConditionButtonAsync()
-    {
-        var frame = await GetContractEditFrameAsync();
-        
-        // Find and click "Yeni Kayıt" button for GeneralCondition
-        var newButton = frame.Locator("a.k-grid-ContractRebateGridIdAddNew");
-        await newButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
-        await newButton.ClickAsync();
-        await Page.WaitForTimeoutAsync(2000);
-        Console.WriteLine("✅ Clicked New General Condition button");
-    }
-
-    public async Task VerifyNewGeneralConditionButtonIsActiveAsync()
-    {
-        var frame = await GetContractEditFrameAsync();
-
-        var newButton = frame.Locator("a.k-grid-ContractRebateGridIdAddNew");
-        await newButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
-
-        string? classList = await newButton.First.GetAttributeAsync("class");
-        bool isDisabled = classList != null && classList.Contains("k-state-disabled", StringComparison.OrdinalIgnoreCase);
-
-        isDisabled.Should().BeFalse("Genel kondisyon 'Yeni Kayıt' butonu aktif olmalıdır");
-        Console.WriteLine("✅ New General Condition button is active");
-    }
-
-    public async Task VerifyNewGeneralConditionButtonIsInactiveAsync()
-    {
-        var frame = await GetContractEditFrameAsync();
-
-        var newButton = frame.Locator("a.k-grid-ContractRebateGridIdAddNew");
-        var buttonCount = await newButton.CountAsync();
-
-        if (buttonCount == 0)
-        {
-            Console.WriteLine("✅ New General Condition button is not available");
-            return;
-        }
-
-        await newButton.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Attached, Timeout = 10000 });
-        var isVisible = await newButton.First.IsVisibleAsync();
-
-        isVisible.Should().BeFalse("Genel kondisyon 'Yeni Kayıt' butonu görünmemelidir");
-        Console.WriteLine("✅ New General Condition button is not visible");
-    }
-
-    public async Task ClickIncentiveTabAsync()
-    {
-        var frame = await GetContractEditFrameAsync();
-        
-        // Click on "Incentive" tab - use the first exact match
-        var incentiveTab = frame.Locator("a.k-link").Filter(new() { HasText = "Incentive" }).First;
-        await incentiveTab.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
-        await incentiveTab.ClickAsync();
-        await Page.WaitForTimeoutAsync(2000);
-        Console.WriteLine("✅ Clicked Incentive tab");
-    }
-
-    public async Task ClickNewIncentiveButtonAsync()
-    {
-        var frame = await GetContractEditFrameAsync();
-        
-        // Find and click "Yeni Kayıt" button for Incentive
-        var newButton = frame.Locator("a.k-grid-ContractRepresentativeIncentiveGridIdAddNew");
-        await newButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
-        await newButton.ClickAsync();
-        await Page.WaitForTimeoutAsync(2000);
-        Console.WriteLine("✅ Clicked New Incentive button");
-    }
-
-    private async Task<IFrame> GetContractEditFrameAsync()
-    {
-        // Wait for the contract edit frame to load
-        await Page.WaitForTimeoutAsync(2000);
-        
-        var frames = Page.Frames;
-        foreach (var frame in frames)
-        {
-            if (frame.Url.Contains("/ApplicationManagement/Contract/Edit"))
-            {
-                return frame;
-            }
-        }
-        throw new InvalidOperationException("Contract Edit frame not found");
-    }
 }
